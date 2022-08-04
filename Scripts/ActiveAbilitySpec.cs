@@ -4,50 +4,6 @@ using System.Collections.Generic;
 
 namespace KimScor.GameplayTagSystem.Ability
 {
-    public class TaskAbility : ActiveAbility
-    {
-        public override AbilitySpec CreateSpec(AbilitySystem owner, int level)
-        {
-            var spec = new TaskAbilitySpec(this, owner,level);
-
-            return spec;
-        }
-        public class TaskAbilitySpec : ActiveAbilitySpec
-        {
-            public TaskAbilitySpec(Ability ability, AbilitySystem owner, int level) : base(ability, owner, level)
-            {
-            }
-
-            public override void OnGrantAbility()
-            {
-                base.OnGrantAbility();
-            }
-            public override void OnLostAbility()
-            {
-            }
-            protected override void EnterAbility()
-            {
-            }
-
-            protected override void ExitAbility()
-            {
-            }
-
-            protected override void CancelAbility()
-            {
-            }
-
-            
-
-            protected override void ReleasedAbility()
-            {
-            }
-
-            protected override void ReTriggerAbility()
-            {
-            }
-        }
-    }
     public abstract class ActiveAbilitySpec : AbilitySpec
     {
         public ActiveAbilitySpec(Ability ability, AbilitySystem owner, int level) : base(ability, owner, level)
