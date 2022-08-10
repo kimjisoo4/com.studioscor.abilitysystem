@@ -6,11 +6,16 @@
 #if UNITY_EDITOR
         public string TaskName;
 #endif
-        public GameplayTag ActivateTag;
-        public GameplayTag DeActiveTag;
-        public GameplayTag ReTriggerTag;
+        public AbilityTaskTag ActivateTag;
+        public AbilityTaskTag EndAbilityTag;
+        public AbilityTaskTag ReTriggerTag;
+        public AbilityTaskTag CanNextTaskTag;
+
         public FAbilityTags AbilityTags;
+        public AbilityCost AbilityCost;
         public AbilityTask[] AbilityTasks;
+
+        
     }
 
 }

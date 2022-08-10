@@ -1,28 +1,23 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace KimScor.GameplayTagSystem.Ability
 {
     public abstract class AbilityTaskSpec
     {
         private AbilityTask _AbilityTask;
-        private GameplayTagSystem _GameplayTagSystem;
         private TaskAbilitySpec _TaskAbilitySpec;
         public AbilityTask AbilityTask => _AbilityTask;
-        public GameplayTagSystem GameplayTagSystem => _GameplayTagSystem;
-
         public TaskAbilitySpec TaskAbilitySpec => _TaskAbilitySpec;
 
         private bool _IsActive = false;
         public bool IsActive => _IsActive;
-        public GameplayTag ActiveTag => AbilityTask.ActiveTag;
-        public IReadOnlyCollection<GameplayTag> StartedTags => AbilityTask.StartedTags;
-        public IReadOnlyCollection<GameplayTag> FinishedTags => AbilityTask.FinishedTags;
+        public AbilityTaskTag ActiveTag => AbilityTask.ActiveTag;
+        public IReadOnlyCollection<AbilityTaskTag> StartedTags => AbilityTask.StartedTags;
+        public IReadOnlyCollection<AbilityTaskTag> FinishedTags => AbilityTask.FinishedTags;
 
-        public AbilityTaskSpec(AbilityTask abilityTask, GameplayTagSystem gameplayTagSysetm, TaskAbilitySpec taskAbilitySpec)
+        public AbilityTaskSpec(AbilityTask abilityTask, TaskAbilitySpec taskAbilitySpec)
         {
             _AbilityTask = abilityTask;
-            _GameplayTagSystem = gameplayTagSysetm;
             _TaskAbilitySpec = taskAbilitySpec;
 
             SetupGameplayTag();
@@ -31,15 +26,13 @@ namespace KimScor.GameplayTagSystem.Ability
         {
             if (ActiveTag is not null)
             {
-
-                Debug.Log("Chjeck");
-                _GameplayTagSystem.OnTriggerTag += GameplayTagSystem_OnTriggerTag;
+                TaskAbilitySpec.OnTriggeredTag += TaskAbilitySpec_OnTriggeredTag;
             }
         }
 
-        private void GameplayTagSystem_OnTriggerTag(GameplayTagSystem gameplayTagSystem, GameplayTag changedTag)
+        private void TaskAbilitySpec_OnTriggeredTag(TaskAbilitySpec taskAbilitySpec, AbilityTaskTag triggerTag)
         {
-            if (changedTag == ActiveTag)
+            if (triggerTag == ActiveTag)
             {
                 if (IsActive)
                 {
@@ -59,7 +52,8 @@ namespace KimScor.GameplayTagSystem.Ability
 
             _IsActive = true;
 
-            GameplayTagSystem.TriggerTags(StartedTags);
+            if(StartedTags is not null)
+                TaskAbilitySpec.OnTriggerTags(StartedTags);
 
             EnterTask();
         }
@@ -70,12 +64,18 @@ namespace KimScor.GameplayTagSystem.Ability
 
             _IsActive = false;
 
-            GameplayTagSystem.TriggerTags(FinishedTags);
+            if (FinishedTags is not null)
+                TaskAbilitySpec.OnTriggerTags(FinishedTags);
 
             ExitTask();
         }
         public virtual void DestroyTask()
         {
+            if (StartedTags is not null)
+            {
+                TaskAbilitySpec.OnTriggeredTag -= TaskAbilitySpec_OnTriggeredTag;
+            }
+
             return;
         }
 
