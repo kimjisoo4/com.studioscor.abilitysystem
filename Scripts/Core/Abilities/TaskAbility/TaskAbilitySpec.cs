@@ -150,19 +150,17 @@ namespace KimScor.GameplayTagSystem.Ability
 
             _CurrentNumber = 0;
             _CanNextTask = false;
-
-            Owner.OnFixedUpdatedAbility -= Owner_OnFixedUpdatedAbility;
         }
 
         protected override void EnterAbility()
         {
             PlayAbility();
-
-            Owner.OnFixedUpdatedAbility += Owner_OnFixedUpdatedAbility;
         }
 
-        private void Owner_OnFixedUpdatedAbility(AbilitySystem abilitySystem, float deltaTime)
+        protected override void FixedUpdateAbility(float deltaTime)
         {
+            base.FixedUpdateAbility(deltaTime);
+
             foreach (AbilityTaskSpec abilitySpec in CurrentSpec.AbilityTaskSpecs)
             {
                 abilitySpec.UpdateTask(deltaTime);
@@ -175,8 +173,6 @@ namespace KimScor.GameplayTagSystem.Ability
             GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ActivationBlockedTags);
 
             _CurrentNumber = 0;
-
-            Owner.OnFixedUpdatedAbility -= Owner_OnFixedUpdatedAbility;
         }
 
         protected override void ReleasedAbility()
@@ -217,25 +213,44 @@ namespace KimScor.GameplayTagSystem.Ability
 
         protected bool CheckAbilityTags(FAbilityTags abilityTags)
         {
-            if (!GameplayTagSystem.ContainAllOwnedTags(abilityTags.ActivationRequiredTags))
+            // 해당 태그가 모두 존재하고 있는가
+            if (abilityTags.ActivationRequiredTags is not null
+                && !GameplayTagSystem.ContainAllTagsInOwned(abilityTags.ActivationRequiredTags))
             {
+                Log("필수 태그를 소유하고 있지 않음");
+
                 return false;
             }
-            if (!GameplayTagSystem.ContainNotAllBlockTags(abilityTags.ActivationBlockedTags))
+
+            // 해당 태그를 가지고 있는가
+            if (abilityTags.ActivationBlockedTags is not null
+                && !GameplayTagSystem.ContainOnceTagsInOwned(abilityTags.ActivationBlockedTags))
             {
+                Log("방해 태그를 소유하고 있음");
+
                 return false;
             }
+
             return true;
         }
 
         public override bool CanActiveAbility()
         {
-            if (GameplayTagSystem.ContainBlockTag(AbilityTag))
+            // 어빌리티 태그가 블록 되어 있는가
+            if (Ability.AbilityTag is not null
+                && GameplayTagSystem.ContainBlockTag(Ability.AbilityTag))
             {
+                Log("어빌리티가 블록되어 있음.");
+
                 return false;
             }
-            if (!GameplayTagSystem.ContainNotAllBlockTags(AttributeTags.ToArray()))
+
+            // 속성 태그 중에 블록되어 있는게 있는가
+            if (Ability.AttributeTags is not null
+                && !GameplayTagSystem.ContainOnceTagsInBlock(Ability.AttributeTags.ToArray()))
             {
+                Log("어빌리티의 속성이 블록되어 있음.");
+
                 return false;
             }
             if (!CheckAbilityTags(CurrentSpec.AbilityTags))

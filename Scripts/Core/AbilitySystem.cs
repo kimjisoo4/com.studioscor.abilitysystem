@@ -63,13 +63,8 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public bool DebugMode = false;
 
-        public event UpdateAbilityHandler OnUpdatedAbility;
-        public event UpdateAbilityHandler OnFixedUpdatedAbility;
-
         public event AbilityChangedHandler OnAddedAbility;
         public event AbilityChangedHandler OnRemovedAbility;
-
-        public event CancelAbilityHandler OnCanceledAbility;
 
 
 
@@ -80,15 +75,9 @@ namespace KimScor.GameplayTagSystem.Ability
         }
 #endif
 
+        
+
         #region CallBack
-        public void OnUpdateAbility(float deltaTime)
-        {
-            OnUpdatedAbility?.Invoke(this, deltaTime);
-        }
-        public void OnFixedUpdateAbility(float deltaTime)
-        {
-            OnFixedUpdatedAbility?.Invoke(this, deltaTime);
-        }
         public void OnAddAbility(AbilitySpec addAbilitySpec)
         {
             OnAddedAbility?.Invoke(this, addAbilitySpec);
@@ -96,10 +85,6 @@ namespace KimScor.GameplayTagSystem.Ability
         public void OnRemoveAbility(AbilitySpec removeAbilitySpec)
         {
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
-        }
-        public void OnCancelAbility(GameplayTag[] cancelTags)
-        {
-            OnCanceledAbility?.Invoke(this, cancelTags);
         }
         #endregion
 
@@ -122,15 +107,29 @@ namespace KimScor.GameplayTagSystem.Ability
 
             InputBuffer.Buffer(deltaTime);
 
-            OnUpdateAbility(deltaTime);
+            foreach (AbilitySpec spec in Abilities.Values)
+            {
+                spec.OnUpdateAbility(deltaTime);
+            }
         }
 
         private void FixedUpdate()
         {
             float deltaTime = Time.fixedDeltaTime;
 
-            OnFixedUpdateAbility(deltaTime);
+            foreach (AbilitySpec spec in Abilities.Values)
+            {
+                spec.OnFixedUpdateAbility(deltaTime);
+            }
         }
+        public void OnCancelAbility(GameplayTag[] cancelTags)
+        {
+            foreach (AbilitySpec spec in Abilities.Values)
+            {
+                spec.TryCancelAbility(cancelTags);
+            }
+        }
+
 
         public void OverrideAbilities(AbilitySystem abilitySystem)
         {
@@ -287,5 +286,38 @@ namespace KimScor.GameplayTagSystem.Ability
 
             return false;
         }
+
+        public void ActivateAbility(Ability ability)
+        {
+            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            {
+                spec.OnAbility();
+            }
+        }
+        public bool TryGetAbility(Ability ability, out AbilitySpec abilitySpec)
+        {
+            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            {
+                abilitySpec = spec;
+
+                return true;
+            }
+            else
+            {
+                abilitySpec = null;
+
+                return false;
+            }
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            foreach (AbilitySpec spec in Abilities.Values)
+            {
+                spec.OnDrawGizmos();
+            }
+        }
+#endif
     }
 }

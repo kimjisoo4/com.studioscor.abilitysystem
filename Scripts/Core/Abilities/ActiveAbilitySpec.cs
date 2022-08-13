@@ -15,33 +15,6 @@ namespace KimScor.GameplayTagSystem.Ability
         public ActiveAbility ActiveAbility => _ActiveAbility;
         public FAbilityTags AbilityTags => ActiveAbility.AbilityTags;
 
-        public override void OnGrantAbility()
-        {
-            Owner.OnCanceledAbility += Owner_OnCanceledAbility;
-        }
-
-        private void Owner_OnCanceledAbility(AbilitySystem abilitySystem, GameplayTag[] cancelTags)
-        {
-            if (!Activate)
-                return;
-
-            if (cancelTags.Contains(Ability.AbilityTag))
-            {
-                CancelAbility();
-
-                return;
-            }
-
-            foreach (GameplayTag tag in cancelTags)
-            {
-                if (AttributeTags.Contains(tag))
-                {
-                    CancelAbility();
-
-                    return;
-                }
-            }
-        }
 
         public override void OnAbility()
         {
@@ -71,36 +44,38 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public override bool CanActiveAbility()
         {
-            if (GameplayTagSystem.ContainBlockTag(Ability.AbilityTag))
+            // 어빌리티 태그가 블록 되어 있는가
+            if (Ability.AbilityTag is not null
+                && GameplayTagSystem.ContainBlockTag(Ability.AbilityTag))
             {
-                if (Ability.DebugMode)
-                    Debug.Log("블록되어 있는 어빌리티");
+                Log("어빌리티가 블록되어 있음.");
 
                 return false;
             }
 
-            if (!GameplayTagSystem.ContainNotOnceBlockTags(Ability.AttributeTags.ToArray()))
+            // 속성 태그 중에 블록되어 있는게 있는가
+            if (Ability.AttributeTags is not null 
+                && GameplayTagSystem.ContainOnceTagsInBlock(Ability.AttributeTags.ToArray()))
             {
-                if (Ability.DebugMode)
-                    Debug.Log("블록되어 있는 태그 속성");
+                Log("어빌리티의 속성이 블록되어 있음.");
 
                 return false;
             }
 
             // 해당 태그가 모두 존재하고 있는가
-            if (!GameplayTagSystem.ContainOnceOwnedTags(AbilityTags.ActivationRequiredTags))
+            if (AbilityTags.ActivationRequiredTags is not null 
+                && !GameplayTagSystem.ContainAllTagsInOwned(AbilityTags.ActivationRequiredTags))
             {
-                if (Ability.DebugMode)
-                    Debug.Log("필수 태그 없음");
+                Log("필수 태그를 소유하고 있지 않음");
 
                 return false;
             }
 
-            // 해당 태그가 하나라도 존재하고 있는가
-            if (!GameplayTagSystem.ContainNotOnceOwnedTags(AbilityTags.ActivationBlockedTags))
+            // 해당 태그를 가지고 있는가
+            if (AbilityTags.ActivationBlockedTags is not null
+                && GameplayTagSystem.ContainOnceTagsInOwned(AbilityTags.ActivationBlockedTags))
             {
-                if (Ability.DebugMode)
-                    Debug.Log("없어야할 태그 존재");
+                Log("방해 태그를 소유하고 있음");
 
                 return false;
             }

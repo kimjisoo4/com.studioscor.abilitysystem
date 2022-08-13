@@ -34,7 +34,7 @@ namespace KimScor.GameplayTagSystem.Ability
         [Header(" 디버그 ")]
         [SerializeField] private bool _DebugMode;
 
-        public bool DebugMode => _DebugMode;
+        public bool UseDebugMode => _DebugMode;
         public abstract AbilitySpec CreateSpec(AbilitySystem owner, int level);
     }
 }

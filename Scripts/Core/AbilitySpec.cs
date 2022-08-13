@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Diagnostics;
 
 namespace KimScor.GameplayTagSystem.Ability
 {
@@ -89,11 +90,34 @@ namespace KimScor.GameplayTagSystem.Ability
 
             return false;
         }
+        public bool TryCancelAbility(GameplayTag[] cancelTags)
+        {
+            if (!Activate)
+                return false;
+
+            if (cancelTags.Contains(Ability.AbilityTag))
+            {
+                OnCancelAbility();
+
+                return true;
+            }
+
+            foreach (GameplayTag tag in cancelTags)
+            {
+                if (AttributeTags.Contains(tag))
+                {
+                    OnCancelAbility();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public virtual void OnAbility()
         {
-            if (Ability.DebugMode)
-                Debug.Log("Enter Ability : " + Ability.name);
+            Log(" On Ability ");
 
             Owner.OnCancelAbility(CancelTags.ToArray());
 
@@ -106,23 +130,21 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public void OnReTriggerAbility()
         {
-            if (Ability.DebugMode)
-                Debug.Log("ReTrigger Ability : " + Ability.name);
+            Log(" ReTrigger Ability ");
 
             ReTriggerAbility();
         }
 
         public virtual void EndAbility()
         {
-            if (!_isActivate)
+            if (!Activate)
                 return;
 
-            if (Ability.DebugMode)
-                Debug.Log("Exit Ability : " + Ability.name);
-
-            _isActivate = false;
+            Log(" Exit Ability ");
 
             ExitAbility();
+
+            _isActivate = false;
 
             OnFinishedAbility?.Invoke(this);
             OnEndedAbility?.Invoke(this);
@@ -130,18 +152,46 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public virtual void OnCancelAbility()
         {
-            if (!_isActivate)
+            if (!Activate)
                 return;
 
-            if (Ability.DebugMode)
-                Debug.Log("Cancel Ability : " + Ability.name);
-
-            _isActivate = false;
+            Log(" Cancel Ability ");
 
             CancelAbility();
 
+            _isActivate = false;
+
             OnCanceledAbility?.Invoke(this);
             OnEndedAbility?.Invoke(this);
+        }
+
+        public void OnUpdateAbility(float deltaTime)
+        {
+            if (!Activate)
+                return;
+
+            UpdateAbility(deltaTime);
+        }
+        public void OnFixedUpdateAbility(float deltaTime)
+        {
+            if (!Activate)
+                return;
+
+            FixedUpdateAbility(deltaTime);
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        protected void Log(string log)
+        {
+            if (Ability.UseDebugMode)
+                UnityEngine.Debug.Log(Ability.AbilityName + " : " + log, Owner);
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public virtual void OnDrawGizmos() 
+        {
+            if (!Activate)
+                return;
         }
 
 
@@ -150,6 +200,8 @@ namespace KimScor.GameplayTagSystem.Ability
         protected abstract void CancelAbility();
         protected abstract void ReleasedAbility();
         protected abstract void ReTriggerAbility();
+        protected virtual void UpdateAbility(float deltaTime) { }
+        protected virtual void FixedUpdateAbility(float deltaTime) { }
 
         public virtual bool CanReTriggerAbility()
         {
@@ -161,7 +213,4 @@ namespace KimScor.GameplayTagSystem.Ability
             return false;
         }
     }
-
-
-
 }
