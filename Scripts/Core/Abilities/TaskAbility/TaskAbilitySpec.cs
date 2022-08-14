@@ -145,8 +145,8 @@ namespace KimScor.GameplayTagSystem.Ability
 
         protected override void CancelAbility()
         {
-            GameplayTagSystem.RemoveOwnedTags(CurrentSpec.AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ActivationBlockedTags);
+            GameplayTagSystem.RemoveOwnedTags(CurrentSpec.AbilityTags.AddOwnedTags);
+            GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ObstacledTags);
 
             _CurrentNumber = 0;
             _CanNextTask = false;
@@ -169,8 +169,8 @@ namespace KimScor.GameplayTagSystem.Ability
 
         protected override void ExitAbility()
         {
-            GameplayTagSystem.RemoveOwnedTags(CurrentSpec.AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ActivationBlockedTags);
+            GameplayTagSystem.RemoveOwnedTags(CurrentSpec.AbilityTags.AddOwnedTags);
+            GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ObstacledTags);
 
             _CurrentNumber = 0;
         }
@@ -189,8 +189,8 @@ namespace KimScor.GameplayTagSystem.Ability
                 abilitySpec.EndTask();
             }
 
-            GameplayTagSystem.RemoveOwnedTags(PrevSpec.AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.RemoveBlockTags(PrevSpec.AbilityTags.ActivationBlockedTags);
+            GameplayTagSystem.RemoveOwnedTags(PrevSpec.AbilityTags.AddOwnedTags);
+            GameplayTagSystem.RemoveBlockTags(PrevSpec.AbilityTags.ObstacledTags);
 
             _CanNextTask = false;
 
@@ -203,10 +203,10 @@ namespace KimScor.GameplayTagSystem.Ability
                 CurrentSpec.AbilityCost.ConsumeCost();
             }
 
-            GameplayTagSystem.AddOwnedTags(CurrentSpec.AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.AddBlockTags(CurrentSpec.AbilityTags.ActivationBlockedTags);
+            GameplayTagSystem.AddOwnedTags(CurrentSpec.AbilityTags.AddOwnedTags);
+            GameplayTagSystem.AddBlockTags(CurrentSpec.AbilityTags.ObstacledTags);
 
-            Owner.OnCancelAbility(CurrentSpec.AbilityTags.CancelAbilitiesWithTag);
+            Owner.OnCancelAbility(CurrentSpec.AbilityTags.CancelAbilityTags);
 
             OnTriggerTag(CurrentSpec.ActivateTag);
         }
@@ -214,8 +214,8 @@ namespace KimScor.GameplayTagSystem.Ability
         protected bool CheckAbilityTags(FAbilityTags abilityTags)
         {
             // 해당 태그가 모두 존재하고 있는가
-            if (abilityTags.ActivationRequiredTags is not null
-                && !GameplayTagSystem.ContainAllTagsInOwned(abilityTags.ActivationRequiredTags))
+            if (abilityTags.RequiredTags is not null
+                && !GameplayTagSystem.ContainAllTagsInOwned(abilityTags.RequiredTags))
             {
                 Log("필수 태그를 소유하고 있지 않음");
 
@@ -223,8 +223,8 @@ namespace KimScor.GameplayTagSystem.Ability
             }
 
             // 해당 태그를 가지고 있는가
-            if (abilityTags.ActivationBlockedTags is not null
-                && !GameplayTagSystem.ContainOnceTagsInOwned(abilityTags.ActivationBlockedTags))
+            if (abilityTags.ObstacledTags is not null
+                && !GameplayTagSystem.ContainOnceTagsInOwned(abilityTags.ObstacledTags))
             {
                 Log("방해 태그를 소유하고 있음");
 

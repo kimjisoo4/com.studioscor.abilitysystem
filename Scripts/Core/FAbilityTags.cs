@@ -6,41 +6,41 @@ namespace KimScor.GameplayTagSystem.Ability
     public struct FAbilityTags
     {
         /// <summary>
-        /// 어빌리티 사용시 부여되는 태그
+        /// 부여 소유 태그
         /// </summary>
         [Header(" 활성화 부여 태그 ")]
-        public GameplayTag[] ActivationOwnedTags;
+        public GameplayTag[] AddOwnedTags;
 
         /// <summary>
-        /// 어빌리티 차단 태그를 부여한다.
+        /// 부여 차단 태그
         /// </summary>
         [Header(" 어빌리티 차단 태그 ")]
-        public GameplayTag[] BlockAbilitiesWithTag;
+        public GameplayTag[] AddBlockTags;
 
         /// <summary>
-        /// 어빌리티를 확인하여 해당 태그를 취소한다.
+        /// 캔슬 태그
         /// </summary>
         [Header(" 어빌리티 취소 태그 ")]
-        public GameplayTag[] CancelAbilitiesWithTag;
+        public GameplayTag[] CancelAbilityTags;
 
         /// <summary>
-        /// 어빌리티를 실행할 때, 해당 태그들이 모두 존재해야 한다.
+        /// 필요 태그
         /// </summary>
         [Header("활성화 필수 태그")]
-        public GameplayTag[] ActivationRequiredTags;
+        public GameplayTag[] RequiredTags;
         /// <summary>
-        /// 어빌리티를 실행할 때, 해당 태그들이 모두 존재하지 않아야 한다.
+        /// 방해 태그
         /// </summary>
         [Header("활성화 차단 태그")]
-        public GameplayTag[] ActivationBlockedTags;
+        public GameplayTag[] ObstacledTags;
 
         public FAbilityTags(GameplayTag abilityTag, GameplayTag[] attributeTags, GameplayTag[] activationOwnedTags, GameplayTag[] blockAbilitiesWithTag, GameplayTag[] cancelAbilitiesWithTag, GameplayTag[] activationRequiredTags, GameplayTag[] activationBlockedTags)
         {
-            ActivationOwnedTags = activationOwnedTags;
-            BlockAbilitiesWithTag = blockAbilitiesWithTag;
-            CancelAbilitiesWithTag = cancelAbilitiesWithTag;
-            ActivationRequiredTags = activationRequiredTags;
-            ActivationBlockedTags = activationBlockedTags;
+            AddOwnedTags = activationOwnedTags;
+            AddBlockTags = blockAbilitiesWithTag;
+            CancelAbilityTags = cancelAbilitiesWithTag;
+            RequiredTags = activationRequiredTags;
+            ObstacledTags = activationBlockedTags;
         }
     }
 }

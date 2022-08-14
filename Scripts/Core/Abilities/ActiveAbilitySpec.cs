@@ -18,10 +18,10 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public override void OnAbility()
         {
-            Owner.OnCancelAbility(AbilityTags.CancelAbilitiesWithTag);
+            Owner.OnCancelAbility(AbilityTags.CancelAbilityTags);
 
-            GameplayTagSystem.AddOwnedTags(AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.AddBlockTags(AbilityTags.BlockAbilitiesWithTag);
+            GameplayTagSystem.AddOwnedTags(AbilityTags.AddOwnedTags);
+            GameplayTagSystem.AddBlockTags(AbilityTags.AddBlockTags);
 
             base.OnAbility();
         }
@@ -30,16 +30,16 @@ namespace KimScor.GameplayTagSystem.Ability
         {
             base.EndAbility();
 
-            GameplayTagSystem.RemoveOwnedTags(AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.RemoveBlockTags(AbilityTags.BlockAbilitiesWithTag);
+            GameplayTagSystem.RemoveOwnedTags(AbilityTags.AddOwnedTags);
+            GameplayTagSystem.RemoveBlockTags(AbilityTags.AddBlockTags);
         }
 
         public override void OnCancelAbility()
         {
             base.OnCancelAbility();
 
-            GameplayTagSystem.RemoveOwnedTags(AbilityTags.ActivationOwnedTags);
-            GameplayTagSystem.RemoveBlockTags(AbilityTags.BlockAbilitiesWithTag);
+            GameplayTagSystem.RemoveOwnedTags(AbilityTags.AddOwnedTags);
+            GameplayTagSystem.RemoveBlockTags(AbilityTags.AddBlockTags);
         }
 
         public override bool CanActiveAbility()
@@ -63,8 +63,8 @@ namespace KimScor.GameplayTagSystem.Ability
             }
 
             // 해당 태그가 모두 존재하고 있는가
-            if (AbilityTags.ActivationRequiredTags is not null 
-                && !GameplayTagSystem.ContainAllTagsInOwned(AbilityTags.ActivationRequiredTags))
+            if (AbilityTags.RequiredTags is not null 
+                && !GameplayTagSystem.ContainAllTagsInOwned(AbilityTags.RequiredTags))
             {
                 Log("필수 태그를 소유하고 있지 않음");
 
@@ -72,8 +72,8 @@ namespace KimScor.GameplayTagSystem.Ability
             }
 
             // 해당 태그를 가지고 있는가
-            if (AbilityTags.ActivationBlockedTags is not null
-                && GameplayTagSystem.ContainOnceTagsInOwned(AbilityTags.ActivationBlockedTags))
+            if (AbilityTags.ObstacledTags is not null
+                && GameplayTagSystem.ContainOnceTagsInOwned(AbilityTags.ObstacledTags))
             {
                 Log("방해 태그를 소유하고 있음");
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.Linq;
 
 namespace KimScor.GameplayTagSystem.Ability
@@ -308,6 +309,21 @@ namespace KimScor.GameplayTagSystem.Ability
 
                 return false;
             }
+        }
+
+        public bool TryFindAbility(Type type, out AbilitySpec abilitySpec) 
+        {
+            foreach (var ability in Abilities.Keys)
+            {
+                if(ability.GetType().Equals(type))
+                {
+                    return Abilities.TryGetValue(ability, out abilitySpec);
+                }
+            }
+
+            abilitySpec = null;
+
+            return false;
         }
 
 #if UNITY_EDITOR
