@@ -140,28 +140,41 @@ namespace KimScor.GameplayTagSystem.Ability
             if (!Activate)
                 return;
 
+            _isActivate = false;
+
+            
+            Log(" Finish Ability Ability ");
+
+            FinishAbility();
+
+            OnFinishedAbility?.Invoke(this);
+
+
             Log(" Exit Ability ");
 
             ExitAbility();
 
-            _isActivate = false;
-
-            OnFinishedAbility?.Invoke(this);
             OnEndedAbility?.Invoke(this);
         }
-
         public virtual void OnCancelAbility()
         {
             if (!Activate)
                 return;
 
+            _isActivate = false;
+
+
             Log(" Cancel Ability ");
 
             CancelAbility();
 
-            _isActivate = false;
-
             OnCanceledAbility?.Invoke(this);
+
+
+            Log(" Exit Ability ");
+
+            ExitAbility();
+
             OnEndedAbility?.Invoke(this);
         }
 
@@ -197,6 +210,7 @@ namespace KimScor.GameplayTagSystem.Ability
 
         protected abstract void EnterAbility();
         protected abstract void ExitAbility();
+        protected abstract void FinishAbility();
         protected abstract void CancelAbility();
         protected abstract void ReleasedAbility();
         protected abstract void ReTriggerAbility();

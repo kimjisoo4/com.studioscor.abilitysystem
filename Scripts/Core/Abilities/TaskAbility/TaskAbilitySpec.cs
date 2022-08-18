@@ -167,7 +167,7 @@ namespace KimScor.GameplayTagSystem.Ability
             }
         }
 
-        protected override void ExitAbility()
+        protected override void FinishAbility()
         {
             GameplayTagSystem.RemoveOwnedTags(CurrentSpec.AbilityTags.AddOwnedTags);
             GameplayTagSystem.RemoveBlockTags(CurrentSpec.AbilityTags.ObstacledTags);
@@ -283,6 +283,10 @@ namespace KimScor.GameplayTagSystem.Ability
                 return false;
             }
             return true;
+        }
+
+        protected override void ExitAbility()
+        {
         }
     }
 }
