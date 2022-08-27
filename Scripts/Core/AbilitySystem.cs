@@ -8,12 +8,8 @@ namespace KimScor.GameplayTagSystem.Ability
     public class AbilitySystem : MonoBehaviour
     {
         #region Events
-        public delegate void UpdateAbilityHandler(AbilitySystem abilitySystem, float deltaTime);
         public delegate void AbilityChangedHandler(AbilitySystem abilitySystem, AbilitySpec abilitySpec);
-        public delegate void CancelAbilityHandler(AbilitySystem abilitySystem, GameplayTag[] cancelTags);
         #endregion
-
-
 
         [SerializeField] private GameplayTagSystem _GameplayTagSystem;
 
@@ -64,9 +60,11 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public bool DebugMode = false;
 
+        public event AbilityChangedHandler OnStartedAbility;
+        public event AbilityChangedHandler OnFinishedAbility;
+
         public event AbilityChangedHandler OnAddedAbility;
         public event AbilityChangedHandler OnRemovedAbility;
-
 
 
 #if UNITY_EDITOR
@@ -76,14 +74,20 @@ namespace KimScor.GameplayTagSystem.Ability
         }
 #endif
 
-        
-
         #region CallBack
-        public void OnAddAbility(AbilitySpec addAbilitySpec)
+        protected void OnStartAbility(AbilitySpec startAbility)
+        {
+            OnStartedAbility?.Invoke(this, startAbility);
+        }
+        protected void OnFinishAbility(AbilitySpec finishAbility)
+        {
+            OnStartedAbility?.Invoke(this, finishAbility);
+        }
+        protected void OnAddAbility(AbilitySpec addAbilitySpec)
         {
             OnAddedAbility?.Invoke(this, addAbilitySpec);
         }
-        public void OnRemoveAbility(AbilitySpec removeAbilitySpec)
+        protected void OnRemoveAbility(AbilitySpec removeAbilitySpec)
         {
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
         }
@@ -165,9 +169,21 @@ namespace KimScor.GameplayTagSystem.Ability
 
             spec.OnGrantAbility();
 
+            spec.OnStartedAbility += Spec_OnStartedAbility;
+            spec.OnFinishedAbility += Spec_OnFinishedAbility;
+
             OnAddAbility(spec);
 
             return spec;
+        }
+
+        private void Spec_OnFinishedAbility(AbilitySpec abilitySpec)
+        {
+            OnFinishAbility(abilitySpec);
+        }
+        private void Spec_OnStartedAbility(AbilitySpec abilitySpec)
+        {
+            OnStartAbility(abilitySpec);
         }
 
         /// <summary>
@@ -181,6 +197,9 @@ namespace KimScor.GameplayTagSystem.Ability
                 _Abilities.Remove(ability);
 
                 spec.OnLostAbility();
+
+                spec.OnStartedAbility -= Spec_OnStartedAbility;
+                spec.OnFinishedAbility -= Spec_OnFinishedAbility;
 
                 OnRemoveAbility(spec);
             }
