@@ -90,7 +90,32 @@ namespace KimScor.GameplayTagSystem.Ability
 
             return false;
         }
+
         public bool TryCancelAbility(GameplayTag[] cancelTags)
+        {
+            if (!Activate)
+                return false;
+
+            if (cancelTags.Contains(Ability.AbilityTag))
+            {
+                OnCancelAbility();
+
+                return true;
+            }
+
+            foreach (GameplayTag tag in cancelTags)
+            {
+                if (AttributeTags.Contains(tag))
+                {
+                    OnCancelAbility();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        public bool TryCancelAbility(IReadOnlyCollection<GameplayTag> cancelTags)
         {
             if (!Activate)
                 return false;

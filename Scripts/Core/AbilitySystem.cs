@@ -106,10 +106,8 @@ namespace KimScor.GameplayTagSystem.Ability
             }
         }
 
-        private void Update()
+        public void UpdateAbility(float deltaTime)
         {
-            float deltaTime = Time.deltaTime;
-
             InputBuffer.Buffer(deltaTime);
 
             foreach (AbilitySpec spec in Abilities.Values)
@@ -117,17 +115,22 @@ namespace KimScor.GameplayTagSystem.Ability
                 spec.OnUpdateAbility(deltaTime);
             }
         }
-
-        private void FixedUpdate()
+        public void FixedUpdateAbility(float deltaTime)
         {
-            float deltaTime = Time.fixedDeltaTime;
-
             foreach (AbilitySpec spec in Abilities.Values)
             {
                 spec.OnFixedUpdateAbility(deltaTime);
             }
         }
+
         public void OnCancelAbility(GameplayTag[] cancelTags)
+        {
+            foreach (AbilitySpec spec in Abilities.Values)
+            {
+                spec.TryCancelAbility(cancelTags);
+            }
+        }
+        public void OnCancelAbility(IReadOnlyCollection<GameplayTag> cancelTags)
         {
             foreach (AbilitySpec spec in Abilities.Values)
             {
