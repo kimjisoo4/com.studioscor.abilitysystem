@@ -83,7 +83,7 @@ namespace KimScor.GameplayTagSystem.Ability
         }
         #endregion
 
-        public override void OnGrantAbility()
+        protected override void GrantAbility()
         {
             OnSetupAbilitySpec(ref _AbilityTaskSpecs, _TaskAbility.AbilityTasks.ToArray());
         }
@@ -130,7 +130,7 @@ namespace KimScor.GameplayTagSystem.Ability
 
 
 
-        public override void OnLostAbility()
+        protected override void LostAbility()
         {
             foreach (FAbilityTaskSpecContainer specContainers in _AbilityTaskSpecs)
             {
@@ -157,7 +157,7 @@ namespace KimScor.GameplayTagSystem.Ability
             PlayAbility();
         }
 
-        protected override void FixedUpdateAbility(float deltaTime)
+        public override void FixedUpdateAbility(float deltaTime)
         {
             base.FixedUpdateAbility(deltaTime);
 
@@ -175,7 +175,7 @@ namespace KimScor.GameplayTagSystem.Ability
             _CurrentNumber = 0;
         }
 
-        protected override void ReleasedAbility()
+        protected override void ReleaseAbility()
         {
 
         }
@@ -206,7 +206,7 @@ namespace KimScor.GameplayTagSystem.Ability
             GameplayTagSystem.AddOwnedTags(CurrentSpec.AbilityTags.AddOwnedTags);
             GameplayTagSystem.AddBlockTags(CurrentSpec.AbilityTags.ObstacledTags);
 
-            Owner.OnCancelAbility(CurrentSpec.AbilityTags.CancelAbilityTags);
+            AbilitySystem.OnCancelAbility(CurrentSpec.AbilityTags.CancelAbilityTags);
 
             OnTriggerTag(CurrentSpec.ActivateTag);
         }
@@ -237,8 +237,8 @@ namespace KimScor.GameplayTagSystem.Ability
         public override bool CanActiveAbility()
         {
             // 어빌리티 태그가 블록 되어 있는가
-            if (Ability.AbilityTag is not null
-                && GameplayTagSystem.ContainBlockTag(Ability.AbilityTag))
+            if (Ability.Tag is not null
+                && GameplayTagSystem.ContainBlockTag(Ability.Tag))
             {
                 Log("어빌리티가 블록되어 있음.");
 

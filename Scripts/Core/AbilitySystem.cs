@@ -2,13 +2,14 @@
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Diagnostics;
 
 namespace KimScor.GameplayTagSystem.Ability
 {
     public class AbilitySystem : MonoBehaviour
     {
         #region Events
-        public delegate void AbilityChangedHandler(AbilitySystem abilitySystem, AbilitySpec abilitySpec);
+        public delegate void AbilityChangedHandler(AbilitySystem abilitySystem, IAbilitySpec abilitySpec);
         #endregion
 
         [SerializeField] private GameplayTagSystem _GameplayTagSystem;
@@ -26,14 +27,14 @@ namespace KimScor.GameplayTagSystem.Ability
             }
         }
 
-        private Dictionary<Ability, AbilitySpec> _Abilities;
-        public IReadOnlyDictionary<Ability, AbilitySpec> Abilities
+        private List<IAbilitySpec> _Abilities;
+        public IReadOnlyList<IAbilitySpec> Abilities
         {
             get
             {
                 if (_Abilities == null)
                 {
-                    _Abilities = new Dictionary<Ability, AbilitySpec>();
+                    _Abilities = new();
                 }
 
                 return _Abilities;
@@ -58,7 +59,7 @@ namespace KimScor.GameplayTagSystem.Ability
         [SerializeField] private float _BufferDuration = 0.2f;
         [SerializeField] private Ability[] _InitializationAbilities;
 
-        public bool DebugMode = false;
+        private bool _WasSetup = false;
 
         public event AbilityChangedHandler OnStartedAbility;
         public event AbilityChangedHandler OnFinishedAbility;
@@ -74,179 +75,118 @@ namespace KimScor.GameplayTagSystem.Ability
         }
 #endif
 
-        #region CallBack
-        protected void OnStartAbility(AbilitySpec startAbility)
+        #region EDITOR ONLY
+#if UNITY_EDITOR
+        [SerializeField] private bool _UseDebug;
+
+        public bool UseDebug => _UseDebug;
+#endif
+
+        [Conditional("UNITY_EDITOR")]
+        protected void Log(object content)
         {
-            OnStartedAbility?.Invoke(this, startAbility);
-        }
-        protected void OnFinishAbility(AbilitySpec finishAbility)
-        {
-            OnStartedAbility?.Invoke(this, finishAbility);
-        }
-        protected void OnAddAbility(AbilitySpec addAbilitySpec)
-        {
-            OnAddedAbility?.Invoke(this, addAbilitySpec);
-        }
-        protected void OnRemoveAbility(AbilitySpec removeAbilitySpec)
-        {
-            OnRemovedAbility?.Invoke(this, removeAbilitySpec);
+#if UNITY_EDITOR
+            if (UseDebug)
+                UnityEngine.Debug.Log("Ability Sytstem [ " + transform.name + " ] : " + content, this);
+#endif
         }
         #endregion
 
         private void Awake()
         {
-            if (_Abilities == null)
-            {
-                _Abilities = new Dictionary<Ability, AbilitySpec>();
-            }
-
-            foreach (Ability ability in _InitializationAbilities)
-            {
-                AddNewAbility(ability, 0);
-            }
+            if (!_WasSetup)
+                Setup();
         }
 
-        public void UpdateAbility(float deltaTime)
+        protected virtual void Setup()
         {
+            _WasSetup = true;
+
+            Log("Setup");
+
+            _Abilities = new();
+        }
+
+        private void Update()
+        {
+            float deltaTime = Time.deltaTime;
+
             InputBuffer.Buffer(deltaTime);
 
-            foreach (AbilitySpec spec in Abilities.Values)
+            for (int i = 0; i < Abilities.Count; i++)
             {
-                spec.OnUpdateAbility(deltaTime);
-            }
-        }
-        public void FixedUpdateAbility(float deltaTime)
-        {
-            foreach (AbilitySpec spec in Abilities.Values)
-            {
-                spec.OnFixedUpdateAbility(deltaTime);
+                Abilities[i].OnUpdateAbility(deltaTime);
             }
         }
 
-        public void OnCancelAbility(GameplayTag[] cancelTags)
+        private void FixedUpdate()
         {
-            foreach (AbilitySpec spec in Abilities.Values)
+            float deltaTime = Time.fixedDeltaTime;
+
+            for (int i = 0; i < Abilities.Count; i++)
             {
-                spec.TryCancelAbility(cancelTags);
-            }
-        }
-        public void OnCancelAbility(IReadOnlyCollection<GameplayTag> cancelTags)
-        {
-            foreach (AbilitySpec spec in Abilities.Values)
-            {
-                spec.TryCancelAbility(cancelTags);
+                Abilities[i].OnFixedUpdateAbility(deltaTime);
             }
         }
 
-
-        public void OverrideAbilities(AbilitySystem abilitySystem)
+        #region Get Ability Spec
+        public bool TryGetAbilitySpec(Ability abilitym, out IAbilitySpec spec)
         {
-            foreach (AbilitySpec spec in abilitySystem.Abilities.Values)
-            {
-                AddNewAbility(spec.Ability, spec.Level);
-            }
+            spec = GetAbilitySpec(abilitym);
+
+            return spec is not null;
         }
-
-        #region Add Remove
-        /// <summary>
-        /// 새로운 어빌리티를 추가함.
-        /// </summary>
-        /// <param name="ability"></param>
-        /// <param name="level"></param>
-        public AbilitySpec AddNewAbility(Ability ability, int level = 1)
+        public IAbilitySpec GetAbilitySpec(Ability ability)
         {
-            if (DebugMode)
-                Debug.Log("Add New Ability : " + ability.name);
-
-
-            if (Abilities.TryGetValue(ability, out AbilitySpec containSpec))
+            foreach (var spec in Abilities)
             {
-                // TODO 가지고 있는 스킬에 특정 이벤트를 실행해야함 ... 경험치 증가, 효과 변경 등 ... //
-
-                return containSpec;
+                if (spec.Ability == ability)
+                {
+                    return spec;
+                }
             }
 
-            var spec = ability.CreateSpec(this, level);
-
-            _Abilities.Add(ability, spec);
-
-            spec.OnGrantAbility();
-
-            spec.OnStartedAbility += Spec_OnStartedAbility;
-            spec.OnFinishedAbility += Spec_OnFinishedAbility;
-
-            OnAddAbility(spec);
-
-            return spec;
+            return null;
         }
+        public bool TryGetAbilityWithType(Type type, out IAbilitySpec abilitySpec)
+        {
+            abilitySpec = GetAbilitySpecWithType(type);
 
-        private void Spec_OnFinishedAbility(AbilitySpec abilitySpec)
-        {
-            OnFinishAbility(abilitySpec);
+            return abilitySpec is not null;
         }
-        private void Spec_OnStartedAbility(AbilitySpec abilitySpec)
+        public IAbilitySpec GetAbilitySpecWithType(Type type)
         {
-            OnStartAbility(abilitySpec);
-        }
-
-        /// <summary>
-        /// 보유한 특정 어빌리티를 제거함
-        /// </summary>
-        /// <param name="ability"></param>
-        public void RemoveAbility(Ability ability)
-        {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            foreach (var ability in Abilities)
             {
-                _Abilities.Remove(ability);
-
-                spec.OnLostAbility();
-
-                spec.OnStartedAbility -= Spec_OnStartedAbility;
-                spec.OnFinishedAbility -= Spec_OnFinishedAbility;
-
-                OnRemoveAbility(spec);
+                if (ability.Ability.GetType() == type)
+                {
+                    return ability;
+                }
             }
+
+            return null;
         }
 
         #endregion
 
-        public void TryActivateAbilityWithInputBuffer(Ability ability)
+        #region Get Ability State 
+        public bool HasAbility(Ability ability)
         {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            return GetAbilitySpec(ability) is not null;
+        }
+
+        public int GetAbilityLevel(Ability ability)
+        {
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                if (!spec.TryActivateAbility())
-                {
-                    InputBuffer.SetBuffer(spec, _BufferDuration);
-                }
+                return spec.Level;
             }
-        }
 
-        public void OnReleasedAbility(Ability ability)
-        {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
-            {
-                spec.OnReleasedAbility();
-            }
+            return -1;
         }
-
-        /// <summary>
-        /// 해당 어빌리티를 보유하고 있는가.
-        /// </summary>
-        /// <param name="ability"></param>
-        /// <returns></returns>
-        public bool CheckHasAbility(Ability ability)
+        public bool CanActivateAbility(Ability ability)
         {
-            return Abilities.ContainsKey(ability);
-        }
-
-        /// <summary>
-        /// 해당 어빌리티를 사용할 수 있는가
-        /// </summary>
-        /// <param name="ability"></param>
-        /// <returns></returns>
-        public bool CheckCanActivateAbility(Ability ability)
-        {
-            if(Abilities.TryGetValue(ability, out AbilitySpec spec))
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
                 return spec.CanActiveAbility();
             }
@@ -255,53 +195,57 @@ namespace KimScor.GameplayTagSystem.Ability
                 return false;
             }
         }
-
-        /// <summary>
-        /// 해당 어빌리티가 사용되고 있는가
-        /// </summary>
-        /// <param name="ability"></param>
-        /// <returns></returns>
-        public bool CheckActivatingAbility(Ability ability)
+        public bool IsPlayingAbility(Ability ability)
         {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                return spec.Activate;
+                return spec.IsPlaying;
             }
             else
             {
                 return false;
             }
         }
+        public bool IsPlayingAbilityWithType(Type type)
+        {
+            if (TryGetAbilityWithType(type, out var abilitySpec))
+            {
+                return abilitySpec.IsPlaying;
+            }
 
-        /// <summary>
-        /// 해당 어빌리티 사용을 시도함
-        /// </summary>
-        /// <param name="ability"></param>
-        /// <returns></returns>
+            return false;
+        }
+        #endregion
+
+        #region Ability Control
+        public void TryActivateAbilityWithInputBuffer(Ability ability)
+        {
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            {
+                if (!spec.TryActiveAbility())
+                {
+                    InputBuffer.SetBuffer(spec, _BufferDuration);
+                }
+            }
+        }
         public bool TryActivateAbility(Ability ability)
         {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                return spec.TryActivateAbility();
+                return spec.TryActiveAbility();
             }
             else
             {
                 return false;
             }
         }
-
-        /// <summary>
-        /// 어빌리티를 태그로 검색하여 시도함.
-        /// </summary>
-        /// <param name="abilityTag"></param>
-        /// <returns></returns>
         public bool TryActivateAbilityWithTag(GameplayTag abilityTag)
         {
-            foreach (AbilitySpec spec in Abilities.Values)
+            foreach (IAbilitySpec spec in Abilities)
             {
-                if (abilityTag == spec.Ability.AbilityTag)
+                if (abilityTag == spec.Ability.Tag)
                 {
-                    bool activate = spec.TryActivateAbility();
+                    bool activate = spec.TryActiveAbility();
 
                     return activate;
                 }
@@ -312,50 +256,125 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public void ActivateAbility(Ability ability)
         {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                spec.OnAbility();
+                spec.ForceActiveAbility();
             }
         }
-        public bool TryGetAbility(Ability ability, out AbilitySpec abilitySpec)
+        public void OnReleasedAbility(Ability ability)
         {
-            if (Abilities.TryGetValue(ability, out AbilitySpec spec))
+            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                abilitySpec = spec;
-
-                return true;
+                spec.OnReleaseAbility();
             }
-            else
+        }
+        public void OnCancelAbility(GameplayTag[] cancelTags)
+        {
+            foreach (IAbilitySpec spec in Abilities)
             {
-                abilitySpec = null;
+                spec.TryCancelAbility(cancelTags);
+            }
+        }
+        public void OnCancelAbility(IReadOnlyCollection<GameplayTag> cancelTags)
+        {
+            GameplayTag[] tags = cancelTags.ToArray();
+
+            foreach (IAbilitySpec spec in Abilities)
+            {
+                spec.TryCancelAbility(tags);
+            }
+        }
+        public void OnCancelAllAbility()
+        {
+            foreach (var spec in Abilities)
+            {
+                spec.ForceCancelAbility();
+            }
+        }
+        #endregion
+
+        #region Add Remove
+        public bool TryAddAbility(Ability addAbility, int level = 1)
+        {
+            if (!addAbility)
+                return false;
+
+            Log("Add New Ability : " + addAbility.name);
+
+            if (TryGetAbilitySpec(addAbility, out IAbilitySpec spec))
+            {
+                // TODO 가지고 있는 스킬에 특정 이벤트를 실행해야함 ... 경험치 증가, 효과 변경 등 ... //
 
                 return false;
             }
-        }
 
-        public bool TryFindAbility(Type type, out AbilitySpec abilitySpec) 
+            var newAbilitySpec = addAbility.CreateSpec(this, level);
+
+            _Abilities.Add(newAbilitySpec);
+
+            newAbilitySpec.OnActivatedAbility += Spec_OnStartedAbility;
+            newAbilitySpec.OnFinishedAbility += Spec_OnFinishedAbility;
+
+            newAbilitySpec.OnGrantAbility();
+
+            OnAddAbility(newAbilitySpec);
+
+            return true;
+        }
+        public bool TryRemoveAbility(Ability ability)
         {
-            foreach (var ability in Abilities.Keys)
-            {
-                if(ability.GetType().Equals(type))
-                {
-                    return Abilities.TryGetValue(ability, out abilitySpec);
-                }
-            }
+            if (!TryGetAbilitySpec(ability, out IAbilitySpec spec))
+                return false;
 
-            abilitySpec = null;
+            _Abilities.Remove(spec);
 
-            return false;
+            spec.OnActivatedAbility -= Spec_OnStartedAbility;
+            spec.OnFinishedAbility -= Spec_OnFinishedAbility;
+
+            spec.OnLostAbility();
+
+            OnRemoveAbility(spec);
+
+            return true;
         }
+        #endregion
+        
 
-#if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
+
+        private void Spec_OnFinishedAbility(IAbilitySpec abilitySpec)
         {
-            foreach (AbilitySpec spec in Abilities.Values)
-            {
-                spec.OnDrawGizmos();
-            }
+            OnFinishAbility(abilitySpec);
         }
-#endif
+        private void Spec_OnStartedAbility(IAbilitySpec abilitySpec)
+        {
+            OnStartAbility(abilitySpec);
+        }
+
+        #region CallBack
+        protected virtual void OnAddAbility(IAbilitySpec addAbilitySpec)
+        {
+            Log("On Added Ability - " + addAbilitySpec);
+
+            OnAddedAbility?.Invoke(this, addAbilitySpec);
+        }
+        protected virtual void OnRemoveAbility(IAbilitySpec removeAbilitySpec)
+        {
+            Log("On Removed Ability - " + removeAbilitySpec);
+
+            OnRemovedAbility?.Invoke(this, removeAbilitySpec);
+        }
+        protected virtual void OnFinishAbility(IAbilitySpec abilitySpec)
+        {
+            Log("On Finished Ability - " + abilitySpec);
+
+            OnFinishedAbility?.Invoke(this, abilitySpec);
+        }
+        protected virtual void OnStartAbility(IAbilitySpec abilitySpec)
+        {
+            Log("On Started Ability - " + abilitySpec);
+
+            OnStartedAbility?.Invoke(this, abilitySpec);
+        }
+        #endregion
     }
 }

@@ -16,14 +16,14 @@ namespace KimScor.GameplayTagSystem.Ability
         public FAbilityTags AbilityTags => ActiveAbility.AbilityTags;
 
 
-        public override void OnAbility()
+        public override void ForceActiveAbility()
         {
-            Owner.OnCancelAbility(AbilityTags.CancelAbilityTags);
+            AbilitySystem.OnCancelAbility(AbilityTags.CancelAbilityTags);
 
             GameplayTagSystem.AddOwnedTags(AbilityTags.AddOwnedTags);
             GameplayTagSystem.AddBlockTags(AbilityTags.AddBlockTags);
 
-            base.OnAbility();
+            base.ForceActiveAbility();
         }
 
         public override void EndAbility()
@@ -34,7 +34,7 @@ namespace KimScor.GameplayTagSystem.Ability
             GameplayTagSystem.RemoveBlockTags(AbilityTags.AddBlockTags);
         }
 
-        public override void OnCancelAbility()
+        public override void ForceCancelAbility()
         {
             base.OnCancelAbility();
 
@@ -45,8 +45,8 @@ namespace KimScor.GameplayTagSystem.Ability
         public override bool CanActiveAbility()
         {
             // 어빌리티 태그가 블록 되어 있는가
-            if (Ability.AbilityTag is not null
-                && GameplayTagSystem.ContainBlockTag(Ability.AbilityTag))
+            if (Ability.Tag is not null
+                && GameplayTagSystem.ContainBlockTag(Ability.Tag))
             {
                 Log("어빌리티가 블록되어 있음.");
 

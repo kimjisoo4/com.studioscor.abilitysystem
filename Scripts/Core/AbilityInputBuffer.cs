@@ -2,11 +2,11 @@
 {
     public class AbilityInputBuffer
     {
-        private AbilitySpec _AbilitySpec;
+        private IAbilitySpec _AbilitySpec;
         private bool _Activate = false;
         private float _Duration = 0.2f;
 
-        public void SetBuffer(AbilitySpec abilitySpec, float duration = 0.2f)
+        public void SetBuffer(IAbilitySpec abilitySpec, float duration = 0.2f)
         {
             _AbilitySpec = abilitySpec;
             _Activate = true;
@@ -28,7 +28,7 @@
 
             _Duration -= deltaTime;
 
-            if (_AbilitySpec.TryActivateAbility() || _Duration <= 0f)
+            if (_AbilitySpec.TryActiveAbility() || _Duration <= 0f)
             {
                 CancelBuffer();
             }

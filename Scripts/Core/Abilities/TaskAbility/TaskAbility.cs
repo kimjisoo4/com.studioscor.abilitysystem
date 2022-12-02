@@ -10,7 +10,7 @@ namespace KimScor.GameplayTagSystem.Ability
 
         public IReadOnlyCollection<FAbilityTaskContainer> AbilityTasks => _AbilityTasks;
 
-        public override AbilitySpec CreateSpec(AbilitySystem owner, int level)
+        public override IAbilitySpec CreateSpec(AbilitySystem owner, int level)
         {
             var spec = new TaskAbilitySpec(this, owner, level);
 

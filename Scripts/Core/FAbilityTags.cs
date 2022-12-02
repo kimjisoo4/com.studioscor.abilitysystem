@@ -35,7 +35,7 @@ namespace KimScor.GameplayTagSystem.Ability
         [BoxGroup("Added Tags")]
         [ListDrawerSettings(Expanded = true)]        
 #endif
-        [Header(" 활성화 부여 태그 ")]
+        [Header(" 부여 소유 태그 ")]
         public GameplayTag[] AddOwnedTags;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace KimScor.GameplayTagSystem.Ability
         [BoxGroup("Added Tags")]
         [ListDrawerSettings(Expanded = true)]
 #endif
-        [Header(" 어빌리티 차단 태그 ")]
+        [Header(" 부여 차단 태그 ")]
         public GameplayTag[] AddBlockTags;
 
         /// <summary>
