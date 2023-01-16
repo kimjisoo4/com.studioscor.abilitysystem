@@ -1,6 +1,6 @@
 {
-  "name": "com.studioscor.gameplaytagsystem.gameplayabilitysystem",
+  "name": "com.studioscor.abilitysystem",
   "version": "0.0.1",
-  "displayName": "StudioScor - GameplayAbilitySystem",
-  "description": "Gameplay Ability System - StudioScor"
+  "displayName": "StudioScor - AbilitySystem",
+  "description": "AbilitySystem - StudioScor"
 }
