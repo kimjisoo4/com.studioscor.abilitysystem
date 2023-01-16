@@ -6,13 +6,7 @@ using System;
 
 namespace StudioScor.AbilitySystem
 {
-    #region Events
-    public delegate void OnAbilityHandler(IAbilitySpec abilitySpec);
-    public delegate void AbilityLevelHandler(IAbilitySpec abilitySpec, int currentLevel, int prevLevel);
-
-#endregion
-
-    public abstract partial class AbilitySpec : IAbilitySpec
+    public abstract class AbilitySpec : IAbilitySpec
     {
         private readonly Ability _Ability;
         private readonly AbilitySystem _AbilitySystem;
@@ -20,11 +14,11 @@ namespace StudioScor.AbilitySystem
         private int _Level = 0;
         private bool _IsPlaying = false;
 
-        public event OnAbilityHandler OnActivatedAbility;
-        public event OnAbilityHandler OnEndedAbility;
-        public event OnAbilityHandler OnFinishedAbility;
-        public event OnAbilityHandler OnCanceledAbility;
-        public event AbilityLevelHandler OnChangedAbilityLevel;
+        public event AbilityEventHandler OnActivatedAbility;
+        public event AbilityEventHandler OnEndedAbility;
+        public event AbilityEventHandler OnFinishedAbility;
+        public event AbilityEventHandler OnCanceledAbility;
+        public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
         public AbilitySystem  AbilitySystem => _AbilitySystem;
@@ -49,13 +43,13 @@ namespace StudioScor.AbilitySystem
         }
 #endregion
 
-        public void OnAddAbility()
+        public void GrantAbility()
         {
-            GrantAbility();
+            OnGrantAbility();
         }
-        public void OnRemoveAbility()
+        public void RemoveAbility()
         {
-            LostAbility();
+            OnRemoveAbility();
         }
 
         public bool TryActiveAbility()
@@ -75,12 +69,12 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public void OnReleaseAbility()
+        public void ReleaseAbility()
         {
             if (!IsPlaying)
                 return;
 
-            ReleaseAbility();
+            OnReleaseAbility();
         }
         public bool TryReTriggerAbility()
         {
@@ -100,8 +94,6 @@ namespace StudioScor.AbilitySystem
         {
             Log(" On Ability ");
 
-            CancelAbilityWithCancelTags();
-
             _IsPlaying = true;
 
             EnterAbility();
@@ -113,7 +105,7 @@ namespace StudioScor.AbilitySystem
         {
             Log(" ReTrigger Ability ");
 
-            ReTriggerAbility();
+            OnReTriggerAbility();
         }
 
         public virtual void EndAbility()
@@ -123,19 +115,15 @@ namespace StudioScor.AbilitySystem
 
             _IsPlaying = false;
 
-            
-            Log(" Finish Ability Ability ");
 
-            FinishAbility();
+            OnFinishAbility();
 
-            OnFinishedAbility?.Invoke(this);
+            CallBack_OnFinishedAbility();
 
-
-            Log(" Exit Ability ");
 
             ExitAbility();
 
-            OnEndedAbility?.Invoke(this);
+            CallBack_OnEndedAbility();
         }
         public virtual void ForceCancelAbility()
         {
@@ -145,33 +133,29 @@ namespace StudioScor.AbilitySystem
             _IsPlaying = false;
 
 
-            Log(" Cancel Ability ");
+            OnCancelAbility();
 
-            CancelAbility();
+            CallBack_OnCanceledAbility();
 
-            OnCanceledAbility?.Invoke(this);
-
-
-            Log(" Exit Ability ");
 
             ExitAbility();
 
-            OnEndedAbility?.Invoke(this);
+            CallBack_OnEndedAbility();
         }
 
-        public void OnUpdateAbility(float deltaTime)
+        public void UpdateAbility(float deltaTime)
         {
             if (!IsPlaying)
                 return;
 
-            UpdateAbility(deltaTime);
+            OnUpdateAbility(deltaTime);
         }
-        public void OnFixedUpdateAbility(float deltaTime)
+        public void FixedUpdateAbility(float deltaTime)
         {
             if (!IsPlaying)
                 return;
 
-            FixedUpdateAbility(deltaTime);
+            OnFixedUpdateAbility(deltaTime);
         }
 
         public void SetAbilityLevel(int newLevel)
@@ -183,27 +167,27 @@ namespace StudioScor.AbilitySystem
 
             _Level = newLevel;
 
-            ChangeAbilityLevel(prevLevel);
-
             OnChangeAbilityLevel(prevLevel);
+
+            Callback_OnChangedAbilityLevel(prevLevel);
         }
 
 
-        protected virtual void GrantAbility() { }
-        protected virtual void LostAbility() { }
+        protected virtual void OnGrantAbility() { }
+        protected virtual void OnRemoveAbility() { }
 
 
 
-        public void OnOverrideAbility(int level) { }
+        public void OnOverride(int level) { }
         protected abstract void EnterAbility();
         protected virtual void ExitAbility() { }
-        protected virtual void FinishAbility() { }
-        protected virtual void CancelAbility() { }
-        protected virtual void ReleaseAbility() { }
-        protected virtual void ReTriggerAbility() { }
-        public virtual void UpdateAbility(float deltaTime) { }
-        public virtual void FixedUpdateAbility(float deltaTime) { }
-        protected virtual void ChangeAbilityLevel(int prevLevel) { }
+        protected virtual void OnFinishAbility() { }
+        protected virtual void OnCancelAbility() { }
+        protected virtual void OnReleaseAbility() { }
+        protected virtual void OnReTriggerAbility() { }
+        public virtual void OnUpdateAbility(float deltaTime) { }
+        public virtual void OnFixedUpdateAbility(float deltaTime) { }
+        protected virtual void OnChangeAbilityLevel(int prevLevel) { }
 
         public virtual bool CanReTriggerAbility()
         {
@@ -216,25 +200,31 @@ namespace StudioScor.AbilitySystem
         }
 
 #region Callback
-        protected virtual void OnActiveAbility()
+        protected virtual void CallBack_OnActivateAbility()
         {
             Log("On Activated Ability");
 
             OnActivatedAbility?.Invoke(this);
         }
-        protected virtual void OnFinishAbility()
+        protected virtual void CallBack_OnFinishedAbility()
         {
             Log("On Finished Ability");
 
             OnFinishedAbility?.Invoke(this);
         }
-        protected virtual void OnCancelAbility()
+        protected virtual void CallBack_OnEndedAbility()
+        {
+            Log("On Ended Ability");
+
+            OnEndedAbility?.Invoke(this);
+        }
+        protected virtual void CallBack_OnCanceledAbility()
         {
             Log("On Canceled Ability");
 
             OnCanceledAbility?.Invoke(this);
         }
-        protected virtual void OnChangeAbilityLevel(int prevLevel)
+        protected virtual void Callback_OnChangedAbilityLevel(int prevLevel)
         {
             Log("Level Change - Current Level : " + Level + " Prev Level : " + prevLevel);
 

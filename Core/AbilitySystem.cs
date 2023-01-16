@@ -14,7 +14,7 @@ namespace StudioScor.AbilitySystem
         #endregion
 
         [Header(" [ Setup] ")]
-        [SerializeField] private FAbility[] _InitializationAbilities;
+        [SerializeField] private FInitAbility[] _InitAbilities;
         [SerializeField] private float _BufferDuration = 0.2f;
 
         [Header(" [ Use Debug ] ")]
@@ -54,13 +54,6 @@ namespace StudioScor.AbilitySystem
 
         #region EDITOR ONLY
 
-#if UNITY_EDITOR
-        private void Reset()
-        {
-            SetupGameplayTag();
-        }
-#endif
-
         [Conditional("UNITY_EDITOR")]
         protected void Log(object content, bool isError = false)
         {
@@ -93,12 +86,10 @@ namespace StudioScor.AbilitySystem
 
             _WasSetup = true;
 
-            SetupGameplayTag();
-
             _Abilities = new();
             _AbilityInputBuffer = new();
 
-            foreach (var ability in _InitializationAbilities)
+            foreach (var ability in _InitAbilities)
             {
                 TryAddAbility(ability.Ability, ability.Level);
             }
@@ -111,7 +102,7 @@ namespace StudioScor.AbilitySystem
             _Abilities.Clear();
             _AbilityInputBuffer.ResetAbilityInputBuffer();
 
-            foreach (var ability in _InitializationAbilities)
+            foreach (var ability in _InitAbilities)
             {
                 TryAddAbility(ability.Ability, ability.Level);
             }
@@ -125,7 +116,7 @@ namespace StudioScor.AbilitySystem
 
             for (int i = 0; i < Abilities.Count; i++)
             {
-                Abilities[i].OnUpdateAbility(deltaTime);
+                Abilities[i].UpdateAbility(deltaTime);
             }
         }
 
@@ -135,7 +126,7 @@ namespace StudioScor.AbilitySystem
 
             for (int i = 0; i < Abilities.Count; i++)
             {
-                Abilities[i].OnFixedUpdateAbility(deltaTime);
+                Abilities[i].FixedUpdateAbility(deltaTime);
             }
         }
 
@@ -281,7 +272,7 @@ namespace StudioScor.AbilitySystem
             if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
                 if(spec.IsPlaying)
-                    spec.OnReleaseAbility();
+                    spec.ReleaseAbility();
             }
         }
         #endregion
@@ -321,14 +312,14 @@ namespace StudioScor.AbilitySystem
         {
             if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
-                spec.OnOverrideAbility(level);
+                spec.OnOverride(level);
 
                 return;
             }
 
             var newAbilitySpec = ability.CreateSpec(this, level);
 
-            newAbilitySpec.OnAddAbility();
+            newAbilitySpec.GrantAbility();
 
             _Abilities.Add(newAbilitySpec);
 
@@ -386,7 +377,7 @@ namespace StudioScor.AbilitySystem
             abilitySpec.OnActivatedAbility -= Spec_OnStartedAbility;
             abilitySpec.OnFinishedAbility -= Spec_OnFinishedAbility;
 
-            abilitySpec.OnRemoveAbility();
+            abilitySpec.RemoveAbility();
 
             OnRemoveAbility(abilitySpec);
         }

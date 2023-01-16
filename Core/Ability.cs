@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract partial class Ability : ScriptableObject
+    public abstract class Ability : ScriptableObject
     {
         [SerializeField] protected string _Name;
         [SerializeField] protected Sprite _Icon;
@@ -12,28 +12,34 @@ namespace StudioScor.AbilitySystem
         public Sprite Icon => _Icon;
 
 
-        [Header(" 디버그 ")]
-        [SerializeField] private bool _DebugMode;
-        public bool UseDebug => _DebugMode;
-
+        [Header(" [ Use Debug ] ")]
+        [SerializeField] private bool _UseDebug;
+        public bool UseDebug => _UseDebug;
 
         #region EDITOR ONLY
 
         [Conditional("UNITY_EDITOR")]
-        protected void Log(object massage)
+        protected void Log(object content, bool isError = false)
         {
 #if UNITY_EDITOR
+            if (isError)
+            {
+                UnityEngine.Debug.LogError(name + " [ " + GetType().Name + " ] : " + content, this);
+
+                return;
+            }
+
             if (UseDebug)
-                UnityEngine.Debug.Log(name + " [ " + GetType().Name + " ] : " + massage, this);
+                UnityEngine.Debug.Log(name + " [ " + GetType().Name + " ] : " + content, this);
 #endif
         }
         #endregion
-
-        public abstract IAbilitySpec CreateSpec(AbilitySystem abilitySystem, int level = 0);
 
         public virtual bool CanGrantAbility(AbilitySystem abilitySystem)
         {
             return true;
         }
+
+        public abstract IAbilitySpec CreateSpec(AbilitySystem abilitySystem, int level = 0);
     }
 }

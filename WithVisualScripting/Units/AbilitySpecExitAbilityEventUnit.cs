@@ -1,0 +1,15 @@
+﻿#if SCOR_ENABLE_VISUALSCRIPTING
+using Unity.VisualScripting;
+
+
+namespace StudioScor.AbilitySystem
+{
+    [UnitTitle("OnExitAbility")]
+    [UnitCategory("Events\\StudioScor\\AbilitySystem\\AbilitySpec")]
+    public class AbilitySpecExitAbilityEventUnit : AbilitySpecCustomEventUnit
+    {
+        protected override string EventName => AbilitySystemVisualScriptingEvent.EXIT_ABILITY;
+    }
+}
+
+#endif
