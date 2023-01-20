@@ -35,11 +35,11 @@ namespace StudioScor.AbilitySystem
         }
         #endregion
 
-        public virtual bool CanGrantAbility(AbilitySystem abilitySystem)
+        public virtual bool CanGrantAbility(AbilitySystemComponent abilitySystemComponent)
         {
             return true;
         }
 
-        public abstract IAbilitySpec CreateSpec(AbilitySystem abilitySystem, int level = 0);
+        public abstract IAbilitySpec CreateSpec(AbilitySystemComponent abilitySystemComponent, int level = 0);
     }
 }

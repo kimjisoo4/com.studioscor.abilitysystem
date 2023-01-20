@@ -6,13 +6,13 @@ using System;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class AbilitySpec : IAbilitySpec
+    public abstract class AbilitySpec<T> : IAbilitySpec where T : Ability
     {
-        private readonly Ability _Ability;
-        private readonly AbilitySystem _AbilitySystem;
+        protected readonly T _Ability;
+        protected readonly AbilitySystemComponent _AbilitySystemComponent;
 
-        private int _Level = 0;
-        private bool _IsPlaying = false;
+        protected int _Level = 0;
+        protected bool _IsPlaying = false;
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnEndedAbility;
@@ -21,14 +21,14 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
-        public AbilitySystem  AbilitySystem => _AbilitySystem;
-
+        public AbilitySystemComponent AbilitySystemComponent => _AbilitySystemComponent;
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
-        public AbilitySpec(Ability ability, AbilitySystem abilitySystem, int level)
+
+        public AbilitySpec(T ability, AbilitySystemComponent abilitySystemComponent, int level)
         {
             _Ability = ability;
-            _AbilitySystem = abilitySystem;
+            _AbilitySystemComponent = abilitySystemComponent;
             _Level = level;
         }
 
@@ -38,7 +38,7 @@ namespace StudioScor.AbilitySystem
         {
 #if UNITY_EDITOR
             if (Ability.UseDebug)
-                UnityEngine.Debug.Log(AbilitySystem.gameObject.name + " [ " + Ability.GetType().Name + " ] : " + massage, Ability);
+                UnityEngine.Debug.Log(AbilitySystemComponent.gameObject.name + " [ " + Ability.GetType().Name + " ] : " + massage, Ability);
 #endif
         }
 #endregion

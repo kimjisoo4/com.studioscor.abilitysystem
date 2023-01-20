@@ -1,21 +1,15 @@
 ﻿using UnityEngine;
-using System;
-
 using System.Diagnostics;
-
-#if SCOR_ENABLE_VISUALSCRIPTING
-using Unity.VisualScripting;
-#endif
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract partial class AbilitySpecWithMono : MonoBehaviour, IAbilitySpec
+    public abstract partial class AbilitySpecWithMono<T> : MonoBehaviour, IAbilitySpec where T : Ability
     {
-        private Ability _Ability;
-        private AbilitySystem _AbilitySystem;
+        protected T _Ability;
+        protected AbilitySystemComponent _AbilitySystemComponent;
 
-        private int _Level = 0;
-        private bool _IsPlaying = false;
+        protected int _Level = 0;
+        protected bool _IsPlaying = false;
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnEndedAbility;
@@ -24,8 +18,7 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
-        public AbilitySystem AbilitySystem => _AbilitySystem;
-
+        public AbilitySystemComponent AbilitySystemComponent => _AbilitySystemComponent;
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
 
@@ -35,15 +28,15 @@ namespace StudioScor.AbilitySystem
         {
 #if UNITY_EDITOR
             if (Ability.UseDebug)
-                UnityEngine.Debug.Log(AbilitySystem.gameObject.name + " [ " + GetType().Name + " ] : " + massage, Ability);
+                UnityEngine.Debug.Log(AbilitySystemComponent.gameObject.name + " [ " + GetType().Name + " ] : " + massage, Ability);
 #endif
         }
 #endregion
 
-        public virtual void Setup(Ability ability, AbilitySystem abilitySystem, int level = 0)
+        public virtual void Setup(T ability, AbilitySystemComponent abilitySystemComponent, int level = 0)
         {
             _Ability = ability;
-            _AbilitySystem = abilitySystem;
+            _AbilitySystemComponent = abilitySystemComponent;
             _Level = level;
         }
 

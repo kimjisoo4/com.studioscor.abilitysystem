@@ -1,4 +1,5 @@
-﻿#if SCOR_ENABLE_GAMEPLAYTAG
+﻿#if SCOR_ENABLE_VISUALSCRIPTING
+using Unity.VisualScripting;
 #endif
 namespace StudioScor.AbilitySystem
 {
@@ -7,10 +8,10 @@ namespace StudioScor.AbilitySystem
     public delegate void AbilityLevelEventHandler(IAbilitySpec abilitySpec, int currentLevel, int prevLevel);
     #endregion
 
-    public partial interface IAbilitySpec
+    public interface IAbilitySpec
     {
         public Ability Ability { get; }
-        public AbilitySystem AbilitySystem { get; }
+        public AbilitySystemComponent AbilitySystemComponent { get; }
 
         public bool IsPlaying { get; }
         public int Level { get; }
