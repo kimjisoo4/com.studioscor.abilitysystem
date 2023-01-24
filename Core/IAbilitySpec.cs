@@ -1,7 +1,4 @@
-﻿#if SCOR_ENABLE_VISUALSCRIPTING
-using Unity.VisualScripting;
-#endif
-namespace StudioScor.AbilitySystem
+﻿namespace StudioScor.AbilitySystem
 {
     #region Events
     public delegate void AbilityEventHandler(IAbilitySpec abilitySpec);
@@ -12,7 +9,6 @@ namespace StudioScor.AbilitySystem
     {
         public Ability Ability { get; }
         public AbilitySystemComponent AbilitySystemComponent { get; }
-
         public bool IsPlaying { get; }
         public int Level { get; }
 

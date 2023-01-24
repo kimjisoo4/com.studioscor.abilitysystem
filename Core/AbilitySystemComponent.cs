@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Linq;
 using System.Diagnostics;
 
 namespace StudioScor.AbilitySystem
 {
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
-    public partial class AbilitySystemComponent : MonoBehaviour
+    public class AbilitySystemComponent : MonoBehaviour
     {
         #region Events
         public delegate void AbilityChangedHandler(AbilitySystemComponent abilitySystemComponent, IAbilitySpec abilitySpec);
@@ -67,7 +66,7 @@ namespace StudioScor.AbilitySystem
                 Setup();
         }
 
-        public virtual void Setup()
+        protected void Setup()
         {
             if (_WasSetup)
                 return;
@@ -85,7 +84,7 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public virtual void ResetAbilitySystemComponent()
+        public void ResetAbilitySystem()
         {
             RemoveAllAbility();
 
@@ -96,6 +95,10 @@ namespace StudioScor.AbilitySystem
                 TryGrantAbility(ability.Ability, ability.Level);
             }
         }
+
+        protected virtual void OnSetup() { }
+        protected virtual void OnReset() { }
+
 
         private void Update()
         {
@@ -321,7 +324,6 @@ namespace StudioScor.AbilitySystem
             newAbilitySpec.OnFinishedAbility += Spec_OnFinishedAbility;
 
             Callback_OnGrantedAbility(newAbilitySpec);
-            Callback_OnGrantedAbilityWithVisualScripting(newAbilitySpec);
         }
         #endregion
         #region Remove Ability
@@ -375,7 +377,6 @@ namespace StudioScor.AbilitySystem
             abilitySpec.RemoveAbility();
 
             Callback_OnRemovedAbility(abilitySpec);
-            Callback_OnRemovedAbilityWithVisualScripting(abilitySpec);
         }
         public void RemoveAllAbility()
         {
@@ -393,24 +394,11 @@ namespace StudioScor.AbilitySystem
         private void Spec_OnFinishedAbility(IAbilitySpec abilitySpec)
         {
             Callback_OnFinishedAbility(abilitySpec);
-            Callback_OnFinishedAbilityWithVisualScripting(abilitySpec);
         }
         private void Spec_OnActivatedAbility(IAbilitySpec abilitySpec)
         {
             Callback_OnActivatedAbility(abilitySpec);
-            Callback_OnActivatedAbilityWithVisualScripting(abilitySpec);
         }
-        #endregion
-
-        #region With Visual Scripting
-        [Conditional("SCOR_ENABLE_VISUALSCRIPTING")]
-        private partial void Callback_OnActivatedAbilityWithVisualScripting(IAbilitySpec abilitySpec);
-        [Conditional("SCOR_ENABLE_VISUALSCRIPTING")]
-        private partial void Callback_OnFinishedAbilityWithVisualScripting(IAbilitySpec abilitySpec);
-        [Conditional("SCOR_ENABLE_VISUALSCRIPTING")]
-        private partial void Callback_OnGrantedAbilityWithVisualScripting(IAbilitySpec abilitySpec);
-        [Conditional("SCOR_ENABLE_VISUALSCRIPTING")]
-        private partial void Callback_OnRemovedAbilityWithVisualScripting(IAbilitySpec abilitySpec);
         #endregion
 
         #region CallBack

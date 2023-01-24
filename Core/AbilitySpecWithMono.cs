@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract partial class AbilitySpecWithMono<T> : MonoBehaviour, IAbilitySpec where T : Ability
+    public abstract class AbilitySpecWithMono<T> : MonoBehaviour, IAbilitySpec where T : Ability
     {
         protected T _Ability;
         protected AbilitySystemComponent _AbilitySystemComponent;
