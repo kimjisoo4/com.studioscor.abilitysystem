@@ -24,7 +24,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 
         protected override void Definition()
         {
-            AbilitySpec = ValueInput<AbilitySpecWithVisualScripting>(nameof(AbilitySpec), null).NullMeansSelf();
+            AbilitySpec = ValueInput<VisualScriptingAbilitySpec>(nameof(AbilitySpec), null).NullMeansSelf();
 
             AbilitySystemComponent = ValueOutput<AbilitySystemComponent>(nameof(AbilitySystemComponent), GetAbilitySystemComponent);
 
@@ -33,7 +33,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 
         private AbilitySystemComponent GetAbilitySystemComponent(Flow flow)
         {
-            var spec = flow.GetValue<AbilitySpecWithVisualScripting>(AbilitySpec);
+            var spec = flow.GetValue<VisualScriptingAbilitySpec>(AbilitySpec);
 
             return spec.AbilitySystemComponent;
         }

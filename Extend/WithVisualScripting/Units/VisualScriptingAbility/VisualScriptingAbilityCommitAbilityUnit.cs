@@ -24,14 +24,14 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             InputTrigger = ControlInput(nameof(InputTrigger), TriggerCummit);
 
-            Target = ValueInput<AbilitySpecWithVisualScripting>(nameof(Target), null).NullMeansSelf();
+            Target = ValueInput<VisualScriptingAbilitySpec>(nameof(Target), null).NullMeansSelf();
 
             Requirement(Target, InputTrigger);
         }
 
         private ControlOutput TriggerCummit(Flow flow)
         {
-            var abilitySpec = flow.GetValue<AbilitySpecWithVisualScripting>(Target);
+            var abilitySpec = flow.GetValue<VisualScriptingAbilitySpec>(Target);
 
             abilitySpec.CommitAbility();
 

@@ -7,7 +7,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 {
     public abstract class AbilitySpecLevelEventUnit : GameObjectEventUnit<int>
     {
-        public override Type MessageListenerType => typeof(AbilitySpecEventListener);
+        public override Type MessageListenerType => typeof(AbilitySpecMessageListener);
     }
 }
 

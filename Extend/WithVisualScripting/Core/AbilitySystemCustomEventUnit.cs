@@ -21,7 +21,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public ValueOutput AbilitySpec { get; private set; }
 
 
-        public override Type MessageListenerType => typeof(AbilitySystemEventListener);
+        public override Type MessageListenerType => typeof(AbilitySystemMessageListener);
 
         protected override void Definition()
         {

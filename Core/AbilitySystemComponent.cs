@@ -6,6 +6,7 @@ using System.Diagnostics;
 namespace StudioScor.AbilitySystem
 {
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
+    [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
     public class AbilitySystemComponent : MonoBehaviour
     {
         #region Events

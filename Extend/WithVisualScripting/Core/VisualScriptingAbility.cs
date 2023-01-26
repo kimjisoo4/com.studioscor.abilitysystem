@@ -9,7 +9,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
     public class VisualScriptingAbility : Ability
     {
         [Header(" [ Visual Scripting Ability ] ")]
-        [SerializeField] private AbilitySpecWithVisualScripting _VisualScriptingAbilitySpec;
+        [SerializeField] private VisualScriptingAbilitySpec _VisualScriptingAbilitySpec;
 
         public override IAbilitySpec CreateSpec(AbilitySystemComponent abilitySystemComponent, int level = 0)
         {

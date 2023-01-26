@@ -1,11 +1,12 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
-using System;
+using UnityEngine;
 using Unity.VisualScripting;
 
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-    public class AbilitySpecWithVisualScripting : AbilitySpecWithMono<VisualScriptingAbility>
+    [AddComponentMenu("StudioScor/AbilitySystem/VisualScripting AbilitySpec Component", order: 10)]
+    public class VisualScriptingAbilitySpec : AbilitySpecWithMono<VisualScriptingAbility>
     {
         private bool _IsCommitActivate = false;
         public bool IsCommitActivate => _IsCommitActivate;
