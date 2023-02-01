@@ -20,21 +20,10 @@ namespace StudioScor.AbilitySystem
         [Header(" [ Use Debug ] ")]
         [SerializeField] private bool _UseDebug;
 
-        private bool _WasSetup = false;
-
         private List<IAbilitySpec> _Abilities;
         private AbilityInputBuffer _AbilityInputBuffer;
-        
-        public IReadOnlyList<IAbilitySpec> Abilities
-        {
-            get
-            {
-                if (!_WasSetup)
-                    Setup();
 
-                return _Abilities;
-            }
-        }
+        public IReadOnlyList<IAbilitySpec> Abilities => _Abilities;
 
         public event AbilityChangedHandler OnActivatedAbility;
         public event AbilityChangedHandler OnFinishedAbility;
@@ -63,26 +52,22 @@ namespace StudioScor.AbilitySystem
 
         private void Awake()
         {
-            if (!_WasSetup)
-                Setup();
+            Setup();
         }
 
-        protected void Setup()
+        private void Start()
         {
-            if (_WasSetup)
-                return;
-
-            Log("Setup");
-
-            _WasSetup = true;
-
-            _Abilities = new();
-            _AbilityInputBuffer = new();
-
             foreach (var ability in _InitAbilities)
             {
                 TryGrantAbility(ability.Ability, ability.Level);
             }
+        }
+        protected void Setup()
+        {
+            Log("Setup");
+
+            _Abilities = new();
+            _AbilityInputBuffer = new();
         }
 
         public void ResetAbilitySystem()

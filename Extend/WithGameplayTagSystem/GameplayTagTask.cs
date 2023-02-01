@@ -2,7 +2,7 @@
 using UnityEngine;
 using StudioScor.GameplayTagSystem;
 
-namespace StudioScor.AbilitySystem
+namespace StudioScor.AbilitySystem.GameplayTagSystem
 {
     [System.Serializable]
     public class GameplayTagTask : AbilityTask

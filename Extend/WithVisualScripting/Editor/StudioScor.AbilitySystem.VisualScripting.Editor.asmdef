@@ -1,0 +1,34 @@
+{
+    "name": "StudioScor.AbilitySystem.VisualScripting.Editor",
+    "rootNamespace": "StudioScor.AbilitySystem.VisualScripting.Editor",
+    "references": [
+        "GUID:e9dd1263e2a75664681caedc1b70ce84",
+        "GUID:29cc66aa43bc2d04e94ce3895bad4e60",
+        "GUID:ded80f8a64d39b54ab48a6bf1e8342a3",
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:bbf02dfe599168243a8990cc1db989cc",
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:54cb1906aeb4e4264bc1d2aa3818a43f",
+        "GUID:ea715009a4efd4c6cbc85be3ae097dd3",
+        "GUID:23f3c6063e13e4fd9addce3606ff4e42",
+        "GUID:315d634a9ac6d460a9515f5a56be6311",
+        "GUID:f10496e9d78b943308af5e7e9e4543c8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "0.0.0",
+            "define": "SCOR_ENABLE_VISUALSCRIPTING"
+        }
+    ],
+    "noEngineReferences": false
+}
