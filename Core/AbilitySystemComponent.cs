@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Diagnostics;
+using StudioScor.Utilities;
+
 
 namespace StudioScor.AbilitySystem
 {
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
     [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
-    public class AbilitySystemComponent : MonoBehaviour
+    public class AbilitySystemComponent : BaseMonoBehaviour
     {
         #region Events
         public delegate void AbilityChangedHandler(AbilitySystemComponent abilitySystemComponent, IAbilitySpec abilitySpec);
@@ -30,25 +31,6 @@ namespace StudioScor.AbilitySystem
 
         public event AbilityChangedHandler OnGrantedAbility;
         public event AbilityChangedHandler OnRemovedAbility;
-
-        #region EDITOR ONLY
-
-        [Conditional("UNITY_EDITOR")]
-        protected void Log(object content, bool isError = false)
-        {
-#if UNITY_EDITOR
-            if(isError)
-            {
-                UnityEngine.Debug.LogError("Ability Sytstem [ " + transform.name + " ] : " + content, this);
-
-                return;
-            }
-
-            if (_UseDebug)
-                UnityEngine.Debug.Log("Ability Sytstem [ " + transform.name + " ] : " + content, this);
-#endif
-        }
-        #endregion
 
         private void Awake()
         {

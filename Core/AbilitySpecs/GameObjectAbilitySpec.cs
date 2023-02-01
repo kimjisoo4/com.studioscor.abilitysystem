@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Diagnostics;
+using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class GameObjectAbilitySpec : MonoBehaviour, IAbilitySpec
+    public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec
     {
         protected Ability _Ability;
         protected AbilitySystemComponent _AbilitySystemComponent;
@@ -22,16 +22,6 @@ namespace StudioScor.AbilitySystem
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
 
-#region EDITOR ONLY
-        [Conditional("UNITY_EDITOR")]
-        protected void Log(object massage)
-        {
-#if UNITY_EDITOR
-            if (Ability.UseDebug)
-                UnityEngine.Debug.Log(AbilitySystemComponent.gameObject.name + " [ " + GetType().Name + " ] : " + massage, Ability);
-#endif
-        }
-#endregion
 
         public virtual void Setup(Ability ability, AbilitySystemComponent abilitySystemComponent, int level = 0)
         {

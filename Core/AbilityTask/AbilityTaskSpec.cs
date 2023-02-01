@@ -1,32 +1,17 @@
-﻿using System.Diagnostics;
+﻿using StudioScor.Utilities;
+using UnityEngine;
 
 namespace StudioScor.AbilitySystem
 {
-
-    public abstract class AbilityTaskSpec<T> : IAbilityTaskSpec where T : AbilityTask
+    public abstract class AbilityTaskSpec<T> : BaseClass, IAbilityTaskSpec where T : AbilityTask
     {
         private readonly T _AbilityTask;
         private readonly IAbilitySpec _AbilitySpec;
 
         private bool _IsPlaying;
 
-#region EDITOR ONLY
-        [Conditional("UNITY_EDITOR")]
-        protected void Log(object content, bool isError = false)
-        {
-#if UNITY_EDITOR
-            if (isError)
-            {
-                UnityEngine.Debug.LogError(_AbilitySpec.Ability.name + " [ " + AbilityTask.GetType().Name + " ] : " + content, _AbilitySpec.Ability);
-
-                return;
-            }
-
-            if (_AbilityTask.UseDebug)
-                UnityEngine.Debug.Log(_AbilitySpec.Ability.name + " [ " + AbilityTask.GetType().Name + " ] : " + content, _AbilitySpec.Ability);
-#endif
-        }
-#endregion
+        public new bool UseDebug => _AbilityTask.UseDebug;
+        public new Object Context => _AbilityTask;
 
         protected T AbilityTask => _AbilityTask;
         protected IAbilitySpec AbilitySpec => _AbilitySpec;
