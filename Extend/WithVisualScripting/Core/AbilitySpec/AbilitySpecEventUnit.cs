@@ -7,7 +7,7 @@ using StudioScor.Utilities.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-    public abstract class AbilitySpecEventUnit : CustomGameObjectEventUnit<GameObjectAbilitySpec, EmptyEventArgs>
+    public abstract class AbilitySpecEventUnit : CustomEventUnit<GameObjectAbilitySpec, EmptyEventArgs>
     {
         public override Type MessageListenerType => typeof(AbilitySpecMessageListener);
     }

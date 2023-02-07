@@ -5,6 +5,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 {
 
     [UnitTitle("Can Active Ability")]
+    [UnitShortTitle("CanActiveAbility")]
     [UnitSubtitle("VisualScripting Ability Event")]
     [UnitCategory("Events\\StudioScor\\AbilitySystem\\VisualScriptingAbility")]
     public class VisualScriptingAbilityCanActiveAbilityEventUnit : VisualScriptingAbilitySpecEventUnit

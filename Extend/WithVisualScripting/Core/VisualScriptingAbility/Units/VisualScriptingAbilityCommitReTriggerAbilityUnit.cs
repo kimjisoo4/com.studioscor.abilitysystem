@@ -4,11 +4,10 @@ using Unity.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-
-    [UnitTitle("CommitAbility")]
+    [UnitTitle("CommitReTriggerAbility")]
     [UnitSubtitle("VisualScripting Ability Unit")]
     [UnitCategory("StudioScor\\AbilitySystem\\VisualScriptingAbility")]
-    public class VisualScriptingAbilityCommitAbilityUnit : Unit
+    public class VisualScriptingAbilityCommitReTriggerAbilityUnit : Unit
     {
         [DoNotSerialize]
         [PortLabel("Enter")]
@@ -34,7 +33,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             var abilitySpec = flow.GetValue<VisualScriptingAbilitySpec>(Target);
 
-            abilitySpec.CommitAbility();
+            abilitySpec.CommitReTriggerAbility();
 
             return null;
         }

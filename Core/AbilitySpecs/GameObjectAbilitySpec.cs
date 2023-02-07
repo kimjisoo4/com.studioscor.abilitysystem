@@ -111,6 +111,9 @@ namespace StudioScor.AbilitySystem
 
             Callback_OnEndedAbility();
         }
+
+        public virtual void CancelAbilityFromSource(object source) { }
+
         public virtual void ForceCancelAbility()
         {
             if (!IsPlaying)
@@ -182,7 +185,7 @@ namespace StudioScor.AbilitySystem
 
         public virtual bool CanActiveAbility()
         {
-            return true;
+            return !IsPlaying;
         }
 
 
@@ -217,7 +220,8 @@ namespace StudioScor.AbilitySystem
 
             OnChangedAbilityLevel?.Invoke(this, Level, prevLevel);
         }
-        
-#endregion
+
+
+        #endregion
     }
 }

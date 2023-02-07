@@ -236,6 +236,13 @@ namespace StudioScor.AbilitySystem
         #endregion
         #region Canceled Ability Spec
         
+        public void CancelAbilityFromSource(object source)
+        {
+            foreach (var spec in Abilities)
+            {
+                spec.CancelAbilityFromSource(source);
+            }
+        }
         public void CancelAbility(Ability ability)
         {
             if (TryGetAbilitySpec(ability, out IAbilitySpec spec))

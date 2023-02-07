@@ -6,7 +6,7 @@ using StudioScor.Utilities.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-    public abstract class VisualScriptingAbilitySpecLevelEventUnit : CustomGameObjectEventUnit<VisualScriptingAbilitySpec, int>
+    public abstract class VisualScriptingAbilitySpecLevelEventUnit : CustomEventUnit<VisualScriptingAbilitySpec, int>
     {
         [DoNotSerialize]
         [PortLabel("Level")]

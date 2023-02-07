@@ -6,7 +6,7 @@ using StudioScor.Utilities.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-    public abstract class AbilitySystemEventUnit : CustomGameObjectEventUnit<AbilitySystemComponent, IAbilitySpec>
+    public abstract class AbilitySystemEventUnit : CustomEventUnit<AbilitySystemComponent, IAbilitySpec>
     {
         [DoNotSerialize]
         [PortLabel("Ability")]

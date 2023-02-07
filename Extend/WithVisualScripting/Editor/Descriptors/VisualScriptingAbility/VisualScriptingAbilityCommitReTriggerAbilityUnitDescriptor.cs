@@ -5,11 +5,10 @@ using Unity.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting.Editor
 {
-
-    [Descriptor(typeof(VisualScriptingAbilityEndAbilityUnit))]
-    public sealed class VisualScriptingAbilityEndAbilityUnitDescriptor : UnitDescriptor<VisualScriptingAbilityEndAbilityUnit>
+    [Descriptor(typeof(VisualScriptingAbilityCommitReTriggerAbilityUnit))]
+    public sealed class VisualScriptingAbilityCommitReTriggerAbilityUnitDescriptor : UnitDescriptor<VisualScriptingAbilityCommitReTriggerAbilityUnit>
     {
-        public VisualScriptingAbilityEndAbilityUnitDescriptor(VisualScriptingAbilityEndAbilityUnit target) : base(target)
+        public VisualScriptingAbilityCommitReTriggerAbilityUnitDescriptor(VisualScriptingAbilityCommitReTriggerAbilityUnit target) : base(target)
         {
         }
         protected override EditorTexture DefaultIcon()

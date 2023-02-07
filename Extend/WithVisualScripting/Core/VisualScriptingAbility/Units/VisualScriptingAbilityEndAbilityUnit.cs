@@ -4,7 +4,6 @@ using Unity.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-
     [UnitTitle("End Ability")]
     [UnitSubtitle("VisualScriptingAbility Unit")]
     [UnitCategory("StudioScor\\AbilitySystem\\AbilitySpec")]

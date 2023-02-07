@@ -26,6 +26,7 @@
 
         public void ReleaseAbility();
 
+        public void CancelAbilityFromSource(object source);
         public void ForceCancelAbility();
 
 

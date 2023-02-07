@@ -13,6 +13,10 @@ namespace StudioScor.AbilitySystem.VisualScripting
         private bool _IsCommitActivate = false;
         public bool IsCommitActivate => _IsCommitActivate;
 
+        private bool _IsCommitReTrigger = false;
+
+        public bool IsCommitReTrigger => _IsCommitReTrigger;
+
         public override bool CanActiveAbility()
         {
             if (!base.CanActiveAbility())
@@ -28,9 +32,27 @@ namespace StudioScor.AbilitySystem.VisualScripting
             return true;
         }
 
+        public override bool CanReTriggerAbility()
+        {
+            if (!base.CanReTriggerAbility())
+                return false;
+
+            _IsCommitReTrigger = false;
+
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CAN_RETRIGGER_ABILITY, this));
+
+            if (!IsCommitReTrigger)
+                return false;
+
+            return true;
+        }
         public void CommitAbility()
         {
             _IsCommitActivate = true;
+        }
+        public void CommitReTriggerAbility()
+        {
+            _IsCommitReTrigger = true;
         }
 
         protected override void OnGrantAbility() 
@@ -56,6 +78,12 @@ namespace StudioScor.AbilitySystem.VisualScripting
         protected override void OnFinishAbility() 
         {
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_FINISH_ABILITY, this));
+        }
+
+        public override void CancelAbilityFromSource(object source)
+        {
+            if (IsPlaying)
+                EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CANCEL_ABILITY_FROM_SOURCE, this), source);
         }
         protected override void OnCancelAbility() 
         {

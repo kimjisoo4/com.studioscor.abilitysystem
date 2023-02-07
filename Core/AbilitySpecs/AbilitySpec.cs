@@ -115,6 +115,12 @@ namespace StudioScor.AbilitySystem
 
             CallBack_OnEndedAbility();
         }
+
+        public virtual void CancelAbilityFromSource(object source)
+        {
+
+        }
+
         public virtual void ForceCancelAbility()
         {
             if (!IsPlaying)

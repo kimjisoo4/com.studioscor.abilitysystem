@@ -20,7 +20,9 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public const string ABILITYSPEC_ENTER_ABILITY = "AbilitySpec_EnterAbility";
         public const string ABILITYSPEC_EXIT_ABILITY = "AbilitySpec_ExitAbility";
         public const string ABILITYSPEC_FINISH_ABILITY = "AbilitySpec_FInishAbility";
+        public const string ABILITYSPEC_CANCEL_ABILITY_FROM_SOURCE = "AbilitySpec_CancelAbilityFromSource";
         public const string ABILITYSPEC_CANCEL_ABILITY = "AbilitySpec_CancelAbility";
+        public const string ABILITYSPEC_CAN_RETRIGGER_ABILITY = "AbilitySpec_CanReTriggerAbility";
         public const string ABILITYSPEC_RETRIGGER_ABILITY = "AbilitySpec_ReTriggerAbility";
         public const string ABILITYSPEC_RELEASE_ABILITY = "AbilitySpec_ReleaseAbility";
         public const string ABILITYSPEC_GRANT_ABILITY = "AbilitySpec_GrantAbility";
