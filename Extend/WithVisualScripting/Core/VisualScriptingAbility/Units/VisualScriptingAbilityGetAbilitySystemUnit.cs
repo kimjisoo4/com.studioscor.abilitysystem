@@ -35,7 +35,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             var spec = flow.GetValue<VisualScriptingAbilitySpec>(AbilitySpec);
 
-            return spec.AbilitySystemComponent;
+            return spec.AbilitySystem;
         }
     }
 }
