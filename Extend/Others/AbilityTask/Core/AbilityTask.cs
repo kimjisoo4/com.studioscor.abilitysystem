@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using StudioScor.Utilities;
+
 
 namespace StudioScor.AbilitySystem
 {
@@ -8,8 +10,10 @@ namespace StudioScor.AbilitySystem
     {
         [Header(" [ Ability Task ] ")]
         [SerializeField] private bool _IsAlwaysPass = false;
-        public bool IsAlwaysPass => _IsAlwaysPass;
+        [SerializeField] private AbilityTask[] _SubTasks = null;
 
+        public bool IsAlwaysPass => _IsAlwaysPass;
+        public IReadOnlyCollection<AbilityTask> SubTasks => _SubTasks;
 
         public abstract IAbilityTaskSpec CreateSpec(IAbilitySpec abilitySpec);
     }

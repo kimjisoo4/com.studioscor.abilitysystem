@@ -18,7 +18,7 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
-        public AbilitySystemComponent AbilitySystemComponent => _AbilitySystemComponent;
+        public AbilitySystemComponent AbilitySystem => _AbilitySystemComponent;
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
 

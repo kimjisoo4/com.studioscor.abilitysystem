@@ -2,9 +2,9 @@
 using UnityEngine;
 using StudioScor.GameplayTagSystem;
 
-namespace StudioScor.AbilitySystem.GameplayTagSystem
+namespace StudioScor.AbilitySystem.Extend
 {
-    [System.Serializable]
+    [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new GameplayTagTask", fileName = "ATask_GameplayTag")]
     public class GameplayTagTask : AbilityTask
     {
         [Header(" [ GameplayTag Task ] ")]
@@ -22,10 +22,11 @@ namespace StudioScor.AbilitySystem.GameplayTagSystem
         public class Spec : AbilityTaskSpec<GameplayTagTask>
         {
             private readonly GameplayTagSystemComponent _GameplayTagSystemComponent;
+            public override float Progress => IsPlaying ? 1f : 0f;
 
             public Spec(GameplayTagTask actionBlock, IAbilitySpec abilitySpec) : base(actionBlock, abilitySpec)
             {
-                _GameplayTagSystemComponent = abilitySpec.AbilitySystemComponent.GetComponent<GameplayTagSystemComponent>();
+                _GameplayTagSystemComponent = abilitySpec.AbilitySystem.GetComponent<GameplayTagSystemComponent>();
             }
 
             public override bool CanEnterTask()

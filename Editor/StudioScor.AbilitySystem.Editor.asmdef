@@ -3,7 +3,8 @@
     "rootNamespace": "StudioScor.AbilitySystem.Editor",
     "references": [
         "GUID:e9dd1263e2a75664681caedc1b70ce84",
-        "GUID:0e56af4e027762c43b7508efc3b00495"
+        "GUID:0e56af4e027762c43b7508efc3b00495",
+        "GUID:d231f5ffb585d104580a481a96616a8c"
     ],
     "includePlatforms": [
         "Editor"

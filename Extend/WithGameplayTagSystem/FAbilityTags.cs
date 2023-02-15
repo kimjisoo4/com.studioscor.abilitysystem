@@ -1,7 +1,7 @@
 ﻿#if SCOR_ENABLE_GAMEPLAYTAGSYSTEM
 using StudioScor.GameplayTagSystem;
 
-namespace StudioScor.AbilitySystem.GameplayTagSystem
+namespace StudioScor.AbilitySystem.Extend
 {
     [System.Serializable]
     public struct FAbilityTags

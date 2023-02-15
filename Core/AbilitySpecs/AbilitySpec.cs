@@ -6,7 +6,7 @@ namespace StudioScor.AbilitySystem
     public abstract class AbilitySpec<T> : BaseClass, IAbilitySpec where T : Ability
     {
         protected readonly T _Ability;
-        protected readonly AbilitySystemComponent _AbilitySystemComponent;
+        protected readonly AbilitySystemComponent _AbilitySystem;
 
         protected int _Level = 0;
         protected bool _IsPlaying = false;
@@ -18,17 +18,18 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
-        public AbilitySystemComponent AbilitySystemComponent => _AbilitySystemComponent;
+        public AbilitySystemComponent AbilitySystem => _AbilitySystem;
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
 
-        public new bool UseDebug => _Ability.UseDebug;
-        public new Object Context => _Ability;
-
-        public AbilitySpec(T ability, AbilitySystemComponent abilitySystemComponent, int level)
+#if UNITY_EDITOR
+        public override bool UseDebug => _Ability.UseDebug;
+        public override Object Context => _Ability;
+#endif
+        public AbilitySpec(T ability, AbilitySystemComponent abilitySystem, int level)
         {
             _Ability = ability;
-            _AbilitySystemComponent = abilitySystemComponent;
+            _AbilitySystem = abilitySystem;
             _Level = level;
         }
 
@@ -82,7 +83,7 @@ namespace StudioScor.AbilitySystem
 
         public virtual void ForceActiveAbility()
         {
-            Log(" On Ability ", Ability);
+            Log(" On Ability ");
 
             _IsPlaying = true;
 
@@ -93,7 +94,7 @@ namespace StudioScor.AbilitySystem
 
         public void ForceReTriggerAbility()
         {
-            Log(" ReTrigger Ability ", Ability);
+            Log(" ReTrigger Ability ");
 
             OnReTriggerAbility();
         }
@@ -198,31 +199,31 @@ namespace StudioScor.AbilitySystem
 #region Callback
         protected virtual void CallBack_OnActivateAbility()
         {
-            Log("On Activated Ability", Ability);
+            Log("On Activated Ability");
 
             OnActivatedAbility?.Invoke(this);
         }
         protected virtual void CallBack_OnFinishedAbility()
         {
-            Log("On Finished Ability", Ability);
+            Log("On Finished Ability");
 
             OnFinishedAbility?.Invoke(this);
         }
         protected virtual void CallBack_OnEndedAbility()
         {
-            Log("On Ended Ability", Ability);
+            Log("On Ended Ability");
 
             OnEndedAbility?.Invoke(this);
         }
         protected virtual void CallBack_OnCanceledAbility()
         {
-            Log("On Canceled Ability", Ability);
+            Log("On Canceled Ability");
 
             OnCanceledAbility?.Invoke(this);
         }
         protected virtual void Callback_OnChangedAbilityLevel(int prevLevel)
         {
-            Log("Level Change - Current Level : " + Level + " Prev Level : " + prevLevel, Ability);
+            Log("Level Change - Current Level : " + Level + " Prev Level : " + prevLevel);
 
             OnChangedAbilityLevel?.Invoke(this, Level, prevLevel);
         }

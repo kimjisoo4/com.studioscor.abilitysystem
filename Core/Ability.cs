@@ -13,11 +13,11 @@ namespace StudioScor.AbilitySystem
         public Sprite Icon => _Icon;
 
 
-        public virtual bool CanGrantAbility(AbilitySystemComponent abilitySystemComponent)
+        public virtual bool CanGrantAbility(AbilitySystemComponent abilitySystem)
         {
             return true;
         }
 
-        public abstract IAbilitySpec CreateSpec(AbilitySystemComponent abilitySystemComponent, int level = 0);
+        public abstract IAbilitySpec CreateSpec(AbilitySystemComponent abilitySystem, int level = 0);
     }
 }

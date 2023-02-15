@@ -206,6 +206,9 @@ namespace StudioScor.AbilitySystem
         }
         public void TryActivateAbilityAsInputBuffer(Ability ability)
         {
+            if (!ability)
+                return;
+
             if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
             {
                 if (!spec.TryActiveAbility())

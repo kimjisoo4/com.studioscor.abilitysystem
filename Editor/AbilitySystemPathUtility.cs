@@ -2,6 +2,8 @@
 
 namespace StudioScor.AbilitySystem.Editor
 {
+
+
     public static class AbilitySystemPathUtility
     {
         private static string _RootFolder;
