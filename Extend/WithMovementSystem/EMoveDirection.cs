@@ -1,5 +1,5 @@
 ﻿#if SCOR_ENABLE_MOVEMENTSYSTEM
-namespace StudioScor.AbilitySystem.Extend
+namespace StudioScor.AbilitySystem
 {
     public enum EMoveDirection
     {

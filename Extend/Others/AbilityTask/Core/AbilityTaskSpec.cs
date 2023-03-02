@@ -1,52 +1,53 @@
 ﻿using StudioScor.Utilities;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 
 
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class AbilityTaskSpec<T> : BaseClass, IAbilityTaskSpec where T : AbilityTask
+    public abstract class AbilityTaskSpec<T> : BaseClass, ITaskSpec where T : Task
     {
         private readonly T _AbilityTask;
-        private readonly IAbilitySpec _AbilitySpec;
+        private readonly GameObject _Owner;
 
         private bool _IsPlaying;
 
-        public event AbilityTaskEventHandler OnStartedTask;
-        public event AbilityTaskEventHandler OnFinishedTask;
+        public event TaskEventHandler OnStartedTask;
+        public event TaskEventHandler OnFinishedTask;
 
 #if UNITY_EDITOR
         public override bool UseDebug => _AbilityTask.UseDebug;
         public override Object Context => _AbilityTask;
 #endif
 
-        protected T AbilityTask => _AbilityTask;
-        protected IAbilitySpec AbilitySpec => _AbilitySpec;
+        public T AbilityTask => _AbilityTask;
+        public GameObject Owner => _Owner;
         public bool IsPlaying => _IsPlaying;
         public abstract float Progress { get; }
-        public bool IsSub { get; set; } = false;
+        public bool IsSubTask => _IsSubTask;
+        public float Strength => _Strength;
 
-        private readonly IAbilityTaskSpec[] _SubTasks;
+        protected float _Strength = 1f;
 
-        protected AbilityTaskSpec(T actionBlock, IAbilitySpec abilitySpec)
+        protected bool _IsSubTask = false;
+
+        private readonly List<ITaskSpec> _SubTasks;
+
+        protected AbilityTaskSpec(T actionBlock, GameObject owner)
         {
             _AbilityTask = actionBlock;
-            _AbilitySpec = abilitySpec;
-
-            if(_AbilityTask.SubTasks is null)
-            {
-                _SubTasks = System.Array.Empty<IAbilityTaskSpec>();
-
-                return;
-            }
-
-            _SubTasks = new IAbilityTaskSpec[_AbilityTask.SubTasks.Count];
+            _Owner = owner;
+            _SubTasks = new();
 
             for(int i = 0; i < _AbilityTask.SubTasks.Count; i++)
             {
-                _SubTasks[i] = _AbilityTask.SubTasks.ElementAt(i).CreateSpec(abilitySpec);
-                _SubTasks[i].IsSub = true;
+                var task = _AbilityTask.SubTasks.ElementAt(i).CreateSpec(owner);
+
+                task.SetUseSubTask(true);
+
+                _SubTasks.Add(task);
             }
         }
 
@@ -55,16 +56,35 @@ namespace StudioScor.AbilitySystem
             OnRemove();
         }
 
+        public void AddTask(ITaskSpec taskSpec)
+        {
+            if (_SubTasks.Contains(taskSpec))
+                return;
+
+            _SubTasks.Add(taskSpec);
+
+            taskSpec.SetUseSubTask(true);
+
+            Log($"Add New Task -  {taskSpec}");
+        }
+        public void RemoveTask(ITaskSpec taskSpec)
+        {
+            if(_SubTasks.Remove(taskSpec))
+            {
+                taskSpec.SetUseSubTask(false);
+            }
+        }
+
         public virtual bool CanActivateTask()
         {
             if (!_AbilityTask.IsAlwaysPass && !CanEnterTask())
                 return false;
 
-            if(_SubTasks.Length > 0)
+            if(_SubTasks.Count > 0)
             {
                 foreach (var subTask in _SubTasks)
                 {
-                    if (!subTask.CanEnterTask())
+                    if (!subTask.CanActivateTask())
                     {
                         return false;
                     }
@@ -73,7 +93,6 @@ namespace StudioScor.AbilitySystem
 
             return true;
         }
-        
 
         public void ForceEnterTask()
         {
@@ -120,18 +139,18 @@ namespace StudioScor.AbilitySystem
             return false;
         }
 
-        public void OnUpdateTask(float deltaTime)
+        public void OnUpdateTask(float time)
         {
             if (!IsPlaying)
                 return;
 
-            if(IsSub)
+            if(IsSubTask)
             {
-                UpdateSubTask(deltaTime);
+                UpdateSubTask(time);
             }
             else
             {
-                UpdateMainTask(deltaTime);
+                UpdateMainTask(time);
             }
 
             foreach (var subTask in _SubTasks)
@@ -146,9 +165,24 @@ namespace StudioScor.AbilitySystem
             return !IsPlaying;
         }
 
+        public void SetStrength(float strength)
+        {
+            _Strength = strength;
+
+            foreach (var task in _SubTasks)
+            {
+                task.SetStrength(_Strength);
+            }
+        }
+
+        public void SetUseSubTask(bool isSubTask)
+        {
+            _IsSubTask = isSubTask;
+        }
+
         protected abstract void EnterTask();
         protected virtual void ExitTask() { }
-        protected virtual void UpdateSubTask(float normalizedTime) { }
+        protected virtual void UpdateSubTask(float progress) { }
         protected virtual void UpdateMainTask(float deltaTime) { }
 
         #region Callback
@@ -164,6 +198,7 @@ namespace StudioScor.AbilitySystem
 
             OnFinishedTask?.Invoke(this);
         }
+        
         #endregion
     }
 }

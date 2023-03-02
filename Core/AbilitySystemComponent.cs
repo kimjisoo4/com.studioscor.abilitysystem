@@ -6,16 +6,25 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
+    public interface IAbilitySystem
+    {
+        public void CancelAbilityFromSource(object source);
+        public bool TryGrantAbility(Ability ability, int level = 0);
+        public bool TryActivateAbility(Ability ability);
+        public void ReleasedAbility(Ability ability);
+        public bool IsActivateAbility(Ability ability);
+    }
+
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
     [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
-    public class AbilitySystemComponent : BaseMonoBehaviour
+    public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem
     {
         #region Events
         public delegate void AbilityChangedHandler(AbilitySystemComponent abilitySystemComponent, IAbilitySpec abilitySpec);
         #endregion
 
         [Header(" [ Setup] ")]
-        [SerializeField] private FInitAbility[] _InitAbilities;
+        [SerializeField] private FAbility[] _InitAbilities;
         [SerializeField] private float _BufferDuration = 0.2f;
 
         [Header(" [ Use Debug ] ")]

@@ -4,12 +4,10 @@ using System;
 using StudioScor.Utilities;
 using StudioScor.MovementSystem;
 
-
-namespace StudioScor.AbilitySystem.Extend
+namespace StudioScor.AbilitySystem
 {
-
     [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new Curve MoveTo Task", fileName = "ATask_CurveMoveTo")]
-    public class CurveMoveToTask : AbilityTask
+    public class CurveMoveToTask : Task
     {
         [Header(" [ CurveMoveTo Task ] ")]
         [SerializeField] private EMoveDirection _MoveDirection = EMoveDirection.Local;
@@ -17,40 +15,54 @@ namespace StudioScor.AbilitySystem.Extend
 
         [Header(" [ Main Setting ] ")]
         [SerializeField, Tooltip("Duration Only Use Main Task. ")] private float _Duration = 0.5f;
+        [SerializeField] private bool _UseScaleDurationToStrength = true;
 
         [Header(" [ Setting ] ")]
         [SerializeField] private bool _UseX = false;
+        [SerializeField, SCondition(nameof(_UseX), true)] private bool _UseScaleXToStrength = true;
         [SerializeField, SCondition(nameof(_UseX), true)] private float _DistanceX = 0f;
         [SerializeField, SCondition(nameof(_UseX), true)] private AnimationCurve _CurveX = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
         [SerializeField] private bool _UseY = false;
+        [SerializeField, SCondition(nameof(_UseY), true)] private bool _UseScaleYToStrength = false;
         [SerializeField, SCondition(nameof(_UseY), true)] private float _DistanceY = 0f;
         [SerializeField, SCondition(nameof(_UseY), true)] private AnimationCurve _CurveY = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
         [SerializeField] private bool _UseZ = true;
+        [SerializeField, SCondition(nameof(_UseZ), true)] private bool _UseScaleZToStrength = true;
         [SerializeField, SCondition(nameof(_UseZ), true)] private float _DistanceZ = 5f;
         [SerializeField, SCondition(nameof(_UseZ), true)] private AnimationCurve _CurveZ = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-        public override IAbilityTaskSpec CreateSpec(IAbilitySpec abilitySpec)
+        public Vector3 Distance => new Vector3(DistanceX, DistanceY, DistanceZ);
+        public float DistanceX => _UseX ? _DistanceX : 0f;
+        public float DistanceY => _UseY ? _DistanceY : 0f;
+        public float DistanceZ => _UseZ ? _DistanceZ : 0f;
+
+        public override ITaskSpec CreateSpec(GameObject owner)
         {
-            return new Spec(this, abilitySpec);
+            return new Spec(this, owner);
         }
 
         public class Spec : AbilityTaskSpec<CurveMoveToTask>
         {
-            private readonly MovementSystemComponent _MovementSystem;
+            private readonly IMovementSystem _MovementSystem;
             private readonly ReachValueToTime _ReachValueToTimeX;
             private readonly ReachValueToTime _ReachValueToTimeY;
             private readonly ReachValueToTime _ReachValueToTimeZ;
-            public override float Progress => _NormalizedTime;
             private float _NormalizedTime = 0f;
             private float _ElapsedTime = 0f;
 
-            Quaternion Rotate;
+            private float _Duration;
+            private Quaternion Rotate;
+            public override float Progress => _NormalizedTime;
+            public Vector3 Distance => AbilityTask.Distance;
+            public float DistanceX => AbilityTask.DistanceX;
+            public float DistanceY => AbilityTask.DistanceY;
+            public float DistanceZ => AbilityTask.DistanceZ;
 
-            public Spec(CurveMoveToTask actionBlock, IAbilitySpec abilitySpec) : base(actionBlock, abilitySpec)
+            public Spec(CurveMoveToTask actionBlock, GameObject owner) : base(actionBlock, owner)
             {
-                _MovementSystem = abilitySpec.AbilitySystem.GetComponent<MovementSystemComponent>();
+                _MovementSystem = owner.GetComponent<IMovementSystem>();
 
                 _ReachValueToTimeX = new();
                 _ReachValueToTimeY = new();
@@ -58,8 +70,9 @@ namespace StudioScor.AbilitySystem.Extend
             }
             protected override void EnterTask()
             {
-                _ElapsedTime = AbilityTask._Duration;
+                _Duration = AbilityTask._UseScaleDurationToStrength ? AbilityTask._Duration * Strength : AbilityTask._Duration;
 
+                _ElapsedTime = 0f;
                 _NormalizedTime = 0f;
 
                 switch (AbilityTask._MoveDirection)
@@ -67,17 +80,17 @@ namespace StudioScor.AbilitySystem.Extend
                     case EMoveDirection.MoveDirection:
                         if (_MovementSystem.MoveStrength > 0f)
                         {
-                            Rotate = Quaternion.LookRotation(_MovementSystem.MoveDirection, _MovementSystem.transform.up);
+                            Rotate = Quaternion.LookRotation(_MovementSystem.MoveDirection, Owner.transform.up);
                         }
                         else
                         {
-                            Vector3 direction = _MovementSystem.transform.TransformDirection(AbilityTask._Direction);
+                            Vector3 direction = Owner.transform.TransformDirection(AbilityTask._Direction);
 
                             Rotate = Quaternion.LookRotation(direction);
                         }
                         break;
                     case EMoveDirection.Local:
-                        Rotate = _MovementSystem.transform.rotation;
+                        Rotate = Owner.transform.rotation;
                         break;
                     default:
                         Rotate = Quaternion.identity;
@@ -86,28 +99,49 @@ namespace StudioScor.AbilitySystem.Extend
 
 
                 if (AbilityTask._UseX)
-                    _ReachValueToTimeX.OnMovement(AbilityTask._DistanceX, AbilityTask._CurveX);
+                {
+                    float distance = AbilityTask._UseScaleXToStrength ? AbilityTask._DistanceX * Strength : AbilityTask._DistanceX;
+
+                    _ReachValueToTimeX.OnMovement(distance, AbilityTask._CurveX);
+                }
 
                 if (AbilityTask._UseY)
-                    _ReachValueToTimeY.OnMovement(AbilityTask._DistanceY, AbilityTask._CurveY);
+                {
+                    float distance = AbilityTask._UseScaleYToStrength ? AbilityTask._DistanceY * Strength : AbilityTask._DistanceY;
+
+                    _ReachValueToTimeY.OnMovement(distance, AbilityTask._CurveY);
+                }
 
                 if (AbilityTask._UseZ)
-                    _ReachValueToTimeZ.OnMovement(AbilityTask._DistanceZ, AbilityTask._CurveZ);
+                {
+                    float distance = AbilityTask._UseScaleZToStrength ? AbilityTask._DistanceZ * Strength : AbilityTask._DistanceZ;
+
+                    _ReachValueToTimeZ.OnMovement(distance, AbilityTask._CurveZ);
+                }
             }
+
             protected override void ExitTask()
             {
-                _NormalizedTime = 1f;
-
                 _ReachValueToTimeX.EndMovement();
                 _ReachValueToTimeY.EndMovement();
                 _ReachValueToTimeZ.EndMovement();
             }
+
             protected override void UpdateMainTask(float deltaTime)
             {
                 _ElapsedTime += deltaTime;
-                _NormalizedTime = _ElapsedTime / AbilityTask._Duration;
+                _NormalizedTime = _ElapsedTime.SafeDivide(_Duration);
 
-                _NormalizedTime = MathF.Max(_NormalizedTime, 1f);
+                if(_NormalizedTime < 0f)
+                {
+                    Log("Duration is ZERO", true);
+
+                    _NormalizedTime = 1f;
+                }
+                else
+                {
+                    _NormalizedTime = MathF.Min(_NormalizedTime, 1f);
+                }
 
                 UpdateMovement();
             }
@@ -128,7 +162,7 @@ namespace StudioScor.AbilitySystem.Extend
 
                 Vector3 addPosition = new Vector3(x, y, z);
 
-                _MovementSystem.AddPosition(Rotate * addPosition);
+                _MovementSystem.MovePosition(Rotate * addPosition);
 
                 if (_NormalizedTime >= 1f)
                 {

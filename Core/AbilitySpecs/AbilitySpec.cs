@@ -65,6 +65,8 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
+            Log(" On Released Ability ");
+
             OnReleaseAbility();
         }
         public bool TryReTriggerAbility()
@@ -142,11 +144,14 @@ namespace StudioScor.AbilitySystem
 
         public void UpdateAbility(float deltaTime)
         {
+            OnUpdateAlways(deltaTime);
+
             if (!IsPlaying)
                 return;
 
             OnUpdateAbility(deltaTime);
         }
+        public virtual void OnUpdateAlways(float deltaTime) { }
         public void FixedUpdateAbility(float deltaTime)
         {
             if (!IsPlaying)

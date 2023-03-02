@@ -5,8 +5,17 @@ using System;
 
 namespace Portfolio.Abilities
 {
+    public interface IAnimationTask
+    {
+        public float NormalizedTime { get; }
+        public bool TryStopAnimation(int animationHash);
+        public void Play(int animationHash, float fadeIn = 0.2f, float fadeOut = 0.8f, float offset = 0f);
+        public Action OnFinished { get; set; }
+        public Action OnStartedBlendOut { get; set; }
+    }
+
     [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new AnimationTask",fileName = "ATask_Animation")]
-    public class AnimationTask : AbilityTask
+    public class AnimationTask : Task
     {
         [Header(" Animation Task ")]
         [SerializeField] private string _Animation = "";
@@ -15,23 +24,23 @@ namespace Portfolio.Abilities
         [SerializeField] private float _Offset = 0f;
         [SerializeField] private bool _EndWhenBlendOut = false;
 
-        public override IAbilityTaskSpec CreateSpec(IAbilitySpec abilitySpec)
+        public override ITaskSpec CreateSpec(GameObject owner)
         {
-            return new Spec(this, abilitySpec);
+            return new Spec(this, owner);
         }
 
         public class Spec : AbilityTaskSpec<AnimationTask>
         {
-            private readonly AnimationPlayer _AnimationPlayer;
+            private readonly IAnimationTask _AnimationPlayer;
 
             private readonly Action OnAnimationFinished;
             public override float Progress => _AnimationPlayer.NormalizedTime;
 
             private int _AnimationHash;
 
-            public Spec(AnimationTask actionBlock, IAbilitySpec abilitySpec) : base(actionBlock, abilitySpec)
+            public Spec(AnimationTask actionBlock, GameObject owner) : base(actionBlock, owner)
             {
-                _AnimationPlayer = abilitySpec.AbilitySystem.GetComponent<AnimationPlayer>();
+                _AnimationPlayer = owner.GetComponent<IAnimationTask>();
 
                 OnAnimationFinished = () => { EndTask(); };
             }

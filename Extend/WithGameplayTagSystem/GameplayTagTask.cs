@@ -1,11 +1,22 @@
 ﻿#if SCOR_ENABLE_GAMEPLAYTAGSYSTEM
 using UnityEngine;
+using System.Collections.Generic;
 using StudioScor.GameplayTagSystem;
 
-namespace StudioScor.AbilitySystem.Extend
+namespace StudioScor.AbilitySystem
 {
+    public interface IGameplayTagTask
+    {
+        public void AddOwnedTags(IReadOnlyCollection<GameplayTag> addTags);
+        public void AddBlockTags(IReadOnlyCollection<GameplayTag> addTags);
+        public void RemoveOwnedTags(IReadOnlyCollection<GameplayTag> removeTags);
+        public void RemoveBlockTags(IReadOnlyCollection<GameplayTag> removeTags);
+        public bool ContainAllTagsInOwned(IReadOnlyCollection<GameplayTag> containTags);
+        public bool ContainAnyTagsInBlock(IReadOnlyCollection<GameplayTag> containTags);
+    }
+
     [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new GameplayTagTask", fileName = "ATask_GameplayTag")]
-    public class GameplayTagTask : AbilityTask
+    public class GameplayTagTask : Task
     {
         [Header(" [ GameplayTag Task ] ")]
         [SerializeField] private FConditionTags _ConditionTags;
@@ -14,19 +25,19 @@ namespace StudioScor.AbilitySystem.Extend
         public FConditionTags ConditionTags => _ConditionTags;
         public FGameplayTags GrantTags => _GrantTags;
 
-        public override IAbilityTaskSpec CreateSpec(IAbilitySpec abilitySpec)
+        public override ITaskSpec CreateSpec(GameObject owner)
         {
-            return new Spec(this, abilitySpec);
+            return new Spec(this, owner);
         }
 
         public class Spec : AbilityTaskSpec<GameplayTagTask>
         {
-            private readonly GameplayTagSystemComponent _GameplayTagSystemComponent;
+            private readonly IGameplayTagTask _GameplayTagSystem;
             public override float Progress => IsPlaying ? 1f : 0f;
 
-            public Spec(GameplayTagTask actionBlock, IAbilitySpec abilitySpec) : base(actionBlock, abilitySpec)
+            public Spec(GameplayTagTask actionBlock, GameObject owner) : base(actionBlock, owner)
             {
-                _GameplayTagSystemComponent = abilitySpec.AbilitySystem.GetComponent<GameplayTagSystemComponent>();
+                _GameplayTagSystem = owner.GetComponent<IGameplayTagTask>();
             }
 
             public override bool CanEnterTask()
@@ -36,24 +47,24 @@ namespace StudioScor.AbilitySystem.Extend
 
             private bool CheckConditionTags()
             {
-                return _GameplayTagSystemComponent.ContainAllTagsInOwned(AbilityTask.ConditionTags.Requireds)
-                    && !_GameplayTagSystemComponent.ContainAnyTagsInBlock(AbilityTask.ConditionTags.Obstacleds);
+                return _GameplayTagSystem.ContainAllTagsInOwned(AbilityTask.ConditionTags.Requireds)
+                    && !_GameplayTagSystem.ContainAnyTagsInBlock(AbilityTask.ConditionTags.Obstacleds);
             }
 
             protected override void EnterTask()
             {
                 Log(nameof(EnterTask));
 
-                _GameplayTagSystemComponent.AddOwnedTags(AbilityTask.GrantTags.Owneds);
-                _GameplayTagSystemComponent.AddBlockTags(AbilityTask.GrantTags.Blocks);
+                _GameplayTagSystem.AddOwnedTags(AbilityTask.GrantTags.Owneds);
+                _GameplayTagSystem.AddBlockTags(AbilityTask.GrantTags.Blocks);
             }
 
             protected override void ExitTask()
             {
                 Log(nameof(ExitTask));
 
-                _GameplayTagSystemComponent.RemoveOwnedTags(AbilityTask.GrantTags.Owneds);
-                _GameplayTagSystemComponent.RemoveBlockTags(AbilityTask.GrantTags.Blocks);
+                _GameplayTagSystem.RemoveOwnedTags(AbilityTask.GrantTags.Owneds);
+                _GameplayTagSystem.RemoveBlockTags(AbilityTask.GrantTags.Blocks);
             }
         }
     }

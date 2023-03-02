@@ -3,9 +3,9 @@
 namespace StudioScor.AbilitySystem
 {
     [System.Serializable]
-    public struct FInitAbility
+    public struct FAbility
     {
-        public FInitAbility(Ability ability, int level)
+        public FAbility(Ability ability, int level)
         {
             Ability = ability;
             Level = level;

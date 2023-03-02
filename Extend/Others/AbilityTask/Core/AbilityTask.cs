@@ -6,15 +6,14 @@ using StudioScor.Utilities;
 namespace StudioScor.AbilitySystem
 {
 
-    public abstract class AbilityTask : BaseScriptableObject
+    public abstract class Task : BaseScriptableObject
     {
         [Header(" [ Ability Task ] ")]
         [SerializeField] private bool _IsAlwaysPass = false;
-        [SerializeField] private AbilityTask[] _SubTasks = null;
-
+        [SerializeField] private Task[] _SubTasks = null;
         public bool IsAlwaysPass => _IsAlwaysPass;
-        public IReadOnlyCollection<AbilityTask> SubTasks => _SubTasks;
+        public IReadOnlyCollection<Task> SubTasks => _SubTasks;
 
-        public abstract IAbilityTaskSpec CreateSpec(IAbilitySpec abilitySpec);
+        public abstract ITaskSpec CreateSpec(GameObject owner);
     }
 }
