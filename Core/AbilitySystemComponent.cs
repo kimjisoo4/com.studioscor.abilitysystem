@@ -6,22 +6,32 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
+    public delegate void AbilityChangedHandler(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec);
+
     public interface IAbilitySystem
     {
+        public Transform transform { get; }
+
         public void CancelAbilityFromSource(object source);
+        public bool TryGetAbilitySpec(Ability ability, out IAbilitySpec spec);
         public bool TryGrantAbility(Ability ability, int level = 0);
         public bool TryActivateAbility(Ability ability);
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
+        public bool HasAbility(Ability ability);
+
+        public event AbilityChangedHandler OnActivatedAbility;
+        public event AbilityChangedHandler OnFinishedAbility;
+
+        public event AbilityChangedHandler OnGrantedAbility;
+        public event AbilityChangedHandler OnRemovedAbility;
     }
 
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
     [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
     public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem
     {
-        #region Events
-        public delegate void AbilityChangedHandler(AbilitySystemComponent abilitySystemComponent, IAbilitySpec abilitySpec);
-        #endregion
+        
 
         [Header(" [ Setup] ")]
         [SerializeField] private FAbility[] _InitAbilities;

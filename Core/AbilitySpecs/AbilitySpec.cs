@@ -3,13 +3,20 @@ using UnityEngine;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class AbilitySpec<T> : BaseClass, IAbilitySpec where T : Ability
+    public abstract class AbilitySpec : BaseClass, IAbilitySpec
     {
-        protected readonly T _Ability;
-        protected readonly AbilitySystemComponent _AbilitySystem;
+        protected readonly Ability _Ability;
+        protected readonly IAbilitySystem _AbilitySystem;
 
         protected int _Level = 0;
         protected bool _IsPlaying = false;
+
+        protected Transform transform => _AbilitySystem.transform;
+
+        public Ability Ability => _Ability;
+        public IAbilitySystem AbilitySystem => _AbilitySystem;
+        public int Level => _Level;
+        public bool IsPlaying => _IsPlaying;
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnEndedAbility;
@@ -17,16 +24,11 @@ namespace StudioScor.AbilitySystem
         public event AbilityEventHandler OnCanceledAbility;
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
-        public Ability Ability => _Ability;
-        public AbilitySystemComponent AbilitySystem => _AbilitySystem;
-        public int Level => _Level;
-        public bool IsPlaying => _IsPlaying;
-
 #if UNITY_EDITOR
         public override bool UseDebug => _Ability.UseDebug;
         public override Object Context => _Ability;
 #endif
-        public AbilitySpec(T ability, AbilitySystemComponent abilitySystem, int level)
+        public AbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level)
         {
             _Ability = ability;
             _AbilitySystem = abilitySystem;
@@ -36,10 +38,16 @@ namespace StudioScor.AbilitySystem
 
         public void GrantAbility()
         {
+            Log("Grant Ability");
+
             OnGrantAbility();
         }
         public void RemoveAbility()
         {
+            Log("Remove Ability ");
+
+            EndAbility();
+
             OnRemoveAbility();
         }
 

@@ -6,8 +6,8 @@ using StudioScor.MovementSystem;
 
 namespace StudioScor.AbilitySystem
 {
-    [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new Curve MoveTo Task", fileName = "ATask_CurveMoveTo")]
-    public class CurveMoveToTask : Task
+    [CreateAssetMenu(menuName = "StudioScor/TaskSystem/new Reach MoveTo Task", fileName = "Task_ReachMoveTo")]
+    public class ReachMoveToTask : Task
     {
         [Header(" [ CurveMoveTo Task ] ")]
         [SerializeField] private EMoveDirection _MoveDirection = EMoveDirection.Local;
@@ -43,8 +43,10 @@ namespace StudioScor.AbilitySystem
             return new Spec(this, owner);
         }
 
-        public class Spec : AbilityTaskSpec<CurveMoveToTask>
+        public class Spec : TaskSpec
         {
+            private new readonly ReachMoveToTask _Task;
+
             private readonly IMovementSystem _MovementSystem;
             private readonly ReachValueToTime _ReachValueToTimeX;
             private readonly ReachValueToTime _ReachValueToTimeY;
@@ -55,13 +57,14 @@ namespace StudioScor.AbilitySystem
             private float _Duration;
             private Quaternion Rotate;
             public override float Progress => _NormalizedTime;
-            public Vector3 Distance => AbilityTask.Distance;
-            public float DistanceX => AbilityTask.DistanceX;
-            public float DistanceY => AbilityTask.DistanceY;
-            public float DistanceZ => AbilityTask.DistanceZ;
+            public Vector3 Distance => _Task.Distance;
+            public float DistanceX => _Task.DistanceX;
+            public float DistanceY => _Task.DistanceY;
+            public float DistanceZ => _Task.DistanceZ;
 
-            public Spec(CurveMoveToTask actionBlock, GameObject owner) : base(actionBlock, owner)
+            public Spec(Task task, GameObject owner) : base(task, owner)
             {
+                _Task = task as ReachMoveToTask;
                 _MovementSystem = owner.GetComponent<IMovementSystem>();
 
                 _ReachValueToTimeX = new();
@@ -70,12 +73,12 @@ namespace StudioScor.AbilitySystem
             }
             protected override void EnterTask()
             {
-                _Duration = AbilityTask._UseScaleDurationToStrength ? AbilityTask._Duration * Strength : AbilityTask._Duration;
+                _Duration = _Task._UseScaleDurationToStrength ? _Task._Duration * Strength : _Task._Duration;
 
                 _ElapsedTime = 0f;
                 _NormalizedTime = 0f;
 
-                switch (AbilityTask._MoveDirection)
+                switch (_Task._MoveDirection)
                 {
                     case EMoveDirection.MoveDirection:
                         if (_MovementSystem.MoveStrength > 0f)
@@ -84,7 +87,7 @@ namespace StudioScor.AbilitySystem
                         }
                         else
                         {
-                            Vector3 direction = Owner.transform.TransformDirection(AbilityTask._Direction);
+                            Vector3 direction = Owner.transform.TransformDirection(_Task._Direction);
 
                             Rotate = Quaternion.LookRotation(direction);
                         }
@@ -98,25 +101,25 @@ namespace StudioScor.AbilitySystem
                 }
 
 
-                if (AbilityTask._UseX)
+                if (_Task._UseX)
                 {
-                    float distance = AbilityTask._UseScaleXToStrength ? AbilityTask._DistanceX * Strength : AbilityTask._DistanceX;
+                    float distance = _Task._UseScaleXToStrength ? _Task._DistanceX * Strength : _Task._DistanceX;
 
-                    _ReachValueToTimeX.OnMovement(distance, AbilityTask._CurveX);
+                    _ReachValueToTimeX.OnMovement(distance, _Task._CurveX);
                 }
 
-                if (AbilityTask._UseY)
+                if (_Task._UseY)
                 {
-                    float distance = AbilityTask._UseScaleYToStrength ? AbilityTask._DistanceY * Strength : AbilityTask._DistanceY;
+                    float distance = _Task._UseScaleYToStrength ? _Task._DistanceY * Strength : _Task._DistanceY;
 
-                    _ReachValueToTimeY.OnMovement(distance, AbilityTask._CurveY);
+                    _ReachValueToTimeY.OnMovement(distance, _Task._CurveY);
                 }
 
-                if (AbilityTask._UseZ)
+                if (_Task._UseZ)
                 {
-                    float distance = AbilityTask._UseScaleZToStrength ? AbilityTask._DistanceZ * Strength : AbilityTask._DistanceZ;
+                    float distance = _Task._UseScaleZToStrength ? _Task._DistanceZ * Strength : _Task._DistanceZ;
 
-                    _ReachValueToTimeZ.OnMovement(distance, AbilityTask._CurveZ);
+                    _ReachValueToTimeZ.OnMovement(distance, _Task._CurveZ);
                 }
             }
 

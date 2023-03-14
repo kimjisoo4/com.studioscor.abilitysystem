@@ -6,7 +6,7 @@ namespace StudioScor.AbilitySystem
     public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec
     {
         protected Ability _Ability;
-        protected AbilitySystemComponent _AbilitySystemComponent;
+        protected IAbilitySystem _AbilitySystem;
 
         protected int _Level = 0;
         protected bool _IsPlaying = false;
@@ -18,15 +18,15 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => _Ability;
-        public AbilitySystemComponent AbilitySystem => _AbilitySystemComponent;
+        public IAbilitySystem AbilitySystem => _AbilitySystem;
         public int Level => _Level;
         public bool IsPlaying => _IsPlaying;
 
 
-        public virtual void Setup(Ability ability, AbilitySystemComponent abilitySystemComponent, int level = 0)
+        public virtual void Setup(Ability ability, IAbilitySystem abilitySystem, int level = 0)
         {
             _Ability = ability;
-            _AbilitySystemComponent = abilitySystemComponent;
+            _AbilitySystem = abilitySystem;
             _Level = level;
         }
 

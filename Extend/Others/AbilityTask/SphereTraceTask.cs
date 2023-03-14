@@ -5,10 +5,9 @@ using System.Collections.Generic;
 
 namespace StudioScor.AbilitySystem
 {
-    [CreateAssetMenu(menuName ="StudioScor/Ability/Task/new Sphere Trace Task", fileName = "ATask_SphereTrace")]
+    [CreateAssetMenu(menuName = "StudioScor/TaskSystem/new Sphere Trace Task", fileName = "Task_SphereTrace")]
     public class SphereTraceTask : Task
     {
-        
         [Header(" [ Sphere Trace Task ] ")]
         [Header(" [ Main Task Setting ] ")]
         [SerializeField] private bool _UseScaleDurationToStrength = true;
@@ -28,11 +27,14 @@ namespace StudioScor.AbilitySystem
             return new Spec(this, owner);
         }
 
-        public class Spec : AbilityTaskSpec<SphereTraceTask>
+        public class Spec : TaskSpec
         {
             #region
             public delegate void TraceHitHandler(Spec traceTask, List<RaycastHit> Hits);
             #endregion
+
+            private new readonly SphereTraceTask _Task;
+            private readonly IScale _Scale;
 
             private readonly List<Transform> _IgnoreHitTransforms;
             private List<RaycastHit> _HitResults;
@@ -40,27 +42,36 @@ namespace StudioScor.AbilitySystem
 
             private float _Duration;
             private float _Radius;
-            public override float Progress => _NormalizedTime;
 
             private float _ElapsedTime;
             private float _NormalizedTime;
+            public override float Progress => _NormalizedTime;
 
             public event TraceHitHandler OnTraceHits;
 
-            public Spec(SphereTraceTask actionBlock, GameObject owner) : base(actionBlock, owner)
+            public Spec(Task task, GameObject owner) : base(task, owner)
             {
+                _Task = task as SphereTraceTask;
+
+                _Scale = owner.GetComponent<IScale>();
+
                 _IgnoreHitTransforms = new();
                 _HitResults = new();
             }
 
             protected override void EnterTask()
             {
-                _Duration = AbilityTask._UseScaleDurationToStrength ? AbilityTask._Duration * Strength : AbilityTask._Duration;
-                _Radius = AbilityTask._UseScaleRadiusToStrength ? AbilityTask._Radius * Strength : AbilityTask._Radius;
+                _Duration = _Task._UseScaleDurationToStrength ? _Task._Duration * Strength : _Task._Duration;
+                _Radius = _Task._UseScaleRadiusToStrength ? _Task._Radius * Strength : _Task._Radius;
+
+                if(_Scale is not null)
+                {
+                    _Radius *= _Scale.Scale; 
+                }
 
                 _IgnoreHitTransforms.Clear();
 
-                _PrevPosition = Owner.transform.TransformPoint(AbilityTask._Offset);
+                _PrevPosition = Owner.transform.TransformPoint(_Task._Offset);
 
                 _ElapsedTime = _Duration;
                 _NormalizedTime = 0f;
@@ -89,15 +100,15 @@ namespace StudioScor.AbilitySystem
 
             protected void UpdateTrace()
             {
-                if (!Progress.InRange(AbilityTask._Start, AbilityTask._End))
+                if (!Progress.InRange(_Task._Start, _Task._End))
                     return;
 
                 _HitResults.Clear();
 
-                Vector3 currentPosition = Owner.transform.TransformPoint(AbilityTask._Offset);
-                FSphereTrace sphereTrace = new(_PrevPosition, currentPosition, _Radius, AbilityTask._TraceMask.Value);
+                Vector3 currentPosition = Owner.transform.TransformPoint(_Task._Offset);
+                FSphereTrace sphereTrace = new(_PrevPosition, currentPosition, _Radius, _Task._TraceMask.Value);
 
-                if (AbilityTask._SphereTrace.Trace(Owner.transform, sphereTrace, ref _HitResults, _IgnoreHitTransforms, UseDebug))
+                if (_Task._SphereTrace.Trace(Owner.transform, sphereTrace, ref _HitResults, _IgnoreHitTransforms, UseDebug))
                 {
                     Log($"Hit! - {_HitResults.Count}");
 

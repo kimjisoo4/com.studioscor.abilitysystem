@@ -11,11 +11,11 @@ namespace StudioScor.AbilitySystem.VisualScripting
         [Header(" [ Visual Scripting Ability ] ")]
         [SerializeField] private VisualScriptingAbilitySpec _VisualScriptingAbilitySpec;
 
-        public override IAbilitySpec CreateSpec(AbilitySystemComponent abilitySystemComponent, int level = 0)
+        public override IAbilitySpec CreateSpec(IAbilitySystem abilitySystem, int level = 0)
         {
-            var abilitySpec = Instantiate(_VisualScriptingAbilitySpec, abilitySystemComponent.transform);
+            var abilitySpec = Instantiate(_VisualScriptingAbilitySpec, abilitySystem.transform);
 
-            abilitySpec.Setup(this, abilitySystemComponent, level);
+            abilitySpec.Setup(this, abilitySystem, level);
 
             return abilitySpec;
         }

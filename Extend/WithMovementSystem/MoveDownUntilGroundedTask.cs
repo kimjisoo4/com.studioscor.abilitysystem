@@ -5,7 +5,7 @@ using StudioScor.MovementSystem;
 
 namespace StudioScor.AbilitySystem
 {
-    [CreateAssetMenu(menuName = "StudioScor/AbilitySystem/Task/new MoveDown Until Grounded Task", fileName = "ATask_MoveDown")]
+    [CreateAssetMenu(menuName = "StudioScor/TaskSystem/new MoveDown Until Grounded Task", fileName = "Task_MoveDown")]
     public class MoveDownUntilGroundedTask : Task
     {
         [Header(" [ Jump Down Task ] ")]
@@ -20,8 +20,9 @@ namespace StudioScor.AbilitySystem
             return new Spec(this, owner);
         }
 
-        public class Spec : AbilityTaskSpec<MoveDownUntilGroundedTask>
+        public class Spec : TaskSpec
         {
+            private new readonly MoveDownUntilGroundedTask _Task;
             private readonly IMovementSystem _MovementSystem;
             private float _StartSpeed;
             private float _TargetSpeed;
@@ -30,14 +31,15 @@ namespace StudioScor.AbilitySystem
             private float _ElapsedTime;
             public override float Progress => _NormalizedTime;
 
-            public Spec(MoveDownUntilGroundedTask actionBlock, GameObject owner) : base(actionBlock, owner)
+            public Spec(Task task, GameObject owner) : base(task, owner)
             {
+                _Task = task as MoveDownUntilGroundedTask;
                 _MovementSystem = owner.GetComponent<IMovementSystem>();
             }
             protected override void EnterTask()
             {
-                _StartSpeed = Strength * AbilityTask._StartSpeed;
-                _TargetSpeed = Strength * AbilityTask._TargetSpeed;
+                _StartSpeed = Strength * _Task._StartSpeed;
+                _TargetSpeed = Strength * _Task._TargetSpeed;
 
                 _ElapsedTime = 0f;
                 _NormalizedTime = 0f;
@@ -49,7 +51,7 @@ namespace StudioScor.AbilitySystem
             protected override void UpdateMainTask(float deltaTime)
             {
                 _ElapsedTime += deltaTime;
-                _NormalizedTime = _ElapsedTime.SafeDivide(AbilityTask._Duration);
+                _NormalizedTime = _ElapsedTime.SafeDivide(_Task._Duration);
 
                 UpdateMovement();
             }

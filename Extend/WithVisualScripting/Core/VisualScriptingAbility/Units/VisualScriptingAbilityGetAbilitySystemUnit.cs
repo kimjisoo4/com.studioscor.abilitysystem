@@ -26,12 +26,12 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             AbilitySpec = ValueInput<VisualScriptingAbilitySpec>(nameof(AbilitySpec), null).NullMeansSelf();
 
-            AbilitySystemComponent = ValueOutput<AbilitySystemComponent>(nameof(AbilitySystemComponent), GetAbilitySystemComponent);
+            AbilitySystemComponent = ValueOutput<IAbilitySystem>(nameof(AbilitySystemComponent), GetAbilitySystemComponent);
 
             Requirement(AbilitySpec, AbilitySystemComponent);
         }
 
-        private AbilitySystemComponent GetAbilitySystemComponent(Flow flow)
+        private IAbilitySystem GetAbilitySystemComponent(Flow flow)
         {
             var spec = flow.GetValue<VisualScriptingAbilitySpec>(AbilitySpec);
 

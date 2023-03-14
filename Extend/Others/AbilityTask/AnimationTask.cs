@@ -14,7 +14,7 @@ namespace Portfolio.Abilities
         public Action OnStartedBlendOut { get; set; }
     }
 
-    [CreateAssetMenu(menuName = "StudioScor/Ability/Task/new AnimationTask",fileName = "ATask_Animation")]
+    [CreateAssetMenu(menuName = "StudioScor/TaskSystem/new AnimationTask", fileName = "Task_Animation")]
     public class AnimationTask : Task
     {
         [Header(" Animation Task ")]
@@ -29,8 +29,9 @@ namespace Portfolio.Abilities
             return new Spec(this, owner);
         }
 
-        public class Spec : AbilityTaskSpec<AnimationTask>
+        public class Spec : TaskSpec
         {
+            private new readonly AnimationTask _Task;
             private readonly IAnimationTask _AnimationPlayer;
 
             private readonly Action OnAnimationFinished;
@@ -38,8 +39,10 @@ namespace Portfolio.Abilities
 
             private int _AnimationHash;
 
-            public Spec(AnimationTask actionBlock, GameObject owner) : base(actionBlock, owner)
+            public Spec(Task task, GameObject owner) : base(task, owner)
             {
+                _Task = task as AnimationTask;
+
                 _AnimationPlayer = owner.GetComponent<IAnimationTask>();
 
                 OnAnimationFinished = () => { EndTask(); };
@@ -47,7 +50,7 @@ namespace Portfolio.Abilities
  
             protected override void EnterTask()
             {
-                _AnimationHash = Animator.StringToHash(AbilityTask._Animation);
+                _AnimationHash = Animator.StringToHash(_Task._Animation);
 
                 AnimationPlay();
             }
@@ -58,9 +61,9 @@ namespace Portfolio.Abilities
 
             private void AnimationPlay()
             {
-                _AnimationPlayer.Play(_AnimationHash, AbilityTask._FadeIn, AbilityTask._FadeOut, AbilityTask._Offset);
+                _AnimationPlayer.Play(_AnimationHash, _Task._FadeIn, _Task._FadeOut, _Task._Offset);
 
-                if (!AbilityTask._EndWhenBlendOut)
+                if (!_Task._EndWhenBlendOut)
                     _AnimationPlayer.OnFinished = OnAnimationFinished;
                 else
                     _AnimationPlayer.OnStartedBlendOut = OnAnimationFinished;

@@ -8,7 +8,7 @@
     public interface IAbilitySpec
     {
         public Ability Ability { get; }
-        public AbilitySystemComponent AbilitySystem { get; }
+        public IAbilitySystem AbilitySystem { get; }
         public bool IsPlaying { get; }
         public int Level { get; }
 
