@@ -10,7 +10,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
     [UnitCategory("Events\\StudioScor\\AbilitySystem\\AbilitySystem")]
     public class AbilitySystemFinishAbilityEventUnit : AbilitySystemEventUnit
     {
-        protected override string HookName => AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_FINISH_ABILITY;
+        protected override string HookName => AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_END_ABILITY;
     }
 }
 

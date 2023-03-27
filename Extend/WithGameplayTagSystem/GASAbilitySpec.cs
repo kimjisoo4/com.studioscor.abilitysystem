@@ -27,7 +27,7 @@ namespace StudioScor.AbilitySystem
             {
                 if (GASAbility.AbilityTag == tag || GASAbility.AttributeTags.Contains(tag))
                 {
-                    ForceCancelAbility();
+                    CancelAbility();
 
                     return;
                 }

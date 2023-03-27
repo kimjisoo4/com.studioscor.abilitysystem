@@ -8,7 +8,8 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public const string ABILITYSYSTEM_GRANT_ABILITY = "AbilitySystem_GrantAbility";
         public const string ABILITYSYSTEM_REMOVE_ABILITY = "AbilitySystem_RemoveAbility";
         public const string ABILITYSYSTEM_ACTIVE_ABILITY = "AbilitySystem_ActiveAbility";
-        public const string ABILITYSYSTEM_FINISH_ABILITY = "AbilitySystem_FinishAbility";
+        public const string ABILITYSYSTEM_RELEASE_ABILITY = "AbilitySystem_ReleaseAbility";
+        public const string ABILITYSYSTEM_END_ABILITY = "AbilitySystem_FinishAbility";
 
         public const string ABILITYSPEC_ACTIVATED_ABILITY = "AbilitySpec_ActivatedAbility";
         public const string ABILITYSPEC_CANCELED_ABILITY = "AbilitySpec_CanceledAbility";

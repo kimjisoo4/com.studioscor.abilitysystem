@@ -3,7 +3,7 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec
+    public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec, IAbilitySpecEvent
     {
         protected Ability _Ability;
         protected IAbilitySystem _AbilitySystem;
@@ -12,6 +12,7 @@ namespace StudioScor.AbilitySystem
         protected bool _IsPlaying = false;
 
         public event AbilityEventHandler OnActivatedAbility;
+        public event AbilityEventHandler OnReleasedAbility;
         public event AbilityEventHandler OnEndedAbility;
         public event AbilityEventHandler OnFinishedAbility;
         public event AbilityEventHandler OnCanceledAbility;
@@ -60,6 +61,8 @@ namespace StudioScor.AbilitySystem
         {
             if (!IsPlaying)
                 return;
+
+            Callback_OnReleasedAbility();
 
             OnReleaseAbility();
         }
@@ -114,7 +117,7 @@ namespace StudioScor.AbilitySystem
 
         public virtual void CancelAbilityFromSource(object source) { }
 
-        public virtual void ForceCancelAbility()
+        public virtual void CancelAbility()
         {
             if (!IsPlaying)
                 return;
@@ -195,6 +198,13 @@ namespace StudioScor.AbilitySystem
             Log("On Activated Ability");
 
             OnActivatedAbility?.Invoke(this);
+        }
+
+        protected virtual void Callback_OnReleasedAbility()
+        {
+            Log("On Released Ability");
+
+            OnReleasedAbility?.Invoke(this);
         }
         protected virtual void Callback_OnFinishedAbility()
         {

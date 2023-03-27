@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class AbilitySpec : BaseClass, IAbilitySpec
+    public abstract class AbilitySpec : BaseClass, IAbilitySpec, IAbilitySpecEvent
     {
         protected readonly Ability _Ability;
         protected readonly IAbilitySystem _AbilitySystem;
@@ -19,6 +19,7 @@ namespace StudioScor.AbilitySystem
         public bool IsPlaying => _IsPlaying;
 
         public event AbilityEventHandler OnActivatedAbility;
+        public event AbilityEventHandler OnReleasedAbility;
         public event AbilityEventHandler OnEndedAbility;
         public event AbilityEventHandler OnFinishedAbility;
         public event AbilityEventHandler OnCanceledAbility;
@@ -75,6 +76,8 @@ namespace StudioScor.AbilitySystem
 
             Log(" On Released Ability ");
 
+            CallBack_OnReleasedAbility();
+
             OnReleaseAbility();
         }
         public bool TryReTriggerAbility()
@@ -97,7 +100,7 @@ namespace StudioScor.AbilitySystem
 
             _IsPlaying = true;
 
-            OnActivatedAbility?.Invoke(this);
+            CallBack_OnActivateAbility();
 
             EnterAbility();
         }
@@ -132,7 +135,7 @@ namespace StudioScor.AbilitySystem
 
         }
 
-        public virtual void ForceCancelAbility()
+        public virtual void CancelAbility()
         {
             if (!IsPlaying)
                 return;
@@ -209,12 +212,18 @@ namespace StudioScor.AbilitySystem
             return !IsPlaying;
         }
 
-#region Callback
+        #region Callback
         protected virtual void CallBack_OnActivateAbility()
         {
             Log("On Activated Ability");
 
             OnActivatedAbility?.Invoke(this);
+        }
+        protected virtual void CallBack_OnReleasedAbility()
+        {
+            Log("On Released Ability");
+
+            OnReleasedAbility?.Invoke(this);
         }
         protected virtual void CallBack_OnFinishedAbility()
         {

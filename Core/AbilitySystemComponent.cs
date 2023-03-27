@@ -6,50 +6,115 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public delegate void AbilityChangedHandler(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec);
-
+    public delegate void AbilitySpecHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpec abilitySpec);
+    public delegate void AbilitySpecEventHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent);
     public interface IAbilitySystem
     {
+        public GameObject gameObject { get; }
         public Transform transform { get; }
 
-        public void CancelAbilityFromSource(object source);
-        public bool TryGetAbilitySpec(Ability ability, out IAbilitySpec spec);
+        public IReadOnlyDictionary<Ability, IAbilitySpec> Abilities { get; }
         public bool TryGrantAbility(Ability ability, int level = 0);
         public bool TryActivateAbility(Ability ability);
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
-        public bool HasAbility(Ability ability);
+        public void CancelAbilityFromSource(object source);
+    }
 
-        public event AbilityChangedHandler OnActivatedAbility;
-        public event AbilityChangedHandler OnFinishedAbility;
+    public interface IAbilitySystemEvent
+    {
+        public GameObject gameObject { get; }
+        public Transform transform { get; }
 
-        public event AbilityChangedHandler OnGrantedAbility;
-        public event AbilityChangedHandler OnRemovedAbility;
+        public event AbilitySpecEventHandler OnActivatedAbility;
+        public event AbilitySpecEventHandler OnReleasedAbility;
+        public event AbilitySpecEventHandler OnEndedAbility;
+
+        public event AbilitySpecHandler OnGrantedAbility;
+        public event AbilitySpecHandler OnRemovedAbility;
+    }
+
+    public static class AbilitySystemUtility
+    {
+        public static IAbilitySystem GetAbilitySystem(this GameObject gameObject)
+        {
+            return gameObject.GetComponent<IAbilitySystem>();
+        }
+        public static IAbilitySystem GetAbilitySystem(this Component component)
+        {
+            return component.GetComponent<IAbilitySystem>();
+        }
+
+        public static bool HasAbility(this IAbilitySystem abilitySystem, Ability ability)
+        {
+            return abilitySystem.Abilities.ContainsKey(ability);
+        }
+        public static bool HasAbility(this IAbilitySystem abilitySystem, Type type)
+        {
+            foreach (var ability in abilitySystem.Abilities.Keys)
+            {
+                if (ability.GetType() == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static IAbilitySpec GetAbilitySpec(this IAbilitySystem abilitySystem, Ability ability)
+        {
+            return abilitySystem.Abilities[ability];
+        }
+        public static IAbilitySpec GetAbilitySpec(this IAbilitySystem abilitySystem, Type type)
+        {
+            foreach (var ability in abilitySystem.Abilities.Keys)
+            {
+                if (ability.GetType() == type)
+                {
+                    return abilitySystem.Abilities[ability];
+                }
+            }
+
+            return null;
+        }
+
+        public static bool TryGetAbilitySpec(this IAbilitySystem abilitySystem, Ability abilitym, out IAbilitySpec spec)
+        {
+            spec = abilitySystem.GetAbilitySpec(abilitym);
+
+            return spec is not null;
+        }
+
+        public static bool TryGetAbilitySpec(this IAbilitySystem abilitySystem, Type type, out IAbilitySpec abilitySpec)
+        {
+            abilitySpec = abilitySystem.GetAbilitySpec(type);
+
+            return abilitySpec is not null;
+        }
+
     }
 
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
     [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
-    public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem
+    public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem, IAbilitySystemEvent
     {
-        
-
         [Header(" [ Setup] ")]
         [SerializeField] private FAbility[] _InitAbilities;
-        [SerializeField] private float _BufferDuration = 0.2f;
 
         [Header(" [ Use Debug ] ")]
         [SerializeField] private bool _UseDebug;
 
-        private List<IAbilitySpec> _Abilities;
-        private AbilityInputBuffer _AbilityInputBuffer;
+        private Dictionary<Ability, IAbilitySpec> _Abilities;
 
-        public IReadOnlyList<IAbilitySpec> Abilities => _Abilities;
+        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => _Abilities;
 
-        public event AbilityChangedHandler OnActivatedAbility;
-        public event AbilityChangedHandler OnFinishedAbility;
+        public event AbilitySpecEventHandler OnActivatedAbility;
+        public event AbilitySpecEventHandler OnReleasedAbility;
+        public event AbilitySpecEventHandler OnEndedAbility;
 
-        public event AbilityChangedHandler OnGrantedAbility;
-        public event AbilityChangedHandler OnRemovedAbility;
+        public event AbilitySpecHandler OnGrantedAbility;
+        public event AbilitySpecHandler OnRemovedAbility;
 
         private void Awake()
         {
@@ -65,17 +130,16 @@ namespace StudioScor.AbilitySystem
         }
         protected void Setup()
         {
-            Log("Setup");
+            Log("Setup Ability System");
 
             _Abilities = new();
-            _AbilityInputBuffer = new();
         }
 
         public void ResetAbilitySystem()
         {
-            RemoveAllAbility();
+            Log("Reset Ability System");
 
-            _AbilityInputBuffer.ResetAbilityInputBuffer();
+            RemoveAllAbility();
 
             foreach (var ability in _InitAbilities)
             {
@@ -91,11 +155,9 @@ namespace StudioScor.AbilitySystem
         {
             float deltaTime = Time.deltaTime;
 
-            _AbilityInputBuffer.Buffer(deltaTime);
-
-            for (int i = 0; i < Abilities.Count; i++)
+            foreach (var ability in _Abilities.Values)
             {
-                Abilities[i].UpdateAbility(deltaTime);
+                ability.UpdateAbility(deltaTime);
             }
         }
 
@@ -103,70 +165,15 @@ namespace StudioScor.AbilitySystem
         {
             float deltaTime = Time.fixedDeltaTime;
 
-            for (int i = 0; i < Abilities.Count; i++)
+            foreach (var ability in _Abilities.Values)
             {
-                Abilities[i].FixedUpdateAbility(deltaTime);
+                ability.FixedUpdateAbility(deltaTime);
             }
         }
-
-        #region Get Ability Spec
-        public bool TryGetAbilitySpec(Ability abilitym, out IAbilitySpec spec)
-        {
-            spec = GetAbilitySpec(abilitym);
-
-            return spec is not null;
-        }
-        public bool TryGetAbilitySpec(Type type, out IAbilitySpec abilitySpec)
-        {
-            abilitySpec = GetAbilitySpec(type);
-
-            return abilitySpec is not null;
-        }
-        
-
-        public IAbilitySpec GetAbilitySpec(Ability ability)
-        {
-            foreach (var spec in Abilities)
-            {
-                if (spec.Ability == ability)
-                {
-                    return spec;
-                }
-            }
-
-            return null;
-        }
-        public IAbilitySpec GetAbilitySpec(Type type)
-        {
-            foreach (var ability in Abilities)
-            {
-                if (ability.Ability.GetType() == type)
-                {
-                    return ability;
-                }
-            }
-
-            return null;
-        }
-        
-
-        #endregion
-        #region Has Ability Spec
-        public bool HasAbility(Ability ability)
-        {
-            return GetAbilitySpec(ability) is not null;
-        }
-        
-        public bool HasAbility(Type abilityType)
-        {
-            return GetAbilitySpec(abilityType) is not null;
-        }
-        #endregion
-        #region Can Activate Ability
 
         public bool CanActivateAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if(Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 return spec.CanActiveAbility();
             }
@@ -175,23 +182,9 @@ namespace StudioScor.AbilitySystem
                 return false;
             }
         }
-        
-        public bool CanActivateAbility(Type abilityType)
-        {
-            if (TryGetAbilitySpec(abilityType, out IAbilitySpec spec))
-            {
-                return spec.CanActiveAbility();
-            }
-            else
-            {
-                return false;
-            }
-        }
-        #endregion
-        #region Is Activate Ability
         public bool IsActivateAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 return spec.IsPlaying;
             }
@@ -200,21 +193,10 @@ namespace StudioScor.AbilitySystem
                 return false;
             }
         }
-        
-        public bool IsActivateAbility(Type type)
-        {
-            if (TryGetAbilitySpec(type, out var abilitySpec))
-            {
-                return abilitySpec.IsPlaying;
-            }
 
-            return false;
-        }
-        #endregion
-        #region Activate Ability Spec
         public bool TryActivateAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 return spec.TryActiveAbility();
             }
@@ -223,65 +205,47 @@ namespace StudioScor.AbilitySystem
                 return false;
             }
         }
-        public void TryActivateAbilityAsInputBuffer(Ability ability)
-        {
-            if (!ability)
-                return;
-
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
-            {
-                if (!spec.TryActiveAbility())
-                {
-                    _AbilityInputBuffer.SetBuffer(spec, _BufferDuration);
-                }
-            }
-        }
-        
 
         public void ForceActivateAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 spec.ForceActiveAbility();
             }
         }
-        #endregion
-        #region Released Ability Spec
+
         public void ReleasedAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 if(spec.IsPlaying)
+                {
                     spec.ReleaseAbility();
+                }
             }
         }
-        #endregion
-        #region Canceled Ability Spec
-        
+
         public void CancelAbilityFromSource(object source)
         {
-            foreach (var spec in Abilities)
+            foreach (var spec in Abilities.Values)
             {
                 spec.CancelAbilityFromSource(source);
             }
         }
         public void CancelAbility(Ability ability)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
-                spec.ForceCancelAbility();
+                spec.CancelAbility();
             }
         }
         public void CancelAllAbility()
         {
-            foreach (var spec in Abilities)
+            foreach (var spec in Abilities.Values)
             {
-                spec.ForceCancelAbility();
+                spec.CancelAbility();
             }
         }
-        #endregion
-
-        #region Add Ability
         public bool TryGrantAbility(Ability addAbility, int level = 0)
         {
             if (!CanGrantAbility(addAbility, level))
@@ -300,30 +264,33 @@ namespace StudioScor.AbilitySystem
                 return false;
             }
 
-            return true;
+            return ability.CanGrantAbility(this);
         }
         public void ForceGrantAbility(Ability ability, int level = 0)
         {
-            if (TryGetAbilitySpec(ability, out IAbilitySpec spec))
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 spec.OnOverride(level);
 
                 return;
             }
 
-            var newAbilitySpec = ability.CreateSpec(this, level);
+            var abilitySpec = ability.CreateSpec(this, level);
 
-            newAbilitySpec.GrantAbility();
+            if (abilitySpec is IAbilitySpecEvent abilitySpecEvent)
+            {
+                abilitySpecEvent.OnActivatedAbility += Callback_OnActivatedAbility;
+                abilitySpecEvent.OnReleasedAbility += Callback_OnReleasedAbility;
+                abilitySpecEvent.OnEndedAbility += Callback_OnEndedAbility;
+            }
 
-            _Abilities.Add(newAbilitySpec);
+            abilitySpec.GrantAbility();
 
-            newAbilitySpec.OnActivatedAbility += Spec_OnActivatedAbility;
-            newAbilitySpec.OnFinishedAbility += Spec_OnFinishedAbility;
+            _Abilities.Add(ability, abilitySpec);
 
-            Callback_OnGrantedAbility(newAbilitySpec);
+            Callback_OnGrantedAbility(abilitySpec);
         }
-        #endregion
-        #region Remove Ability
+
         public bool TryRemoveAbility(Ability ability)
         {
             if (!CanRemoveAbility(ability))
@@ -343,7 +310,7 @@ namespace StudioScor.AbilitySystem
                 return false;
             }
 
-            if (!HasAbility(ability))
+            if (!Abilities.ContainsKey(ability))
             {
                 Log("Has Not " + ability);
 
@@ -355,48 +322,34 @@ namespace StudioScor.AbilitySystem
         }
         public void ForceRemoveAbility(Ability ability)
         {
-            var spec = GetAbilitySpec(ability);
-
-            RemoveAbility(spec);
-        }
-        private void RemoveAbility(IAbilitySpec abilitySpec)
-        {
-            if (abilitySpec.IsPlaying)
+            if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
-                abilitySpec.ForceCancelAbility();
+                spec.CancelAbility();
+
+                if (spec is IAbilitySpecEvent abilitySpecEvent)
+                {
+                    abilitySpecEvent.OnActivatedAbility -= Callback_OnActivatedAbility;
+                    abilitySpecEvent.OnReleasedAbility -= Callback_OnReleasedAbility;
+                    abilitySpecEvent.OnEndedAbility -= Callback_OnEndedAbility;
+                }
+
+                spec.RemoveAbility();
+
+                Callback_OnRemovedAbility(spec);
+
+                _Abilities.Remove(ability);
             }
-
-            _Abilities.Remove(abilitySpec);
-
-            abilitySpec.OnActivatedAbility -= Spec_OnActivatedAbility;
-            abilitySpec.OnFinishedAbility -= Spec_OnFinishedAbility;
-
-            abilitySpec.RemoveAbility();
-
-            Callback_OnRemovedAbility(abilitySpec);
         }
         public void RemoveAllAbility()
         {
-            for(int i = Abilities.Count - 1; i >= 0; i--)
+            foreach (var ability in _Abilities.Keys)
             {
-                RemoveAbility(Abilities[i]);
+                ForceRemoveAbility(ability);
             }
 
             _Abilities.Clear();
         }
 
-        #endregion
-
-        #region Ability Spec Delegate
-        private void Spec_OnFinishedAbility(IAbilitySpec abilitySpec)
-        {
-            Callback_OnFinishedAbility(abilitySpec);
-        }
-        private void Spec_OnActivatedAbility(IAbilitySpec abilitySpec)
-        {
-            Callback_OnActivatedAbility(abilitySpec);
-        }
-        #endregion
 
         #region CallBack
         protected virtual void Callback_OnGrantedAbility(IAbilitySpec grantAbilitySpec)
@@ -411,18 +364,26 @@ namespace StudioScor.AbilitySystem
 
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
         }
-        protected virtual void Callback_OnFinishedAbility(IAbilitySpec abilitySpec)
-        {
-            Log("On Finished Ability - " + abilitySpec.Ability.Name);
 
-            OnFinishedAbility?.Invoke(this, abilitySpec);
-        }
-        protected virtual void Callback_OnActivatedAbility(IAbilitySpec abilitySpec)
+        protected virtual void Callback_OnActivatedAbility(IAbilitySpecEvent abilitySpec)
         {
             Log("On Activated Ability - " + abilitySpec.Ability.Name);
 
             OnActivatedAbility?.Invoke(this, abilitySpec);
         }
+        protected virtual void Callback_OnReleasedAbility(IAbilitySpecEvent abilitySpec)
+        {
+            Log("On Released Ability - " + abilitySpec.Ability.Name);
+
+            OnReleasedAbility?.Invoke(this, abilitySpec);
+        }
+        protected virtual void Callback_OnEndedAbility(IAbilitySpecEvent abilitySpec)
+        {
+            Log("On Ended Ability - " + abilitySpec.Ability.Name);
+
+            OnEndedAbility?.Invoke(this, abilitySpec);
+        }
+
         #endregion
     }
 }

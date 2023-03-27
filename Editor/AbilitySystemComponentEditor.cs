@@ -40,10 +40,10 @@ namespace StudioScor.AbilitySystem.Editor
                     foreach (var ability in abilitise)
                     {
                         GUILayout.BeginHorizontal();
-                        GUILayout.Label(ability.Ability.Name);
-                        GUILayout.Label("[ Level : " + ability.Level.ToString() + " ]");
+                        GUILayout.Label(ability.Key.Name);
+                        GUILayout.Label("[ Level : " + ability.Value.Level.ToString() + " ]");
                         GUILayout.FlexibleSpace();
-                        GUILayout.Label(ability.IsPlaying ? "[ Playing ]" : "[ Wait ]", ability.IsPlaying ? playing : wait);
+                        GUILayout.Label(ability.Value.IsPlaying ? "[ Playing ]" : "[ Wait ]", ability.Value.IsPlaying ? playing : wait);
                         GUILayout.Space(10f);
                         GUILayout.EndHorizontal();
 
