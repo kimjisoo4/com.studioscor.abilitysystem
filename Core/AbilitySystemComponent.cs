@@ -8,6 +8,7 @@ namespace StudioScor.AbilitySystem
 {
     public delegate void AbilitySpecHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpec abilitySpec);
     public delegate void AbilitySpecEventHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent);
+
     public interface IAbilitySystem
     {
         public GameObject gameObject { get; }
@@ -43,6 +44,14 @@ namespace StudioScor.AbilitySystem
         public static IAbilitySystem GetAbilitySystem(this Component component)
         {
             return component.GetComponent<IAbilitySystem>();
+        }
+        public static bool TryGetAbilitySystem(this GameObject gameObject, out IAbilitySystem abilitySystem)
+        {
+            return gameObject.TryGetComponent(out abilitySystem);
+        }
+        public static bool TryGetAbilitySystem(this Component component, out IAbilitySystem abilitySystem)
+        {
+            return component.TryGetComponent(out abilitySystem);
         }
 
         public static bool HasAbility(this IAbilitySystem abilitySystem, Ability ability)

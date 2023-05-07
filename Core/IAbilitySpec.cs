@@ -48,6 +48,8 @@
 
         public void ReleaseAbility();
 
+        public void ForceReTriggerAbility();
+
         public void CancelAbilityFromSource(object source);
         public void CancelAbility();
 
