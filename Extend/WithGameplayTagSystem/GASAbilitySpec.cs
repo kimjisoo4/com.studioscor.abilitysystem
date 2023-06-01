@@ -4,19 +4,17 @@ using StudioScor.GameplayTagSystem;
 
 namespace StudioScor.AbilitySystem
 {
+
     public abstract class GASAbilitySpec : AbilitySpec
     {
-        private readonly IGASAbility _GASAbility;
-        private readonly IGameplayTagSystem _GameplayTagSystem;
-
-        public IGASAbility GASAbility => _GASAbility;
-        public IGameplayTagSystem GameplayTagSystem => _GameplayTagSystem;
+        protected new readonly GASAbility ability;
+        protected readonly IGameplayTagSystem gameplayTagSystem;
 
 
         protected GASAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
         {
-            _GASAbility = ability as IGASAbility;
-            _GameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
+            this.ability = ability as GASAbility;
+            gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
         }
         public override void CancelAbilityFromSource(object source)
         {
@@ -25,7 +23,7 @@ namespace StudioScor.AbilitySystem
 
             foreach (var tag in gameplayTags)
             {
-                if (GASAbility.AbilityTag == tag || GASAbility.AttributeTags.Contains(tag))
+                if (ability.AbilityTag == tag || ability.AttributeTags.Contains(tag))
                 {
                     CancelAbility();
 
@@ -39,12 +37,11 @@ namespace StudioScor.AbilitySystem
             if (!base.CanActiveAbility())
                 return false;
 
-            if (_GameplayTagSystem.ContainBlockTag(GASAbility.AbilityTag)
-                || _GameplayTagSystem.ContainAnyTagsInBlock(GASAbility.AttributeTags))
+            if (gameplayTagSystem.ContainBlockTag(ability.AbilityTag)
+                || gameplayTagSystem.ContainAnyTagsInBlock(ability.AttributeTags))
                 return false;
 
-            if (!_GameplayTagSystem.ContainAllTagsInOwned(GASAbility.ConditionTags.Requireds)
-                || _GameplayTagSystem.ContainAnyTagsInOwned(GASAbility.ConditionTags.Obstacleds))
+            if (!gameplayTagSystem.ContainConditionTags(ability.ConditionTags))
                 return false;
 
             return true;
@@ -52,16 +49,14 @@ namespace StudioScor.AbilitySystem
 
         protected override void EnterAbility()
         {
-            _AbilitySystem.CancelAbilityFromSource(GASAbility.CancelAbilityTags);
+            abilitySystem.CancelAbilityFromSource(ability.CancelAbilityTags);
 
-            _GameplayTagSystem.AddOwnedTags(GASAbility.GrantTags.Owneds);
-            _GameplayTagSystem.AddBlockTags(GASAbility.GrantTags.Blocks);
+            gameplayTagSystem.GrantGameplayTags(ability.GrantTags);
         }
 
         protected override void ExitAbility()
         {
-            _GameplayTagSystem.RemoveOwnedTags(GASAbility.GrantTags.Owneds);
-            _GameplayTagSystem.RemoveBlockTags(GASAbility.GrantTags.Blocks);
+            gameplayTagSystem.RemoveGameplayTags(ability.GrantTags);
         }
     }
 }

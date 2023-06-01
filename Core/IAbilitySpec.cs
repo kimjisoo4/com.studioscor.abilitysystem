@@ -27,6 +27,12 @@
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
     }
 
+    public interface IUpdateableAbilitySpec : IAbilitySpec
+    {
+        public void UpdateAbility(float deltaTime);
+        public void FixedUpdateAbility(float deltaTime);
+    }
+
     public interface IAbilitySpec
     {
         public Ability Ability { get; }
@@ -53,9 +59,6 @@
         public void CancelAbilityFromSource(object source);
         public void CancelAbility();
 
-
         public void EndAbility();
-        public void UpdateAbility(float deltaTime);
-        public void FixedUpdateAbility(float deltaTime);
     }
 }

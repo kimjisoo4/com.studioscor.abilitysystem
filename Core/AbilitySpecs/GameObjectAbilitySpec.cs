@@ -5,11 +5,11 @@ namespace StudioScor.AbilitySystem
 {
     public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec, IAbilitySpecEvent
     {
-        protected Ability _Ability;
-        protected IAbilitySystem _AbilitySystem;
+        protected Ability ability;
+        protected IAbilitySystem abilitySystem;
 
-        protected int _Level = 0;
-        protected bool _IsPlaying = false;
+        protected int level = 0;
+        protected bool isPlaying = false;
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnReleasedAbility;
@@ -18,17 +18,17 @@ namespace StudioScor.AbilitySystem
         public event AbilityEventHandler OnCanceledAbility;
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
-        public Ability Ability => _Ability;
-        public IAbilitySystem AbilitySystem => _AbilitySystem;
-        public int Level => _Level;
-        public bool IsPlaying => _IsPlaying;
+        public Ability Ability => ability;
+        public IAbilitySystem AbilitySystem => abilitySystem;
+        public int Level => level;
+        public bool IsPlaying => isPlaying;
 
 
         public virtual void Setup(Ability ability, IAbilitySystem abilitySystem, int level = 0)
         {
-            _Ability = ability;
-            _AbilitySystem = abilitySystem;
-            _Level = level;
+            this.ability = ability;
+            this.abilitySystem = abilitySystem;
+            this.level = level;
         }
 
         public void GrantAbility()
@@ -83,7 +83,7 @@ namespace StudioScor.AbilitySystem
         {
             Log(" On Ability ");
 
-            _IsPlaying = true;
+            isPlaying = true;
 
             Callback_OnActivatedAbility();
 
@@ -102,7 +102,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
 
             OnFinishAbility();
@@ -122,7 +122,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
 
             OnCancelAbility();
@@ -135,21 +135,6 @@ namespace StudioScor.AbilitySystem
             Callback_OnEndedAbility();
         }
 
-        public void UpdateAbility(float deltaTime)
-        {
-            if (!IsPlaying)
-                return;
-
-            OnUpdateAbility(deltaTime);
-        }
-        public void FixedUpdateAbility(float deltaTime)
-        {
-            if (!IsPlaying)
-                return;
-
-            OnFixedUpdateAbility(deltaTime);
-        }
-
         public void SetAbilityLevel(int newLevel)
         {
             if (Level == newLevel)
@@ -157,7 +142,7 @@ namespace StudioScor.AbilitySystem
 
             int prevLevel = Level;
 
-            _Level = newLevel;
+            level = newLevel;
 
             OnChangeLevel(prevLevel);
 
@@ -177,8 +162,6 @@ namespace StudioScor.AbilitySystem
         protected virtual void OnCancelAbility() { }
         protected virtual void OnReleaseAbility() { }
         protected virtual void OnReTriggerAbility() { }
-        public virtual void OnUpdateAbility(float deltaTime) { }
-        public virtual void OnFixedUpdateAbility(float deltaTime) { }
 
 
         public virtual bool CanReTriggerAbility()

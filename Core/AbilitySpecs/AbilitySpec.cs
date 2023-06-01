@@ -5,18 +5,18 @@ namespace StudioScor.AbilitySystem
 {
     public abstract class AbilitySpec : BaseClass, IAbilitySpec, IAbilitySpecEvent
     {
-        protected readonly Ability _Ability;
-        protected readonly IAbilitySystem _AbilitySystem;
+        protected readonly Ability ability;
+        protected readonly IAbilitySystem abilitySystem;
 
-        protected int _Level = 0;
-        protected bool _IsPlaying = false;
+        protected int level = 0;
+        protected bool isPlaying = false;
 
-        protected Transform transform => _AbilitySystem.transform;
+        protected Transform transform => abilitySystem.transform;
 
-        public Ability Ability => _Ability;
-        public IAbilitySystem AbilitySystem => _AbilitySystem;
-        public int Level => _Level;
-        public bool IsPlaying => _IsPlaying;
+        public Ability Ability => ability;
+        public IAbilitySystem AbilitySystem => abilitySystem;
+        public int Level => level;
+        public bool IsPlaying => isPlaying;
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnReleasedAbility;
@@ -26,14 +26,14 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
 #if UNITY_EDITOR
-        public override bool UseDebug => _Ability.UseDebug;
-        public override Object Context => _Ability;
+        public override bool UseDebug => ability.UseDebug;
+        public override Object Context => ability;
 #endif
         public AbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level)
         {
-            _Ability = ability;
-            _AbilitySystem = abilitySystem;
-            _Level = level;
+            this.ability = ability;
+            this.abilitySystem = abilitySystem;
+            this.level = level;
         }
 
 
@@ -74,7 +74,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            Log(" On Released Ability ");
+            Log(" On Release Ability ");
 
             CallBack_OnReleasedAbility();
 
@@ -96,9 +96,9 @@ namespace StudioScor.AbilitySystem
 
         public virtual void ForceActiveAbility()
         {
-            Log(" On Ability ");
+            Log(" Active Ability ");
 
-            _IsPlaying = true;
+            isPlaying = true;
 
             CallBack_OnActivateAbility();
 
@@ -117,7 +117,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
 
             OnFinishAbility();
@@ -140,7 +140,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            _IsPlaying = false;
+            isPlaying = false;
 
 
             OnCancelAbility();
@@ -153,24 +153,6 @@ namespace StudioScor.AbilitySystem
             CallBack_OnEndedAbility();
         }
 
-        public void UpdateAbility(float deltaTime)
-        {
-            OnUpdateAlways(deltaTime);
-
-            if (!IsPlaying)
-                return;
-
-            OnUpdateAbility(deltaTime);
-        }
-        public virtual void OnUpdateAlways(float deltaTime) { }
-        public void FixedUpdateAbility(float deltaTime)
-        {
-            if (!IsPlaying)
-                return;
-
-            OnFixedUpdateAbility(deltaTime);
-        }
-
         public void SetAbilityLevel(int newLevel)
         {
             if (Level == newLevel)
@@ -178,7 +160,7 @@ namespace StudioScor.AbilitySystem
 
             int prevLevel = Level;
 
-            _Level = newLevel;
+            level = newLevel;
 
             OnChangeAbilityLevel(prevLevel);
 
@@ -198,8 +180,6 @@ namespace StudioScor.AbilitySystem
         protected virtual void OnCancelAbility() { }
         protected virtual void OnReleaseAbility() { }
         protected virtual void OnReTriggerAbility() { }
-        public virtual void OnUpdateAbility(float deltaTime) { }
-        public virtual void OnFixedUpdateAbility(float deltaTime) { }
         protected virtual void OnChangeAbilityLevel(int prevLevel) { }
 
         public virtual bool CanReTriggerAbility()

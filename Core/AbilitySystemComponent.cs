@@ -111,10 +111,8 @@ namespace StudioScor.AbilitySystem
         [Header(" [ Setup] ")]
         [SerializeField] private FAbility[] _InitAbilities;
 
-        [Header(" [ Use Debug ] ")]
-        [SerializeField] private bool _UseDebug;
-
-        private Dictionary<Ability, IAbilitySpec> _Abilities;
+        private readonly Dictionary<Ability, IAbilitySpec> _Abilities = new();
+        private readonly List<IUpdateableAbilitySpec> updateableAbilitySpecs = new();
 
         public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => _Abilities;
 
@@ -141,7 +139,7 @@ namespace StudioScor.AbilitySystem
         {
             Log("Setup Ability System");
 
-            _Abilities = new();
+            _Abilities.Clear();
         }
 
         public void ResetAbilitySystem()
@@ -164,7 +162,7 @@ namespace StudioScor.AbilitySystem
         {
             float deltaTime = Time.deltaTime;
 
-            foreach (var ability in _Abilities.Values)
+            foreach (var ability in updateableAbilitySpecs)
             {
                 ability.UpdateAbility(deltaTime);
             }
@@ -174,7 +172,7 @@ namespace StudioScor.AbilitySystem
         {
             float deltaTime = Time.fixedDeltaTime;
 
-            foreach (var ability in _Abilities.Values)
+            foreach (var ability in updateableAbilitySpecs)
             {
                 ability.FixedUpdateAbility(deltaTime);
             }
@@ -297,6 +295,11 @@ namespace StudioScor.AbilitySystem
 
             _Abilities.Add(ability, abilitySpec);
 
+            if(abilitySpec is IUpdateableAbilitySpec updateableAbility)
+            {
+                updateableAbilitySpecs.Add(updateableAbility);
+            }
+
             Callback_OnGrantedAbility(abilitySpec);
         }
 
@@ -347,6 +350,11 @@ namespace StudioScor.AbilitySystem
                 Callback_OnRemovedAbility(spec);
 
                 _Abilities.Remove(ability);
+
+                if(spec is IUpdateableAbilitySpec updateableAbility)
+                {
+                    updateableAbilitySpecs.Remove(updateableAbility);
+                }
             }
         }
         public void RemoveAllAbility()
