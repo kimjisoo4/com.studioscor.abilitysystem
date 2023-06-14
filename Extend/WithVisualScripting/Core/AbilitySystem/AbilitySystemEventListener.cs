@@ -12,7 +12,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
     {
         private void Awake()
         {
-            var abilitySystem = GetComponent<IAbilitySystemEvent>();
+            var abilitySystem = GetComponent<IAbilitySystem>();
 
             abilitySystem.OnGrantedAbility += AbilitySystem_OnGrantedAbility;
             abilitySystem.OnRemovedAbility += AbilitySystem_OnRemovedAbility;
@@ -25,7 +25,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 
         private void OnDestroy()
         {
-            if(TryGetComponent(out IAbilitySystemEvent abilitySystem))
+            if(TryGetComponent(out IAbilitySystem abilitySystem))
             {
                 abilitySystem.OnGrantedAbility -= AbilitySystem_OnGrantedAbility;
                 abilitySystem.OnRemovedAbility -= AbilitySystem_OnRemovedAbility;
@@ -34,24 +34,24 @@ namespace StudioScor.AbilitySystem.VisualScripting
                 abilitySystem.OnReleasedAbility -= AbilitySystem_OnReleasedAbility;
             }
         }
-        private void AbilitySystem_OnActivatedAbility(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnActivatedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_ACTIVE_ABILITY, abilitySystemEvent), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_ACTIVE_ABILITY, abilitySystem), abilitySpecEvent);
         }
-        private void AbilitySystem_OnReleasedAbility(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnReleasedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_RELEASE_ABILITY, abilitySystemEvent), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_RELEASE_ABILITY, abilitySystem), abilitySpecEvent);
         }
-        private void AbilitySystem_OnEndedAbility(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnEndedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_END_ABILITY, abilitySystemEvent), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_END_ABILITY, abilitySystem), abilitySpecEvent);
         }
-        private void AbilitySystem_OnRemovedAbility(IAbilitySystemEvent abilitySystem, IAbilitySpec abilitySpec)
+        private void AbilitySystem_OnRemovedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_REMOVE_ABILITY, abilitySystem), abilitySpec);
         }
 
-        private void AbilitySystem_OnGrantedAbility(IAbilitySystemEvent abilitySystem, IAbilitySpec abilitySpec)
+        private void AbilitySystem_OnGrantedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_GRANT_ABILITY, abilitySystem), abilitySpec);
         }

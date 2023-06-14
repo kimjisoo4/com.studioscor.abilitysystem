@@ -6,8 +6,8 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public delegate void AbilitySpecHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpec abilitySpec);
-    public delegate void AbilitySpecEventHandler(IAbilitySystemEvent abilitySystemEvent, IAbilitySpecEvent abilitySpecEvent);
+    public delegate void AbilitySpecHandler(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec);
+    public delegate void AbilitySpecEventHandler(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent);
 
     public interface IAbilitySystem
     {
@@ -20,21 +20,13 @@ namespace StudioScor.AbilitySystem
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
         public void CancelAbilityFromSource(object source);
-    }
-
-    public interface IAbilitySystemEvent
-    {
-        public GameObject gameObject { get; }
-        public Transform transform { get; }
 
         public event AbilitySpecEventHandler OnActivatedAbility;
         public event AbilitySpecEventHandler OnReleasedAbility;
         public event AbilitySpecEventHandler OnEndedAbility;
-
         public event AbilitySpecHandler OnGrantedAbility;
         public event AbilitySpecHandler OnRemovedAbility;
     }
-
     public static class AbilitySystemUtility
     {
         public static IAbilitySystem GetAbilitySystem(this GameObject gameObject)
@@ -106,15 +98,15 @@ namespace StudioScor.AbilitySystem
 
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]
     [AddComponentMenu("StudioScor/AbilitySystem/AbilitySystem Component", order: 0)]
-    public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem, IAbilitySystemEvent
+    public class AbilitySystemComponent : BaseMonoBehaviour, IAbilitySystem
     {
         [Header(" [ Setup] ")]
-        [SerializeField] private FAbility[] _InitAbilities;
+        [SerializeField] private FAbility[] initAbilities;
 
-        private readonly Dictionary<Ability, IAbilitySpec> _Abilities = new();
+        private readonly Dictionary<Ability, IAbilitySpec> abilities = new();
         private readonly List<IUpdateableAbilitySpec> updateableAbilitySpecs = new();
 
-        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => _Abilities;
+        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => abilities;
 
         public event AbilitySpecEventHandler OnActivatedAbility;
         public event AbilitySpecEventHandler OnReleasedAbility;
@@ -123,6 +115,20 @@ namespace StudioScor.AbilitySystem
         public event AbilitySpecHandler OnGrantedAbility;
         public event AbilitySpecHandler OnRemovedAbility;
 
+        private void OnValidate()
+        {
+#if UNITY_EDITOR
+            if (initAbilities is null || initAbilities.Length == 0)
+                return;
+
+            for(int i = 0; i < initAbilities.Length; i++)
+            {
+                if(initAbilities[i].Ability)
+                    initAbilities[i].AbilityName = $"{initAbilities[i].Ability.Name} [ Level : {initAbilities[i].Level} ]";
+            }
+#endif
+        }
+
         private void Awake()
         {
             Setup();
@@ -130,7 +136,7 @@ namespace StudioScor.AbilitySystem
 
         private void Start()
         {
-            foreach (var ability in _InitAbilities)
+            foreach (var ability in initAbilities)
             {
                 TryGrantAbility(ability.Ability, ability.Level);
             }
@@ -139,7 +145,7 @@ namespace StudioScor.AbilitySystem
         {
             Log("Setup Ability System");
 
-            _Abilities.Clear();
+            abilities.Clear();
         }
 
         public void ResetAbilitySystem()
@@ -148,7 +154,7 @@ namespace StudioScor.AbilitySystem
 
             RemoveAllAbility();
 
-            foreach (var ability in _InitAbilities)
+            foreach (var ability in initAbilities)
             {
                 TryGrantAbility(ability.Ability, ability.Level);
             }
@@ -293,7 +299,7 @@ namespace StudioScor.AbilitySystem
 
             abilitySpec.GrantAbility();
 
-            _Abilities.Add(ability, abilitySpec);
+            abilities.Add(ability, abilitySpec);
 
             if(abilitySpec is IUpdateableAbilitySpec updateableAbility)
             {
@@ -349,7 +355,7 @@ namespace StudioScor.AbilitySystem
 
                 Callback_OnRemovedAbility(spec);
 
-                _Abilities.Remove(ability);
+                abilities.Remove(ability);
 
                 if(spec is IUpdateableAbilitySpec updateableAbility)
                 {
@@ -359,12 +365,12 @@ namespace StudioScor.AbilitySystem
         }
         public void RemoveAllAbility()
         {
-            foreach (var ability in _Abilities.Keys)
+            foreach (var ability in abilities.Keys)
             {
                 ForceRemoveAbility(ability);
             }
 
-            _Abilities.Clear();
+            abilities.Clear();
         }
 
 
