@@ -8,21 +8,20 @@ namespace StudioScor.AbilitySystem.VisualScripting
     [AddComponentMenu("StudioScor/AbilitySystem/VisualScripting AbilitySpec Component", order: 10)]
     public class VisualScriptingAbilitySpec : GameObjectAbilitySpec
     {
-        private OnChangedLevelValue _OnChangedLevelValue;
+        private readonly OnChangedLevelValue onChangedLevelValue = new();
 
-        private bool _IsCommitActivate = false;
-        public bool IsCommitActivate => _IsCommitActivate;
+        private bool isCommitActivate = false;
+        private bool isCommitReTrigger = false;
 
-        private bool _IsCommitReTrigger = false;
-
-        public bool IsCommitReTrigger => _IsCommitReTrigger;
+        public bool IsCommitActivate => isCommitActivate;
+        public bool IsCommitReTrigger => isCommitReTrigger;
 
         public override bool CanActiveAbility()
         {
             if (!base.CanActiveAbility())
                 return false;
 
-            _IsCommitActivate = false;
+            isCommitActivate = false;
 
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CAN_ACTIVE_ABILITY, this));
 
@@ -37,7 +36,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
             if (!base.CanReTriggerAbility())
                 return false;
 
-            _IsCommitReTrigger = false;
+            isCommitReTrigger = false;
 
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CAN_RETRIGGER_ABILITY, this));
 
@@ -48,11 +47,11 @@ namespace StudioScor.AbilitySystem.VisualScripting
         }
         public void CommitAbility()
         {
-            _IsCommitActivate = true;
+            isCommitActivate = true;
         }
         public void CommitReTriggerAbility()
         {
-            _IsCommitReTrigger = true;
+            isCommitReTrigger = true;
         }
 
         protected override void OnGrantAbility() 
@@ -99,10 +98,10 @@ namespace StudioScor.AbilitySystem.VisualScripting
         }
         protected override void OnChangeLevel(int prevLevel) 
         {
-            _OnChangedLevelValue.CurrentLevel = Level;
-            _OnChangedLevelValue.PrevLevel = prevLevel;
+            onChangedLevelValue.CurrentLevel = Level;
+            onChangedLevelValue.PrevLevel = prevLevel;
 
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CHANGE_ABILITY_LEVEL, this), _OnChangedLevelValue);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CHANGE_ABILITY_LEVEL, this), onChangedLevelValue);
         }
     }
 }

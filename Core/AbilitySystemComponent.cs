@@ -29,6 +29,7 @@ namespace StudioScor.AbilitySystem
     }
     public static class AbilitySystemUtility
     {
+        #region Get Ability System
         public static IAbilitySystem GetAbilitySystem(this GameObject gameObject)
         {
             return gameObject.GetComponent<IAbilitySystem>();
@@ -45,6 +46,7 @@ namespace StudioScor.AbilitySystem
         {
             return component.TryGetComponent(out abilitySystem);
         }
+        #endregion
 
         public static bool HasAbility(this IAbilitySystem abilitySystem, Ability ability)
         {
@@ -63,6 +65,7 @@ namespace StudioScor.AbilitySystem
             return false;
         }
 
+        #region Get Ability Spec
         public static IAbilitySpec GetAbilitySpec(this IAbilitySystem abilitySystem, Ability ability)
         {
             return abilitySystem.Abilities[ability];
@@ -93,7 +96,7 @@ namespace StudioScor.AbilitySystem
 
             return abilitySpec is not null;
         }
-
+        #endregion
     }
 
     [DefaultExecutionOrder(AbilitySystemExecutionOrder.MAIN_ORDER)]

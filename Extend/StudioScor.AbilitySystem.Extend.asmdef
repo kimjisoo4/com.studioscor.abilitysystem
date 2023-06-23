@@ -7,7 +7,10 @@
         "GUID:86e142e42ae369045bd4eecea14b3e0a",
         "GUID:2a2d341d7e231f74d8c9f2adfaaa67f6",
         "GUID:35513184bef033a45a743bdb8c92b73f",
-        "GUID:1f3923017dc81c04085a5690d785c9f2"
+        "GUID:1f3923017dc81c04085a5690d785c9f2",
+        "GUID:21b0c8d1703a94250bfac916590cea4f",
+        "GUID:315d634a9ac6d460a9515f5a56be6311",
+        "GUID:ea715009a4efd4c6cbc85be3ae097dd3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -31,6 +34,11 @@
             "name": "com.studioscor.movementsystem",
             "expression": "0.0.0",
             "define": "SCOR_ENABLE_MOVEMENTSYSTEM"
+        },
+        {
+            "name": "com.unity.visualscripting",
+            "expression": "0.0.0",
+            "define": "SCOR_ENABLE_VISUALSCRIPTING"
         }
     ],
     "noEngineReferences": false
