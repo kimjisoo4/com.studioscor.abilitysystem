@@ -127,7 +127,7 @@ namespace StudioScor.AbilitySystem
             for(int i = 0; i < initAbilities.Length; i++)
             {
                 if(initAbilities[i].Ability)
-                    initAbilities[i].AbilityName = $"{initAbilities[i].Ability.Name} [ Level : {initAbilities[i].Level} ]";
+                    initAbilities[i].AbilityName = $"{initAbilities[i].Ability.AbilityName} [ Level : {initAbilities[i].Level} ]";
             }
 #endif
         }
@@ -380,32 +380,32 @@ namespace StudioScor.AbilitySystem
         #region CallBack
         protected virtual void Callback_OnGrantedAbility(IAbilitySpec grantAbilitySpec)
         {
-            Log("On Added Ability - " + grantAbilitySpec.Ability.Name);
+            Log("On Added Ability - " + grantAbilitySpec.Ability.AbilityName);
 
             OnGrantedAbility?.Invoke(this, grantAbilitySpec);
         }
         protected virtual void Callback_OnRemovedAbility(IAbilitySpec removeAbilitySpec)
         {
-            Log("On Removed Ability - " + removeAbilitySpec.Ability.Name);
+            Log("On Removed Ability - " + removeAbilitySpec.Ability.AbilityName);
 
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
         }
 
         protected virtual void Callback_OnActivatedAbility(IAbilitySpecEvent abilitySpec)
         {
-            Log("On Activated Ability - " + abilitySpec.Ability.Name);
+            Log("On Activated Ability - " + abilitySpec.Ability.AbilityName);
 
             OnActivatedAbility?.Invoke(this, abilitySpec);
         }
         protected virtual void Callback_OnReleasedAbility(IAbilitySpecEvent abilitySpec)
         {
-            Log("On Released Ability - " + abilitySpec.Ability.Name);
+            Log("On Released Ability - " + abilitySpec.Ability.AbilityName);
 
             OnReleasedAbility?.Invoke(this, abilitySpec);
         }
         protected virtual void Callback_OnEndedAbility(IAbilitySpecEvent abilitySpec)
         {
-            Log("On Ended Ability - " + abilitySpec.Ability.Name);
+            Log("On Ended Ability - " + abilitySpec.Ability.AbilityName);
 
             OnEndedAbility?.Invoke(this, abilitySpec);
         }
