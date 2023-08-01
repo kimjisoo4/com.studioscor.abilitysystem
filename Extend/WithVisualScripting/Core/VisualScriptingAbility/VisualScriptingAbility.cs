@@ -1,4 +1,4 @@
-﻿#if SCOR_ENABLE_VISUALSCRIPTING
+﻿#if SCOR_ENABLE_VISUALSCRIPTING && SCOR_ENABLE_GAMEPLAYTAGSYSTEM
 using StudioScor.GameplayTagSystem;
 using System.Collections.Generic;
 using UnityEngine;

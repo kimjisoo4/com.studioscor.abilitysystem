@@ -173,7 +173,7 @@ namespace StudioScor.AbilitySystem
 
 
 
-        public void OnOverride(int level) { }
+        public virtual void OnOverride(int level) { }
         protected abstract void EnterAbility();
         protected virtual void ExitAbility() { }
         protected virtual void OnFinishAbility() { }
