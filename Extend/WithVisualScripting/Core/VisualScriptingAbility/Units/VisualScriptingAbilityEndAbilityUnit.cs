@@ -33,7 +33,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             var abilitySpec = flow.GetValue<VisualScriptingAbilitySpec>(Target);
 
-            abilitySpec.EndAbility();
+            abilitySpec.ForceEndAbility();
 
             return null;
         }

@@ -8,15 +8,12 @@ namespace StudioScor.AbilitySystem
         protected readonly Ability ability;
         protected readonly IAbilitySystem abilitySystem;
 
-        protected int level = 0;
-        protected bool isPlaying = false;
-
         protected Transform transform => abilitySystem.transform;
 
         public Ability Ability => ability;
         public IAbilitySystem AbilitySystem => abilitySystem;
-        public int Level => level;
-        public bool IsPlaying => isPlaying;
+        public int Level { get; protected set; }
+        public bool IsPlaying { get; protected set; }
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnReleasedAbility;
@@ -33,7 +30,7 @@ namespace StudioScor.AbilitySystem
         {
             this.ability = ability;
             this.abilitySystem = abilitySystem;
-            this.level = level;
+            this.Level = level;
         }
 
 
@@ -47,7 +44,7 @@ namespace StudioScor.AbilitySystem
         {
             Log("Remove Ability ");
 
-            EndAbility();
+            ForceEndAbility();
 
             OnRemoveAbility();
         }
@@ -98,7 +95,7 @@ namespace StudioScor.AbilitySystem
         {
             Log(" Active Ability ");
 
-            isPlaying = true;
+            IsPlaying = true;
 
             CallBack_OnActivateAbility();
 
@@ -112,12 +109,32 @@ namespace StudioScor.AbilitySystem
             OnReTriggerAbility();
         }
 
-        public virtual void EndAbility()
+
+        public bool TryEndAbility()
+        {
+            if (CanEndAbility())
+            {
+                ForceEndAbility();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public virtual bool CanEndAbility()
+        {
+            return IsPlaying;
+        }
+
+        public virtual void ForceEndAbility()
         {
             if (!IsPlaying)
                 return;
 
-            isPlaying = false;
+            IsPlaying = false;
 
 
             OnFinishAbility();
@@ -140,7 +157,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            isPlaying = false;
+            IsPlaying = false;
 
 
             OnCancelAbility();
@@ -160,7 +177,7 @@ namespace StudioScor.AbilitySystem
 
             int prevLevel = Level;
 
-            level = newLevel;
+            Level = newLevel;
 
             OnChangeAbilityLevel(prevLevel);
 
@@ -230,6 +247,6 @@ namespace StudioScor.AbilitySystem
             OnChangedAbilityLevel?.Invoke(this, Level, prevLevel);
         }
 
-#endregion
+        #endregion
     }
 }

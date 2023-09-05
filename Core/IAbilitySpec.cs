@@ -59,6 +59,9 @@
         public void CancelAbilityFromSource(object source);
         public void CancelAbility();
 
-        public void EndAbility();
+
+        public bool TryEndAbility();
+        public bool CanEndAbility();
+        public void ForceEndAbility();
     }
 }

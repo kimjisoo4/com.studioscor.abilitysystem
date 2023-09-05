@@ -1,4 +1,5 @@
 ﻿#if SCOR_ENABLE_GAMEPLAYTAGSYSTEM
+using System.Collections.Generic;
 using System.Linq;
 using StudioScor.GameplayTagSystem;
 
@@ -6,96 +7,54 @@ namespace StudioScor.AbilitySystem
 {
     public abstract class GASPassiveAbilitySpec : GASAbilitySpec
     {
+        private readonly GameplayTagConditionObserver gameplayTagConditionObserver;
+
         protected GASPassiveAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
         {
+            var gameplayTagSystem = abilitySystem.gameObject.GetGameplayTagSystem();
+
+            List<GameplayTag> attributeTags = new();
+
+            if(this.ability.AbilityTag)
+                attributeTags.Add(this.ability.AbilityTag);
+
+            attributeTags.AddRange(this.ability.AttributeTags);
+
+            gameplayTagConditionObserver = new(gameplayTagSystem, attributeTags, this.ability.ConditionTags);
         }
 
         protected override void OnGrantAbility()
         {
             base.OnGrantAbility();
 
-            var gameplayTagSystem = abilitySystem.gameObject.GetGameplayTagSystem();
-
-            gameplayTagSystem.OnGrantedOwnedTag += GameplayTagEvent_OnGrantedOwnedTag;
-            gameplayTagSystem.OnGrantedBlockTag += GameplayTagEvent_OnGrantedBlockTag;
-            gameplayTagSystem.OnRemovedOwnedTag += GameplayTagEvent_OnRemovedOwnedTag;
-            gameplayTagSystem.OnRemovedBlockTag += GameplayTagEvent_OnRemovedBlockTag;
+            gameplayTagConditionObserver.OnChangedState += GameplayTagConditionObserver_OnChangedState;
+            gameplayTagConditionObserver.OnObserver();
 
             TryActiveAbility();
         }
+
         protected override void OnRemoveAbility()
         {
             base.OnRemoveAbility();
 
-            EndAbility();
+            gameplayTagConditionObserver.OnChangedState -= GameplayTagConditionObserver_OnChangedState;
+            gameplayTagConditionObserver.EndObserver();
 
-            var gameplayTagSystem = abilitySystem.gameObject.GetGameplayTagSystem();
-
-            if (gameplayTagSystem is not null)
-            {
-                gameplayTagSystem.OnGrantedOwnedTag -= GameplayTagEvent_OnGrantedOwnedTag;
-                gameplayTagSystem.OnGrantedBlockTag -= GameplayTagEvent_OnGrantedBlockTag;
-                gameplayTagSystem.OnRemovedOwnedTag -= GameplayTagEvent_OnRemovedOwnedTag;
-                gameplayTagSystem.OnRemovedBlockTag -= GameplayTagEvent_OnRemovedBlockTag;
-            }
+            ForceEndAbility();
         }
 
-        #region Auto Toggle
-        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagConditionObserver_OnChangedState(GameplayTagObserver gameplayTagConditionObserver, bool isOn)
         {
-            if (isPlaying)
+            if (isOn)
             {
-                if (ability.ConditionTags.Obstacleds.Contains(gameplayTag))
-                {
-                    EndAbility();
-                }
+                TryActiveAbility();
             }
             else
             {
-                if (ability.ConditionTags.Requireds.Contains(gameplayTag))
-                {
-                    TryActiveAbility();
-                }
+                TryEndAbility();
             }
         }
-        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
-        {
-            if (IsPlaying)
-            {
-                if (ability.ConditionTags.Requireds.Contains(gameplayTag))
-                {
-                    EndAbility();
-                }
-            }
-            else
-            {
-                if (ability.ConditionTags.Obstacleds.Contains(gameplayTag))
-                {
-                    TryActiveAbility();
-                }
-            }
-        }
-        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
-        {
-            if (IsPlaying)
-            {
-                if (gameplayTag == ability.AbilityTag || ability.AttributeTags.Contains(gameplayTag))
-                {
-                    EndAbility();
-                }
-            }
-        }
-        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
-        {
-            if (!IsPlaying)
-            {
-                if (gameplayTag == ability.AbilityTag || ability.AttributeTags.Contains(gameplayTag))
-                {
-                    TryActiveAbility();
-                }
-            }
-        }
-        #endregion
+
     }
 }
 #endif
