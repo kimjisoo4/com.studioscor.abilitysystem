@@ -14,12 +14,12 @@ namespace StudioScor.AbilitySystem
         {
             base.OnGrantAbility();
 
-            var gameplayTagEvent = abilitySystem.gameObject.GetGameplayTagSystemEvent();
+            var gameplayTagSystem = abilitySystem.gameObject.GetGameplayTagSystem();
 
-            gameplayTagEvent.OnGrantedOwnedTag += GameplayTagEvent_OnGrantedOwnedTag;
-            gameplayTagEvent.OnGrantedBlockTag += GameplayTagEvent_OnGrantedBlockTag;
-            gameplayTagEvent.OnRemovedOwnedTag += GameplayTagEvent_OnRemovedOwnedTag;
-            gameplayTagEvent.OnRemovedBlockTag += GameplayTagEvent_OnRemovedBlockTag;
+            gameplayTagSystem.OnGrantedOwnedTag += GameplayTagEvent_OnGrantedOwnedTag;
+            gameplayTagSystem.OnGrantedBlockTag += GameplayTagEvent_OnGrantedBlockTag;
+            gameplayTagSystem.OnRemovedOwnedTag += GameplayTagEvent_OnRemovedOwnedTag;
+            gameplayTagSystem.OnRemovedBlockTag += GameplayTagEvent_OnRemovedBlockTag;
 
             TryActiveAbility();
         }
@@ -29,19 +29,19 @@ namespace StudioScor.AbilitySystem
 
             EndAbility();
 
-            var gameplayTagEvent = abilitySystem.gameObject.GetGameplayTagSystemEvent();
+            var gameplayTagSystem = abilitySystem.gameObject.GetGameplayTagSystem();
 
-            if (gameplayTagEvent is not null)
+            if (gameplayTagSystem is not null)
             {
-                gameplayTagEvent.OnGrantedOwnedTag -= GameplayTagEvent_OnGrantedOwnedTag;
-                gameplayTagEvent.OnGrantedBlockTag -= GameplayTagEvent_OnGrantedBlockTag;
-                gameplayTagEvent.OnRemovedOwnedTag -= GameplayTagEvent_OnRemovedOwnedTag;
-                gameplayTagEvent.OnRemovedBlockTag -= GameplayTagEvent_OnRemovedBlockTag;
+                gameplayTagSystem.OnGrantedOwnedTag -= GameplayTagEvent_OnGrantedOwnedTag;
+                gameplayTagSystem.OnGrantedBlockTag -= GameplayTagEvent_OnGrantedBlockTag;
+                gameplayTagSystem.OnRemovedOwnedTag -= GameplayTagEvent_OnRemovedOwnedTag;
+                gameplayTagSystem.OnRemovedBlockTag -= GameplayTagEvent_OnRemovedBlockTag;
             }
         }
 
         #region Auto Toggle
-        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystemEvent gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (isPlaying)
             {
@@ -58,7 +58,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystemEvent gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -75,7 +75,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystemEvent gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -85,7 +85,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystemEvent gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (!IsPlaying)
             {
