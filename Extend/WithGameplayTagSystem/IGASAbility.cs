@@ -11,6 +11,8 @@ namespace StudioScor.AbilitySystem
         public IReadOnlyCollection<GameplayTag> CancelAbilityTags { get; }
         public FGameplayTags GrantTags { get; }
         public FConditionTags ConditionTags { get; }
+
+        IAbilitySpec CreateSpec(IAbilitySystem abilitySystem, int level = 0);
     }
 }
 #endif
