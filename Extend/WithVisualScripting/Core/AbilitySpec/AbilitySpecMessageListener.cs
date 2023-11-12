@@ -15,7 +15,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 
         private void Awake()
         {
-            var abilitySpec = GetComponent<IAbilitySpecEvent>();
+            var abilitySpec = GetComponent<IAbilitySpec>();
 
             abilitySpec.OnActivatedAbility += AbilitySpec_OnActivatedAbility;
             abilitySpec.OnCanceledAbility += AbilitySpec_OnCanceledAbility;
@@ -25,7 +25,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         }
         private void OnDestroy()
         {
-            if(TryGetComponent(out IAbilitySpecEvent abilitySpec))
+            if(TryGetComponent(out IAbilitySpec abilitySpec))
             {
                 abilitySpec.OnActivatedAbility -= AbilitySpec_OnActivatedAbility;
                 abilitySpec.OnCanceledAbility -= AbilitySpec_OnCanceledAbility;
@@ -34,17 +34,17 @@ namespace StudioScor.AbilitySystem.VisualScripting
                 abilitySpec.OnChangedAbilityLevel -= AbilitySpec_OnChangedAbilityLevel;
             }
         }
-        private void AbilitySpec_OnFinishedAbility(IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySpec_OnFinishedAbility(IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_FINISHED_ABILITY, abilitySpecEvent));
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_FINISHED_ABILITY, abilitySpec));
         }
 
-        private void AbilitySpec_OnEndedAbility(IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySpec_OnEndedAbility(IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_ENDED_ABILITY, abilitySpecEvent));
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_ENDED_ABILITY, abilitySpec));
         }
 
-        private void AbilitySpec_OnChangedAbilityLevel(IAbilitySpecEvent abilitySpecEvent, int currentLevel, int prevLevel)
+        private void AbilitySpec_OnChangedAbilityLevel(IAbilitySpec abilitySpec, int currentLevel, int prevLevel)
         {
             if (_OnChangedLevelValue is null)
                 _OnChangedLevelValue = new();
@@ -52,20 +52,20 @@ namespace StudioScor.AbilitySystem.VisualScripting
             _OnChangedLevelValue.CurrentLevel = currentLevel;
             _OnChangedLevelValue.PrevLevel = prevLevel;
 
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CHANGED_ABILITY_LEVEL, abilitySpecEvent), _OnChangedLevelValue);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CHANGED_ABILITY_LEVEL, abilitySpec), _OnChangedLevelValue);
 
             _OnChangedLevelValue.CurrentLevel = default;
             _OnChangedLevelValue.PrevLevel = default;
         }
 
-        private void AbilitySpec_OnCanceledAbility(IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySpec_OnCanceledAbility(IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CANCELED_ABILITY, abilitySpecEvent));
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CANCELED_ABILITY, abilitySpec));
         }
 
-        private void AbilitySpec_OnActivatedAbility(IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySpec_OnActivatedAbility(IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_ACTIVATED_ABILITY, abilitySpecEvent));
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_ACTIVATED_ABILITY, abilitySpec));
         }
 
         

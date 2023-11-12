@@ -34,17 +34,17 @@ namespace StudioScor.AbilitySystem.VisualScripting
                 abilitySystem.OnReleasedAbility -= AbilitySystem_OnReleasedAbility;
             }
         }
-        private void AbilitySystem_OnActivatedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnActivatedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_ACTIVE_ABILITY, abilitySystem), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_ACTIVE_ABILITY, abilitySystem), abilitySpec);
         }
-        private void AbilitySystem_OnReleasedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnReleasedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_RELEASE_ABILITY, abilitySystem), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_RELEASE_ABILITY, abilitySystem), abilitySpec);
         }
-        private void AbilitySystem_OnEndedAbility(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent)
+        private void AbilitySystem_OnEndedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_END_ABILITY, abilitySystem), abilitySpecEvent);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSYSTEM_END_ABILITY, abilitySystem), abilitySpec);
         }
         private void AbilitySystem_OnRemovedAbility(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec)
         {

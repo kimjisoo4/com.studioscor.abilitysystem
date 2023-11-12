@@ -7,7 +7,6 @@ using StudioScor.Utilities;
 namespace StudioScor.AbilitySystem
 {
     public delegate void AbilitySpecHandler(IAbilitySystem abilitySystem, IAbilitySpec abilitySpec);
-    public delegate void AbilitySpecEventHandler(IAbilitySystem abilitySystem, IAbilitySpecEvent abilitySpecEvent);
 
     public interface IAbilitySystem
     {
@@ -16,14 +15,15 @@ namespace StudioScor.AbilitySystem
 
         public IReadOnlyDictionary<Ability, IAbilitySpec> Abilities { get; }
         public bool TryGrantAbility(Ability ability, int level = 0);
+        public bool TryRemoveAbility(Ability ability);
         public bool TryActivateAbility(Ability ability);
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
         public void CancelAbilityFromSource(object source);
 
-        public event AbilitySpecEventHandler OnActivatedAbility;
-        public event AbilitySpecEventHandler OnReleasedAbility;
-        public event AbilitySpecEventHandler OnEndedAbility;
+        public event AbilitySpecHandler OnActivatedAbility;
+        public event AbilitySpecHandler OnReleasedAbility;
+        public event AbilitySpecHandler OnEndedAbility;
         public event AbilitySpecHandler OnGrantedAbility;
         public event AbilitySpecHandler OnRemovedAbility;
     }
@@ -111,9 +111,9 @@ namespace StudioScor.AbilitySystem
 
         public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => abilities;
 
-        public event AbilitySpecEventHandler OnActivatedAbility;
-        public event AbilitySpecEventHandler OnReleasedAbility;
-        public event AbilitySpecEventHandler OnEndedAbility;
+        public event AbilitySpecHandler OnActivatedAbility;
+        public event AbilitySpecHandler OnReleasedAbility;
+        public event AbilitySpecHandler OnEndedAbility;
 
         public event AbilitySpecHandler OnGrantedAbility;
         public event AbilitySpecHandler OnRemovedAbility;
@@ -127,7 +127,7 @@ namespace StudioScor.AbilitySystem
             for(int i = 0; i < initAbilities.Length; i++)
             {
                 if(initAbilities[i].Ability)
-                    initAbilities[i].AbilityName = $"{initAbilities[i].Ability.AbilityName} [ Level : {initAbilities[i].Level} ]";
+                    initAbilities[i].AbilityName = $"{initAbilities[i].Ability.name} [ Level : {initAbilities[i].Level} ]";
             }
 #endif
         }
@@ -293,12 +293,9 @@ namespace StudioScor.AbilitySystem
 
             var abilitySpec = ability.CreateSpec(this, level);
 
-            if (abilitySpec is IAbilitySpecEvent abilitySpecEvent)
-            {
-                abilitySpecEvent.OnActivatedAbility += Callback_OnActivatedAbility;
-                abilitySpecEvent.OnReleasedAbility += Callback_OnReleasedAbility;
-                abilitySpecEvent.OnEndedAbility += Callback_OnEndedAbility;
-            }
+            abilitySpec.OnActivatedAbility += Callback_OnActivatedAbility;
+            abilitySpec.OnReleasedAbility += Callback_OnReleasedAbility;
+            abilitySpec.OnEndedAbility += Callback_OnEndedAbility;
 
             abilitySpec.GrantAbility();
 
@@ -347,7 +344,7 @@ namespace StudioScor.AbilitySystem
             {
                 spec.CancelAbility();
 
-                if (spec is IAbilitySpecEvent abilitySpecEvent)
+                if (spec is IAbilitySpec abilitySpecEvent)
                 {
                     abilitySpecEvent.OnActivatedAbility -= Callback_OnActivatedAbility;
                     abilitySpecEvent.OnReleasedAbility -= Callback_OnReleasedAbility;
@@ -391,19 +388,19 @@ namespace StudioScor.AbilitySystem
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
         }
 
-        protected virtual void Callback_OnActivatedAbility(IAbilitySpecEvent abilitySpec)
+        protected virtual void Callback_OnActivatedAbility(IAbilitySpec abilitySpec)
         {
             Log("On Activated Ability - " + abilitySpec.Ability.AbilityName);
 
             OnActivatedAbility?.Invoke(this, abilitySpec);
         }
-        protected virtual void Callback_OnReleasedAbility(IAbilitySpecEvent abilitySpec)
+        protected virtual void Callback_OnReleasedAbility(IAbilitySpec abilitySpec)
         {
             Log("On Released Ability - " + abilitySpec.Ability.AbilityName);
 
             OnReleasedAbility?.Invoke(this, abilitySpec);
         }
-        protected virtual void Callback_OnEndedAbility(IAbilitySpecEvent abilitySpec)
+        protected virtual void Callback_OnEndedAbility(IAbilitySpec abilitySpec)
         {
             Log("On Ended Ability - " + abilitySpec.Ability.AbilityName);
 

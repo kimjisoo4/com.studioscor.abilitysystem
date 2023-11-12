@@ -2,41 +2,68 @@
 {
     public class AbilityInputBuffer
     {
-        private IAbilitySpec _AbilitySpec;
-        private bool _Activate = false;
-        private float _RemainTime = 0.2f;
+        private IAbilitySystem abilitySystem;
+        private IAbilitySpec abilitySpec;
 
+        private bool activate = false;
+        private float remainTime = 0.2f;
+
+        public AbilityInputBuffer()
+        {
+
+        }
+        public AbilityInputBuffer(IAbilitySystem newAbilitySystem)
+        {
+            SetAbilitySystem(newAbilitySystem);
+        }
+
+        public void SetAbilitySystem(IAbilitySystem newAbilitySystem)
+        {
+            abilitySystem = newAbilitySystem;
+            activate = false;
+        }
         
+        public void SetBuffer(Ability ability, float remainTime = 0.2f)
+        {
+            if (abilitySystem is null)
+                return;
+
+            if (abilitySystem.TryGetAbilitySpec(ability, out abilitySpec))
+            {
+                activate = true;
+                this.remainTime = remainTime;
+            }
+        }
         public void SetBuffer(IAbilitySpec abilitySpec, float remainTime = 0.2f)
         {
-            _AbilitySpec = abilitySpec;
-            _Activate = true;
-            _RemainTime = remainTime;
+            this.abilitySpec = abilitySpec;
+            activate = true;
+            this.remainTime = remainTime;
         }
 
         public void ResetAbilityInputBuffer()
         {
-            _AbilitySpec = null;
-            _Activate = false;
-            _RemainTime = 0f;
+            abilitySpec = null;
+            activate = false;
+            remainTime = 0f;
         }
 
         public void CancelBuffer()
         {
-            _AbilitySpec = null;
-            _Activate = false;
+            abilitySpec = null;
+            activate = false;
         }
 
-        public void Buffer(float deltaTime)
+        public void UpdateBuffer(float deltaTime)
         {
-            if (!_Activate || _AbilitySpec == null)
+            if (!activate || abilitySystem is null || abilitySpec is null)
             {
                 return;
             }
 
-            _RemainTime -= deltaTime;
+            remainTime -= deltaTime;
 
-            if (_AbilitySpec.TryActiveAbility() || _RemainTime <= 0f)
+            if (abilitySpec.TryActiveAbility() || remainTime <= 0f)
             {
                 CancelBuffer();
             }

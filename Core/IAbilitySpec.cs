@@ -1,8 +1,8 @@
 ﻿namespace StudioScor.AbilitySystem
 {
     #region Events
-    public delegate void AbilityEventHandler(IAbilitySpecEvent abilitySpec);
-    public delegate void AbilityLevelEventHandler(IAbilitySpecEvent abilitySpec, int currentLevel, int prevLevel);
+    public delegate void AbilityEventHandler(IAbilitySpec abilitySpec);
+    public delegate void AbilityLevelEventHandler(IAbilitySpec abilitySpec, int currentLevel, int prevLevel);
     #endregion
 
     public enum EAbilitySpecEventType
@@ -13,18 +13,6 @@
         Finished,
         Canceled,
         OnChangedAbilityLevel,
-    }
-
-    public interface IAbilitySpecEvent
-    {
-        public Ability Ability { get; }
-
-        public event AbilityEventHandler OnActivatedAbility;
-        public event AbilityEventHandler OnReleasedAbility;
-        public event AbilityEventHandler OnEndedAbility;
-        public event AbilityEventHandler OnFinishedAbility;
-        public event AbilityEventHandler OnCanceledAbility;
-        public event AbilityLevelEventHandler OnChangedAbilityLevel;
     }
 
     public interface IUpdateableAbilitySpec : IAbilitySpec
@@ -63,5 +51,12 @@
         public bool TryEndAbility();
         public bool CanEndAbility();
         public void ForceEndAbility();
+
+        public event AbilityEventHandler OnActivatedAbility;
+        public event AbilityEventHandler OnReleasedAbility;
+        public event AbilityEventHandler OnEndedAbility;
+        public event AbilityEventHandler OnFinishedAbility;
+        public event AbilityEventHandler OnCanceledAbility;
+        public event AbilityLevelEventHandler OnChangedAbilityLevel;
     }
 }

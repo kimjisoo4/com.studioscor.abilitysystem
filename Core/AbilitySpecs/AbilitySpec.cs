@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class AbilitySpec : BaseClass, IAbilitySpec, IAbilitySpecEvent
+    public abstract class AbilitySpec : BaseClass, IAbilitySpec
     {
         protected readonly Ability ability;
         protected readonly IAbilitySystem abilitySystem;
@@ -23,8 +23,8 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
 #if UNITY_EDITOR
-        public override bool UseDebug => ability.UseDebug;
-        public override Object Context => ability;
+        protected override bool UseDebug => ability.UseDebug;
+        protected override Object Context => ability;
 #endif
         public AbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level)
         {

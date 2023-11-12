@@ -3,7 +3,7 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec, IAbilitySpecEvent
+    public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec
     {
         protected Ability ability;
         protected IAbilitySystem abilitySystem;
