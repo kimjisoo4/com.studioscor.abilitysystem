@@ -7,14 +7,14 @@ namespace StudioScor.AbilitySystem
 
     public abstract class GASAbilitySpec : AbilitySpec
     {
-        protected new readonly GASAbility ability;
-        protected readonly IGameplayTagSystem gameplayTagSystem;
+        protected new readonly GASAbility _ability;
+        protected readonly IGameplayTagSystem _gameplayTagSystem;
 
 
         protected GASAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
         {
-            this.ability = ability as GASAbility;
-            gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
+            _ability = ability as GASAbility;
+            _gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
         }
         public override void CancelAbilityFromSource(object source)
         {
@@ -23,7 +23,7 @@ namespace StudioScor.AbilitySystem
 
             foreach (var tag in gameplayTags)
             {
-                if (ability.AbilityTag == tag || ability.AttributeTags.Contains(tag))
+                if (_ability.AbilityTag == tag || _ability.AttributeTags.Contains(tag))
                 {
                     CancelAbility();
 
@@ -37,11 +37,11 @@ namespace StudioScor.AbilitySystem
             if (!base.CanActiveAbility())
                 return false;
 
-            if (gameplayTagSystem.ContainBlockTag(ability.AbilityTag)
-                || gameplayTagSystem.ContainAnyTagsInBlock(ability.AttributeTags))
+            if (_gameplayTagSystem.ContainBlockTag(_ability.AbilityTag)
+                || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
                 return false;
 
-            if (!gameplayTagSystem.ContainConditionTags(ability.ConditionTags))
+            if (!_gameplayTagSystem.ContainConditionTags(_ability.ConditionTags))
                 return false;
 
             return true;
@@ -49,14 +49,14 @@ namespace StudioScor.AbilitySystem
 
         protected override void EnterAbility()
         {
-            abilitySystem.CancelAbilityFromSource(ability.CancelAbilityTags);
+            _abilitySystem.CancelAbilityFromSource(_ability.CancelAbilityTags);
 
-            gameplayTagSystem.GrantGameplayTags(ability.GrantTags);
+            _gameplayTagSystem.GrantGameplayTags(_ability.GrantTags);
         }
 
         protected override void ExitAbility()
         {
-            gameplayTagSystem.RemoveGameplayTags(ability.GrantTags);
+            _gameplayTagSystem.RemoveGameplayTags(_ability.GrantTags);
         }
     }
 }

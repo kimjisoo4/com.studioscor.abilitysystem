@@ -14,6 +14,10 @@ namespace StudioScor.AbilitySystem
         public Transform transform { get; }
 
         public IReadOnlyDictionary<Ability, IAbilitySpec> Abilities { get; }
+
+        public void Tick(float deltaTime);
+        public void FixedTick(float deltaTime);
+
         public bool TryGrantAbility(Ability ability, int level = 0);
         public bool TryRemoveAbility(Ability ability);
         public bool TryActivateAbility(Ability ability);
@@ -167,9 +171,9 @@ namespace StudioScor.AbilitySystem
         protected virtual void OnReset() { }
 
 
-        private void Update()
+        public override void Tick(float deltaTime)
         {
-            float deltaTime = Time.deltaTime;
+            base.Tick(deltaTime);
 
             foreach (var ability in updateableAbilitySpecs)
             {
@@ -177,9 +181,9 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        private void FixedUpdate()
+        public override void FixedTick(float deltaTime)
         {
-            float deltaTime = Time.fixedDeltaTime;
+            base.FixedTick(deltaTime);
 
             foreach (var ability in updateableAbilitySpecs)
             {
