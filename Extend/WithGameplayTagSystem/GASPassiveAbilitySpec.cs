@@ -14,7 +14,7 @@ namespace StudioScor.AbilitySystem
         {
             base.OnGrantAbility();
 
-            var gameplayTagSystem = _abilitySystem.gameObject.GetGameplayTagSystem();
+            var gameplayTagSystem = _AbilitySystem.gameObject.GetGameplayTagSystem();
 
             gameplayTagSystem.OnGrantedOwnedTag += GameplayTagEvent_OnGrantedOwnedTag;
             gameplayTagSystem.OnGrantedBlockTag += GameplayTagEvent_OnGrantedBlockTag;
@@ -29,7 +29,7 @@ namespace StudioScor.AbilitySystem
 
             ForceEndAbility();
 
-            var gameplayTagSystem = _abilitySystem.gameObject.GetGameplayTagSystem();
+            var gameplayTagSystem = _AbilitySystem.gameObject.GetGameplayTagSystem();
 
             if (gameplayTagSystem is not null)
             {
@@ -45,14 +45,14 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (_ability.ConditionTags.Obstacleds.Contains(gameplayTag))
+                if (_Ability.ConditionTags.Obstacleds.Contains(gameplayTag))
                 {
                     TryEndAbility();
                 }
             }
             else
             {
-                if (_ability.ConditionTags.Requireds.Contains(gameplayTag))
+                if (_Ability.ConditionTags.Requireds.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }
@@ -62,14 +62,14 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (_ability.ConditionTags.Requireds.Contains(gameplayTag))
+                if (_Ability.ConditionTags.Requireds.Contains(gameplayTag))
                 {
                     TryEndAbility();
                 }
             }
             else
             {
-                if (_ability.ConditionTags.Obstacleds.Contains(gameplayTag))
+                if (_Ability.ConditionTags.Obstacleds.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }
@@ -79,7 +79,7 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (gameplayTag == _ability.AbilityTag || _ability.AttributeTags.Contains(gameplayTag))
+                if (gameplayTag == _Ability.AbilityTag || _Ability.AttributeTags.Contains(gameplayTag))
                 {
                     TryEndAbility();
                 }
@@ -89,7 +89,7 @@ namespace StudioScor.AbilitySystem
         {
             if (!IsPlaying)
             {
-                if (gameplayTag == _ability.AbilityTag || _ability.AttributeTags.Contains(gameplayTag))
+                if (gameplayTag == _Ability.AbilityTag || _Ability.AttributeTags.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }

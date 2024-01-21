@@ -5,14 +5,14 @@ namespace StudioScor.AbilitySystem
 {
     public abstract class AbilitySpec : BaseClass, IAbilitySpec
     {
-        protected readonly Ability _ability;
-        protected readonly IAbilitySystem _abilitySystem;
+        protected readonly Ability _Ability;
+        protected readonly IAbilitySystem _AbilitySystem;
 
-        public Ability Ability => _ability;
-        public IAbilitySystem AbilitySystem => _abilitySystem;
+        public Ability Ability => _Ability;
+        public IAbilitySystem AbilitySystem => _AbilitySystem;
 
-        protected GameObject gameObject => _abilitySystem.gameObject;
-        protected Transform transform => _abilitySystem.transform;
+        protected GameObject gameObject => _AbilitySystem.gameObject;
+        protected Transform transform => _AbilitySystem.transform;
 
         public int Level { get; protected set; }
         public bool IsPlaying { get; protected set; }
@@ -25,13 +25,13 @@ namespace StudioScor.AbilitySystem
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
 #if UNITY_EDITOR
-        public override bool UseDebug => _ability.UseDebug;
-        public override Object Context => _ability;
+        public override bool UseDebug => _Ability.UseDebug;
+        public override Object Context => _Ability;
 #endif
         public AbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level)
         {
-            this._ability = ability;
-            this._abilitySystem = abilitySystem;
+            this._Ability = ability;
+            this._AbilitySystem = abilitySystem;
             this.Level = level;
         }
 
