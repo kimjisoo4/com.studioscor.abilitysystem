@@ -8,13 +8,15 @@ namespace StudioScor.AbilitySystem
     public abstract class GASAbilitySpec : AbilitySpec
     {
         protected new readonly GASAbility _Ability;
-        protected readonly IGameplayTagSystem _gameplayTagSystem;
+        private readonly IGameplayTagSystem _GameplayTagSystem;
+
+        protected IGameplayTagSystem GameplayTagSystem => _GameplayTagSystem;
 
 
         protected GASAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
         {
             _Ability = ability as GASAbility;
-            _gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
+            _GameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
         }
         public override void CancelAbilityFromSource(object source)
         {
@@ -37,11 +39,11 @@ namespace StudioScor.AbilitySystem
             if (!base.CanActiveAbility())
                 return false;
 
-            if (_gameplayTagSystem.ContainBlockTag(_Ability.AbilityTag)
-                || _gameplayTagSystem.ContainAnyTagsInBlock(_Ability.AttributeTags))
+            if (_GameplayTagSystem.ContainBlockTag(_Ability.AbilityTag)
+                || _GameplayTagSystem.ContainAnyTagsInBlock(_Ability.AttributeTags))
                 return false;
 
-            if (!_gameplayTagSystem.ContainConditionTags(_Ability.ConditionTags))
+            if (!_GameplayTagSystem.ContainConditionTags(_Ability.ConditionTags))
                 return false;
 
             return true;
@@ -51,12 +53,12 @@ namespace StudioScor.AbilitySystem
         {
             _AbilitySystem.CancelAbilityFromSource(_Ability.CancelAbilityTags);
 
-            _gameplayTagSystem.GrantGameplayTags(_Ability.GrantTags);
+            _GameplayTagSystem.GrantGameplayTags(_Ability.GrantTags);
         }
 
         protected override void ExitAbility()
         {
-            _gameplayTagSystem.RemoveGameplayTags(_Ability.GrantTags);
+            _GameplayTagSystem.RemoveGameplayTags(_Ability.GrantTags);
         }
     }
 }
