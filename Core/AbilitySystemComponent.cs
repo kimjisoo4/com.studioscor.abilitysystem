@@ -23,6 +23,7 @@ namespace StudioScor.AbilitySystem
         public bool TryActivateAbility(Ability ability);
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
+        public void CancelAbility(Ability ability);
         public void CancelAbilityFromSource(object source);
 
         public event AbilitySpecHandler OnActivatedAbility;

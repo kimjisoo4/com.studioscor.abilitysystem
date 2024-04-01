@@ -7,16 +7,16 @@ namespace StudioScor.AbilitySystem
 
     public abstract class GASAbilitySpec : AbilitySpec
     {
-        protected new readonly GASAbility _Ability;
-        private readonly IGameplayTagSystem _GameplayTagSystem;
+        protected new readonly GASAbility _ability;
+        private readonly IGameplayTagSystem _gameplayTagSystem;
 
-        protected IGameplayTagSystem GameplayTagSystem => _GameplayTagSystem;
+        protected IGameplayTagSystem GameplayTagSystem => _gameplayTagSystem;
 
 
         protected GASAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
         {
-            _Ability = ability as GASAbility;
-            _GameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
+            _ability = ability as GASAbility;
+            _gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
         }
         public override void CancelAbilityFromSource(object source)
         {
@@ -25,7 +25,7 @@ namespace StudioScor.AbilitySystem
 
             foreach (var tag in gameplayTags)
             {
-                if (_Ability.AbilityTag == tag || _Ability.AttributeTags.Contains(tag))
+                if (_ability.AbilityTag == tag || _ability.AttributeTags.Contains(tag))
                 {
                     CancelAbility();
 
@@ -39,11 +39,11 @@ namespace StudioScor.AbilitySystem
             if (!base.CanActiveAbility())
                 return false;
 
-            if (_GameplayTagSystem.ContainBlockTag(_Ability.AbilityTag)
-                || _GameplayTagSystem.ContainAnyTagsInBlock(_Ability.AttributeTags))
+            if (_gameplayTagSystem.ContainBlockTag(_ability.AbilityTag)
+                || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
                 return false;
 
-            if (!_GameplayTagSystem.ContainConditionTags(_Ability.ConditionTags))
+            if (!_gameplayTagSystem.ContainConditionTags(_ability.ConditionTags))
                 return false;
 
             return true;
@@ -51,14 +51,14 @@ namespace StudioScor.AbilitySystem
 
         protected override void EnterAbility()
         {
-            _AbilitySystem.CancelAbilityFromSource(_Ability.CancelAbilityTags);
+            _abilitySystem.CancelAbilityFromSource(_ability.CancelAbilityTags);
 
-            _GameplayTagSystem.GrantGameplayTags(_Ability.GrantTags);
+            _gameplayTagSystem.GrantGameplayTags(_ability.GrantTags);
         }
 
         protected override void ExitAbility()
         {
-            _GameplayTagSystem.RemoveGameplayTags(_Ability.GrantTags);
+            _gameplayTagSystem.RemoveGameplayTags(_ability.GrantTags);
         }
     }
 }
