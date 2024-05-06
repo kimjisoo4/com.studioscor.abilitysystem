@@ -8,6 +8,10 @@ namespace StudioScor.AbilitySystem.Variable
     public class AbilityLevelVariable : IntegerVariable
     {
         [Header(" [ Ability Level Variable ] ")]
+#if SCOR_ENABLE_SERIALIZEREFERENCE
+        [SerializeReference, SerializeReferenceDropdown]
+#endif
+        private IGameObjectVariable _target = new SelfGameObjectVariable();
         [SerializeField] private Ability _ability;
 
         private IAbilitySystem _abilitySystem;
@@ -18,13 +22,19 @@ namespace StudioScor.AbilitySystem.Variable
         {
             base.Setup(owner);
 
-            _abilitySystem = Owner.GetAbilitySystem();
+            _target.Setup(owner);
+
+            var target = _target.GetValue();
+
+            _abilitySystem = target.GetAbilitySystem();
         }
+
         public override IIntegerVariable Clone()
         {
             var clone = new AbilityLevelVariable();
 
             clone._original = this;
+            clone._target = _target.Clone();
 
             return clone;
         }
