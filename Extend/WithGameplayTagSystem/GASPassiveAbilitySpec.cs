@@ -27,7 +27,7 @@ namespace StudioScor.AbilitySystem
         {
             base.OnRemoveAbility();
 
-            ForceEndAbility();
+            ForceFinishAbility();
 
             var gameplayTagSystem = _abilitySystem.gameObject.GetGameplayTagSystem();
 
@@ -47,7 +47,7 @@ namespace StudioScor.AbilitySystem
             {
                 if (_ability.ConditionTags.Obstacleds.Contains(gameplayTag))
                 {
-                    TryEndAbility();
+                    TryFinishAbility();
                 }
             }
             else
@@ -64,7 +64,7 @@ namespace StudioScor.AbilitySystem
             {
                 if (_ability.ConditionTags.Requireds.Contains(gameplayTag))
                 {
-                    TryEndAbility();
+                    TryFinishAbility();
                 }
             }
             else
@@ -81,7 +81,7 @@ namespace StudioScor.AbilitySystem
             {
                 if (gameplayTag == _ability.AbilityTag || _ability.AttributeTags.Contains(gameplayTag))
                 {
-                    TryEndAbility();
+                    TryFinishAbility();
                 }
             }
         }

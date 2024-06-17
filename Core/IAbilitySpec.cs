@@ -48,9 +48,9 @@
         public void CancelAbility();
 
 
-        public bool TryEndAbility();
-        public bool CanEndAbility();
-        public void ForceEndAbility();
+        public bool TryFinishAbility();
+        public bool CanFinishAbility();
+        public void ForceFinishAbility();
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnReleasedAbility;

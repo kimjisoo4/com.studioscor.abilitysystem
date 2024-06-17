@@ -19,9 +19,9 @@ namespace StudioScor.AbilitySystem
 
         public event AbilityEventHandler OnActivatedAbility;
         public event AbilityEventHandler OnReleasedAbility;
-        public event AbilityEventHandler OnEndedAbility;
         public event AbilityEventHandler OnFinishedAbility;
         public event AbilityEventHandler OnCanceledAbility;
+        public event AbilityEventHandler OnEndedAbility;
         public event AbilityLevelEventHandler OnChangedAbilityLevel;
 
 #if UNITY_EDITOR
@@ -46,7 +46,7 @@ namespace StudioScor.AbilitySystem
         {
             Log("Remove Ability ");
 
-            ForceEndAbility();
+            ForceFinishAbility();
 
             OnRemoveAbility();
         }
@@ -75,7 +75,7 @@ namespace StudioScor.AbilitySystem
 
             Log(" On Release Ability ");
 
-            CallBack_OnReleasedAbility();
+            Invoke_OnReleasedAbility();
 
             OnReleaseAbility();
         }
@@ -99,7 +99,7 @@ namespace StudioScor.AbilitySystem
 
             IsPlaying = true;
 
-            CallBack_OnActivateAbility();
+            Invoke_OnActivateAbility();
 
             EnterAbility();
         }
@@ -112,11 +112,11 @@ namespace StudioScor.AbilitySystem
         }
 
 
-        public bool TryEndAbility()
+        public bool TryFinishAbility()
         {
-            if (CanEndAbility())
+            if (CanFinishAbility())
             {
-                ForceEndAbility();
+                ForceFinishAbility();
 
                 return true;
             }
@@ -126,12 +126,12 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public virtual bool CanEndAbility()
+        public virtual bool CanFinishAbility()
         {
             return IsPlaying;
         }
 
-        public virtual void ForceEndAbility()
+        public virtual void ForceFinishAbility()
         {
             if (!IsPlaying)
                 return;
@@ -141,12 +141,12 @@ namespace StudioScor.AbilitySystem
 
             OnFinishAbility();
 
-            CallBack_OnFinishedAbility();
+            Invoke_OnFinishedAbility();
 
 
             ExitAbility();
 
-            CallBack_OnEndedAbility();
+            Invoke_OnEndedAbility();
         }
 
         public virtual void CancelAbilityFromSource(object source)
@@ -164,12 +164,12 @@ namespace StudioScor.AbilitySystem
 
             OnCancelAbility();
 
-            CallBack_OnCanceledAbility();
+            Invoke_OnCanceledAbility();
 
 
             ExitAbility();
 
-            CallBack_OnEndedAbility();
+            Invoke_OnEndedAbility();
         }
 
         public void SetAbilityLevel(int newLevel)
@@ -183,7 +183,7 @@ namespace StudioScor.AbilitySystem
 
             OnChangeAbilityLevel(prevLevel);
 
-            Callback_OnChangedAbilityLevel(prevLevel);
+            Invoke_OnChangedAbilityLevel(prevLevel);
         }
 
 
@@ -212,37 +212,37 @@ namespace StudioScor.AbilitySystem
         }
 
         #region Callback
-        protected virtual void CallBack_OnActivateAbility()
+        protected virtual void Invoke_OnActivateAbility()
         {
-            Log("On Activated Ability");
+            Log(nameof(OnActivatedAbility));
 
             OnActivatedAbility?.Invoke(this);
         }
-        protected virtual void CallBack_OnReleasedAbility()
+        protected virtual void Invoke_OnReleasedAbility()
         {
-            Log("On Released Ability");
+            Log(nameof(OnReleasedAbility));
 
             OnReleasedAbility?.Invoke(this);
         }
-        protected virtual void CallBack_OnFinishedAbility()
+        protected virtual void Invoke_OnFinishedAbility()
         {
-            Log("On Finished Ability");
+            Log(nameof(OnFinishedAbility));
 
             OnFinishedAbility?.Invoke(this);
         }
-        protected virtual void CallBack_OnEndedAbility()
+        protected virtual void Invoke_OnEndedAbility()
         {
-            Log("On Ended Ability");
+            Log(nameof(OnEndedAbility));
 
             OnEndedAbility?.Invoke(this);
         }
-        protected virtual void CallBack_OnCanceledAbility()
+        protected virtual void Invoke_OnCanceledAbility()
         {
-            Log("On Canceled Ability");
+            Log(nameof(OnCanceledAbility));
 
             OnCanceledAbility?.Invoke(this);
         }
-        protected virtual void Callback_OnChangedAbilityLevel(int prevLevel)
+        protected virtual void Invoke_OnChangedAbilityLevel(int prevLevel)
         {
             Log("Level Change - Current Level : " + Level + " Prev Level : " + prevLevel);
 

@@ -18,9 +18,9 @@ namespace StudioScor.AbilitySystem
         public void Tick(float deltaTime);
         public void FixedTick(float deltaTime);
 
-        public bool TryGrantAbility(Ability ability, int level = 0);
+        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(Ability ability, int level = 0);
         public bool TryRemoveAbility(Ability ability);
-        public bool TryActivateAbility(Ability ability);
+        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(Ability ability);
         public void ReleasedAbility(Ability ability);
         public bool IsActivateAbility(Ability ability);
         public void CancelAbility(Ability ability);
@@ -215,15 +215,15 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public bool TryActivateAbility(Ability ability)
+        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(Ability ability)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
-                return spec.TryActiveAbility();
+                return (spec.TryActiveAbility(), spec);
             }
             else
             {
-                return false;
+                return (false, null);
             }
         }
 
@@ -267,14 +267,14 @@ namespace StudioScor.AbilitySystem
                 spec.CancelAbility();
             }
         }
-        public bool TryGrantAbility(Ability addAbility, int level = 0)
+        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(Ability addAbility, int level = 0)
         {
             if (!CanGrantAbility(addAbility, level))
-                return false;
+                return (false, null);
 
-            ForceGrantAbility(addAbility, level);
+            var abilitySpec = ForceGrantAbility(addAbility, level);
 
-            return true;
+            return (true, abilitySpec);
         }
         public virtual bool CanGrantAbility(Ability ability, int level = 0)
         {
@@ -287,13 +287,13 @@ namespace StudioScor.AbilitySystem
 
             return ability.CanGrantAbility(this);
         }
-        public void ForceGrantAbility(Ability ability, int level = 0)
+        public IAbilitySpec ForceGrantAbility(Ability ability, int level = 0)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 spec.OnOverride(level);
 
-                return;
+                return spec;
             }
 
             var abilitySpec = ability.CreateSpec(this, level);
@@ -312,6 +312,8 @@ namespace StudioScor.AbilitySystem
             }
 
             Callback_OnGrantedAbility(abilitySpec);
+
+            return abilitySpec;
         }
 
         public bool TryRemoveAbility(Ability ability)

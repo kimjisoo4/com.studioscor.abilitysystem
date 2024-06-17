@@ -96,11 +96,11 @@ namespace StudioScor.AbilitySystem
         }
 
 
-        public bool TryEndAbility()
+        public bool TryFinishAbility()
         {
-            if (CanEndAbility())
+            if (CanFinishAbility())
             {
-                ForceEndAbility();
+                ForceFinishAbility();
 
                 return true;
             }
@@ -110,13 +110,13 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public virtual bool CanEndAbility()
+        public virtual bool CanFinishAbility()
         {
             return IsPlaying;
         }
 
 
-        public virtual void ForceEndAbility()
+        public virtual void ForceFinishAbility()
         {
             if (!IsPlaying)
                 return;
