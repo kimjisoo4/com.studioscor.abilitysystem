@@ -39,8 +39,15 @@ namespace StudioScor.AbilitySystem
             if (!base.CanActiveAbility())
                 return false;
 
+            if (!CheckGameplayTags())
+                return false;
+
+            return true;
+        }
+        protected bool CheckGameplayTags()
+        {
             if (_gameplayTagSystem.ContainBlockTag(_ability.AbilityTag)
-                || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
+               || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
                 return false;
 
             if (!_gameplayTagSystem.ContainConditionTags(_ability.ConditionTags))
@@ -48,7 +55,6 @@ namespace StudioScor.AbilitySystem
 
             return true;
         }
-
         protected override void EnterAbility()
         {
             _abilitySystem.CancelAbilityFromSource(_ability.CancelAbilityTags);

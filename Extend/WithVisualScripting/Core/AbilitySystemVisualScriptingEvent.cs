@@ -28,7 +28,6 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public const string ABILITYSPEC_RELEASE_ABILITY = "AbilitySpec_ReleaseAbility";
         public const string ABILITYSPEC_GRANT_ABILITY = "AbilitySpec_GrantAbility";
         public const string ABILITYSPEC_REMOVE_ABILITY = "AbilitySpec_RemoveAbility";
-        public const string ABILITYSPEC_OVERRIDE_ABILITY = "AbilitySpec_OverrideAbility";
         public const string ABILITYSPEC_CHANGE_ABILITY_LEVEL = "AbilitySpec_ChangeAbilityLevel";
     }
 }

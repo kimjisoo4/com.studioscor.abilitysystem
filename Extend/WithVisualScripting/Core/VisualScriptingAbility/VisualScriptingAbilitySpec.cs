@@ -62,10 +62,6 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_REMOVE_ABILITY, this));
         }
-        public override void OnOverride(int level) 
-        {
-            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_OVERRIDE_ABILITY, this), level);
-        }
         protected override void EnterAbility()
         {
             EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_ENTER_ABILITY, this));

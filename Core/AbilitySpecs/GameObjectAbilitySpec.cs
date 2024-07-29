@@ -8,12 +8,12 @@ namespace StudioScor.AbilitySystem
         protected Ability ability;
         protected IAbilitySystem abilitySystem;
 
-        public event AbilityEventHandler OnActivatedAbility;
-        public event AbilityEventHandler OnReleasedAbility;
-        public event AbilityEventHandler OnEndedAbility;
-        public event AbilityEventHandler OnFinishedAbility;
-        public event AbilityEventHandler OnCanceledAbility;
-        public event AbilityLevelEventHandler OnChangedAbilityLevel;
+        public event IAbilitySpec.AbilityEventHandler OnActivatedAbility;
+        public event IAbilitySpec.AbilityEventHandler OnReleasedAbility;
+        public event IAbilitySpec.AbilityEventHandler OnEndedAbility;
+        public event IAbilitySpec.AbilityEventHandler OnFinishedAbility;
+        public event IAbilitySpec.AbilityEventHandler OnCanceledAbility;
+        public event IAbilitySpec.AbilityLevelEventHandler OnChangedAbilityLevel;
 
         public Ability Ability => ability;
         public IAbilitySystem AbilitySystem => abilitySystem;
@@ -172,7 +172,6 @@ namespace StudioScor.AbilitySystem
         protected virtual void OnGrantAbility() { }
         protected virtual void OnRemoveAbility() { }
 
-        public virtual void OnOverride(int level) { }
         protected virtual void OnChangeLevel(int prevLevel) { }
 
         protected abstract void EnterAbility();

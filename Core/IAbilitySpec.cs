@@ -1,10 +1,5 @@
 ﻿namespace StudioScor.AbilitySystem
 {
-    #region Events
-    public delegate void AbilityEventHandler(IAbilitySpec abilitySpec);
-    public delegate void AbilityLevelEventHandler(IAbilitySpec abilitySpec, int currentLevel, int prevLevel);
-    #endregion
-
     public enum EAbilitySpecEventType
     {
         Activated,
@@ -23,6 +18,9 @@
 
     public interface IAbilitySpec
     {
+        public delegate void AbilityEventHandler(IAbilitySpec abilitySpec);
+        public delegate void AbilityLevelEventHandler(IAbilitySpec abilitySpec, int currentLevel, int prevLevel);
+
         public Ability Ability { get; }
         public IAbilitySystem AbilitySystem { get; }
         public bool IsPlaying { get; }
@@ -32,7 +30,6 @@
         public void RemoveAbility();
 
 
-        public void OnOverride(int level);
         public void SetAbilityLevel(int level);
 
 

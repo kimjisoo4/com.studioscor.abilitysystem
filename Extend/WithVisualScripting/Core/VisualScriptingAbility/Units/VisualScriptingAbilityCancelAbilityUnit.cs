@@ -1,7 +1,6 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
 using Unity.VisualScripting;
 
-
 namespace StudioScor.AbilitySystem.VisualScripting
 {
 
@@ -33,7 +32,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
         {
             var abilitySpec = flow.GetValue<VisualScriptingAbilitySpec>(Target);
 
-            abilitySpec.ForceEndAbility();
+            abilitySpec.ForceFinishAbility();
 
             return null;
         }

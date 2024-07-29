@@ -2,11 +2,14 @@
 {
     public class AbilityInputBuffer
     {
-        private IAbilitySystem abilitySystem;
-        private IAbilitySpec abilitySpec;
+        private IAbilitySystem _abilitySystem;
+        private IAbilitySpec _abilitySpec;
 
-        private bool activate = false;
-        private float remainTime = 0.2f;
+        public Ability Ability => _abilitySpec is null ? null : _abilitySpec.Ability;
+
+        private bool _wasActivated = false;
+        private bool _wasReleased = false;
+        private float _remainTime = 0.2f;
 
         public AbilityInputBuffer()
         {
@@ -19,51 +22,81 @@
 
         public void SetAbilitySystem(IAbilitySystem newAbilitySystem)
         {
-            abilitySystem = newAbilitySystem;
-            activate = false;
+            _abilitySystem = newAbilitySystem;
+            _wasActivated = false;
+            _wasReleased = false;
         }
         
         public void SetBuffer(Ability ability, float remainTime = 0.2f)
         {
-            if (abilitySystem is null)
+            if (_abilitySystem is null)
                 return;
 
-            if (abilitySystem.TryGetAbilitySpec(ability, out abilitySpec))
+            if (_abilitySystem.TryGetAbilitySpec(ability, out _abilitySpec))
             {
-                activate = true;
-                this.remainTime = remainTime;
+                _wasActivated = true;
+                _wasReleased = false;
+                _remainTime = remainTime;
             }
         }
         public void SetBuffer(IAbilitySpec abilitySpec, float remainTime = 0.2f)
         {
-            this.abilitySpec = abilitySpec;
-            activate = true;
-            this.remainTime = remainTime;
+            _wasActivated = true;
+            _wasReleased = false;
+            _abilitySpec = abilitySpec;
+            _remainTime = remainTime;
+        }
+
+        public void ReleaseBuffer(Ability ability)
+        {
+            if (_abilitySpec is null || _abilitySpec.Ability != ability)
+                return;
+
+            _wasReleased = true;
+        }
+        public void ReleaseBuffer(IAbilitySpec abilitySpec)
+        {
+            if (_abilitySpec is null || _abilitySpec != abilitySpec)
+                return;
+
+            _wasReleased = true;
         }
 
         public void ResetAbilityInputBuffer()
         {
-            abilitySpec = null;
-            activate = false;
-            remainTime = 0f;
+            _abilitySpec = null;
+            _wasActivated = false;
+            _remainTime = 0f;
         }
 
         public void CancelBuffer()
         {
-            abilitySpec = null;
-            activate = false;
+            _abilitySpec = null;
+            _wasActivated = false;
+            _wasReleased = false;
         }
 
         public void UpdateBuffer(float deltaTime)
         {
-            if (!activate || abilitySystem is null || abilitySpec is null)
-            {
+            if (!_wasActivated)
                 return;
+
+            if (_abilitySystem is null)
+                return;
+
+            if (_abilitySpec is null)
+                return;
+
+            _remainTime -= deltaTime;
+
+            if(_abilitySpec.TryActiveAbility())
+            {
+                if (_wasReleased)
+                    _abilitySpec.ReleaseAbility();
+
+                CancelBuffer();
             }
-
-            remainTime -= deltaTime;
-
-            if (abilitySpec.TryActiveAbility() || remainTime <= 0f)
+            else if(_remainTime <= 0f)
             {
                 CancelBuffer();
             }

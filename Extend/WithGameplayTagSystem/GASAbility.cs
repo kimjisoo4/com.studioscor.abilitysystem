@@ -10,8 +10,8 @@ namespace StudioScor.AbilitySystem
         [Header(" [ Gameplay Ability ] ")]
         [SerializeField] private GameplayTag abilityTag;
         [SerializeField] private GameplayTag[] attributeTags;
-        [SerializeField] private FGameplayTags grantTags;
         [SerializeField] private FConditionTags conditionTags;
+        [SerializeField] private FGameplayTags grantTags;
         [SerializeField] private GameplayTag[] cancelAbilityTags;
 
         public GameplayTag AbilityTag => abilityTag;
