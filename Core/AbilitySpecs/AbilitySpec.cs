@@ -46,7 +46,7 @@ namespace StudioScor.AbilitySystem
         {
             Log($"{nameof(RemoveAbility)}");
 
-            ForceFinishAbility();
+            CancelAbility();
 
             OnRemoveAbility();
         }

@@ -6,8 +6,14 @@ namespace StudioScor.AbilitySystem
     public abstract class Ability : BaseScriptableObject
     {
         [Header(" [ Ability ] ")]
-        [SerializeField] protected string abilityName;
-        public string AbilityName => abilityName;
+        [SerializeField] protected string _id;
+        public string ID => _id;
+
+        [ContextMenu(nameof(NameToID))]
+        private void NameToID()
+        {
+            _id = name;
+        }
 
 
         public virtual bool CanGrantAbility(IAbilitySystem abilitySystem)

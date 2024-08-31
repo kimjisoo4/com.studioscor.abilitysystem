@@ -1,6 +1,8 @@
 ﻿#if SCOR_ENABLE_GAMEPLAYTAGSYSTEM
 using System.Linq;
 using StudioScor.GameplayTagSystem;
+using StudioScor.Utilities;
+
 
 namespace StudioScor.AbilitySystem
 {
@@ -48,10 +50,16 @@ namespace StudioScor.AbilitySystem
         {
             if (_gameplayTagSystem.ContainBlockTag(_ability.AbilityTag)
                || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
+            {
+                Log($"{nameof(CanActiveAbility)} - Has Bloking Tag", SUtility.STRING_COLOR_FAIL);
                 return false;
+            }
 
             if (!_gameplayTagSystem.ContainConditionTags(_ability.ConditionTags))
+            {
+                Log($"{nameof(CanActiveAbility)} - Not Contained Condition Tags", SUtility.STRING_COLOR_FAIL);
                 return false;
+            }
 
             return true;
         }

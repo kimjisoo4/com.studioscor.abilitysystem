@@ -10,7 +10,7 @@ namespace StudioScor.AbilitySystem
         {
             Ability = ability;
             Level = level;
-            AbilityName = Ability.AbilityName;
+            AbilityName = Ability.ID;
         }
 
         [SReadOnly] public string AbilityName;

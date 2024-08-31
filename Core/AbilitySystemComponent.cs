@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using StudioScor.Utilities;
 using System;
-using StudioScor.Utilities;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 
 namespace StudioScor.AbilitySystem
@@ -113,10 +114,10 @@ namespace StudioScor.AbilitySystem
         [Header(" [ Setup] ")]
         [SerializeField] private FAbility[] initAbilities;
 
-        private readonly Dictionary<Ability, IAbilitySpec> abilities = new();
-        private readonly List<IUpdateableAbilitySpec> updateableAbilitySpecs = new();
+        private readonly Dictionary<Ability, IAbilitySpec> _abilities = new();
+        private readonly List<IUpdateableAbilitySpec> _updateableAbilitySpecs = new();
 
-        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => abilities;
+        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => _abilities;
 
         public event IAbilitySystem.AbilitySpecHandler OnActivatedAbility;
         public event IAbilitySystem.AbilitySpecHandler OnReleasedAbility;
@@ -139,14 +140,15 @@ namespace StudioScor.AbilitySystem
 #endif
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Setup();
         }
-
-        private void Start()
+        protected virtual void OnDestroy()
         {
+            RemoveAllAbility();
         }
+
         protected void Setup()
         {
             Log("Setup Ability System");
@@ -177,7 +179,7 @@ namespace StudioScor.AbilitySystem
         {
             base.Tick(deltaTime);
 
-            foreach (var ability in updateableAbilitySpecs)
+            foreach (var ability in _updateableAbilitySpecs)
             {
                 ability.UpdateAbility(deltaTime);
             }
@@ -187,7 +189,7 @@ namespace StudioScor.AbilitySystem
         {
             base.FixedTick(deltaTime);
 
-            foreach (var ability in updateableAbilitySpecs)
+            foreach (var ability in _updateableAbilitySpecs)
             {
                 ability.FixedUpdateAbility(deltaTime);
             }
@@ -316,11 +318,11 @@ namespace StudioScor.AbilitySystem
 
             abilitySpec.GrantAbility();
 
-            abilities.Add(ability, abilitySpec);
+            _abilities.Add(ability, abilitySpec);
 
             if(abilitySpec is IUpdateableAbilitySpec updateableAbility)
             {
-                updateableAbilitySpecs.Add(updateableAbility);
+                _updateableAbilitySpecs.Add(updateableAbility);
             }
 
             Callback_OnGrantedAbility(abilitySpec);
@@ -362,66 +364,71 @@ namespace StudioScor.AbilitySystem
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
                 spec.CancelAbility();
-
-                if (spec is IAbilitySpec abilitySpecEvent)
-                {
-                    abilitySpecEvent.OnActivatedAbility -= Callback_OnActivatedAbility;
-                    abilitySpecEvent.OnReleasedAbility -= Callback_OnReleasedAbility;
-                    abilitySpecEvent.OnEndedAbility -= Callback_OnEndedAbility;
-                }
-
                 spec.RemoveAbility();
 
-                Callback_OnRemovedAbility(spec);
+                spec.OnActivatedAbility -= Callback_OnActivatedAbility;
+                spec.OnReleasedAbility -= Callback_OnReleasedAbility;
+                spec.OnEndedAbility -= Callback_OnEndedAbility;
 
-                abilities.Remove(ability);
+                _abilities.Remove(ability);
 
                 if(spec is IUpdateableAbilitySpec updateableAbility)
                 {
-                    updateableAbilitySpecs.Remove(updateableAbility);
+                    _updateableAbilitySpecs.Remove(updateableAbility);
                 }
+
+                Callback_OnRemovedAbility(spec);
             }
         }
+
         public void RemoveAllAbility()
         {
-            foreach (var ability in abilities.Keys)
+            if (_abilities is null || _abilities.Count <= 0)
+                return;
+
+            var abilities = _abilities.Keys;
+
+            for(int i = abilities.LastIndex(); i >= 0; i--)
             {
-                ForceRemoveAbility(ability);
+                var ability = abilities.ElementAtOrDefault(i);
+
+                if(ability)
+                    ForceRemoveAbility(ability);
             }
 
-            abilities.Clear();
+            _abilities.Clear();
         }
 
 
         #region CallBack
         protected virtual void Callback_OnGrantedAbility(IAbilitySpec grantAbilitySpec)
         {
-            Log("On Added Ability - " + grantAbilitySpec.Ability.AbilityName);
+            Log("On Added Ability - " + grantAbilitySpec.Ability.ID);
 
             OnGrantedAbility?.Invoke(this, grantAbilitySpec);
         }
         protected virtual void Callback_OnRemovedAbility(IAbilitySpec removeAbilitySpec)
         {
-            Log("On Removed Ability - " + removeAbilitySpec.Ability.AbilityName);
+            Log("On Removed Ability - " + removeAbilitySpec.Ability.ID);
 
             OnRemovedAbility?.Invoke(this, removeAbilitySpec);
         }
 
         protected virtual void Callback_OnActivatedAbility(IAbilitySpec abilitySpec)
         {
-            Log("On Activated Ability - " + abilitySpec.Ability.AbilityName);
+            Log("On Activated Ability - " + abilitySpec.Ability.ID);
 
             OnActivatedAbility?.Invoke(this, abilitySpec);
         }
         protected virtual void Callback_OnReleasedAbility(IAbilitySpec abilitySpec)
         {
-            Log("On Released Ability - " + abilitySpec.Ability.AbilityName);
+            Log("On Released Ability - " + abilitySpec.Ability.ID);
 
             OnReleasedAbility?.Invoke(this, abilitySpec);
         }
         protected virtual void Callback_OnEndedAbility(IAbilitySpec abilitySpec)
         {
-            Log("On Ended Ability - " + abilitySpec.Ability.AbilityName);
+            Log("On Ended Ability - " + abilitySpec.Ability.ID);
 
             OnEndedAbility?.Invoke(this, abilitySpec);
         }
