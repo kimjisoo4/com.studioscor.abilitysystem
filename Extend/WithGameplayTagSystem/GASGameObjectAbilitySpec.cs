@@ -6,18 +6,20 @@ using StudioScor.Utilities;
 
 namespace StudioScor.AbilitySystem
 {
-    public abstract class GASAbilitySpec : AbilitySpec
+    public abstract class GASGameObjectAbilitySpec : GameObjectAbilitySpec
     {
-        protected new readonly GASAbility _ability;
-        private readonly IGameplayTagSystem _gameplayTagSystem;
+        protected GASAbility _gasAbility;
+        private IGameplayTagSystem _gameplayTagSystem;
         protected IGameplayTagSystem GameplayTagSystem => _gameplayTagSystem;
 
-
-        protected GASAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
+        public override void Setup(Ability ability, IAbilitySystem abilitySystem, int level = 0)
         {
-            _ability = ability as GASAbility;
+            base.Setup(ability, abilitySystem, level);
+
+            _gasAbility = ability as GASAbility;
             _gameplayTagSystem = abilitySystem.transform.GetComponent<IGameplayTagSystem>();
         }
+
         public override void CancelAbilityFromSource(object source)
         {
             if (source is not GameplayTag[] gameplayTags)
@@ -25,7 +27,7 @@ namespace StudioScor.AbilitySystem
 
             foreach (var tag in gameplayTags)
             {
-                if (_ability.AbilityTag == tag || _ability.AttributeTags.Contains(tag))
+                if (_gasAbility.AbilityTag == tag || _gasAbility.AttributeTags.Contains(tag))
                 {
                     CancelAbility();
 
@@ -46,14 +48,14 @@ namespace StudioScor.AbilitySystem
         }
         protected bool CheckGameplayTags()
         {
-            if (_gameplayTagSystem.ContainBlockTag(_ability.AbilityTag)
-               || _gameplayTagSystem.ContainAnyTagsInBlock(_ability.AttributeTags))
+            if (_gameplayTagSystem.ContainBlockTag(_gasAbility.AbilityTag)
+               || _gameplayTagSystem.ContainAnyTagsInBlock(_gasAbility.AttributeTags))
             {
                 Log($"{nameof(CanActiveAbility)} - Has Bloking Tag", SUtility.STRING_COLOR_FAIL);
                 return false;
             }
 
-            if (!_gameplayTagSystem.ContainConditionTags(_ability.ConditionTags))
+            if (!_gameplayTagSystem.ContainConditionTags(_gasAbility.ConditionTags))
             {
                 Log($"{nameof(CanActiveAbility)} - Not Contained Condition Tags", SUtility.STRING_COLOR_FAIL);
                 return false;
@@ -63,14 +65,14 @@ namespace StudioScor.AbilitySystem
         }
         protected override void EnterAbility()
         {
-            _abilitySystem.CancelAbilityFromSource(_ability.CancelAbilityTags);
+            _abilitySystem.CancelAbilityFromSource(_gasAbility.CancelAbilityTags);
 
-            _gameplayTagSystem.GrantGameplayTags(_ability.GrantTags);
+            _gameplayTagSystem.GrantGameplayTags(_gasAbility.GrantTags);
         }
 
         protected override void ExitAbility()
         {
-            _gameplayTagSystem.RemoveGameplayTags(_ability.GrantTags);
+            _gameplayTagSystem.RemoveGameplayTags(_gasAbility.GrantTags);
         }
     }
 }

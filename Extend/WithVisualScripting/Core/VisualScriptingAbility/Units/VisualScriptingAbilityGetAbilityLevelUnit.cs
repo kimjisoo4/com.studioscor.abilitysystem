@@ -1,15 +1,14 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
 using Unity.VisualScripting;
-using UnityEngine;
 
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-
-    [UnitTitle("Get Ability")]
+    [UnitTitle("Get Ability Level")]
     [UnitSubtitle("VisualScriptingAbility Unit")]
     [UnitCategory("StudioScor\\AbilitySystem\\AbilitySpec")]
-    public class VisualScriptingAbilityGetAbilityUnit : Unit
+
+    public class VisualScriptingAbilityGetAbilityLevelUnit : Unit
     {
         [DoNotSerialize]
         [NullMeansSelf]
@@ -18,25 +17,25 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public ValueInput AbilitySpec { get; private set; }
 
         [DoNotSerialize]
-        [PortLabel("AbilitySystem")]
+        [PortLabel("Level")]
         [PortLabelHidden]
-        public ValueOutput Ability { get; private set; }
+        public ValueOutput Level { get; private set; }
 
 
         protected override void Definition()
         {
             AbilitySpec = ValueInput<VisualScriptingAbilitySpec>(nameof(AbilitySpec), null).NullMeansSelf();
 
-            Ability = ValueOutput<Ability>(nameof(Ability), GetAbility);
+            Level = ValueOutput<int>(nameof(Level), GetAbility);
 
-            Requirement(AbilitySpec, Ability);
+            Requirement(AbilitySpec, Level);
         }
 
-        private Ability GetAbility(Flow flow)
+        private int GetAbility(Flow flow)
         {
             var spec = flow.GetValue<VisualScriptingAbilitySpec>(AbilitySpec);
 
-            return spec.Ability;
+            return spec.Level;
         }
     }
 }

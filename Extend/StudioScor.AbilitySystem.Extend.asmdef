@@ -11,7 +11,8 @@
         "GUID:21b0c8d1703a94250bfac916590cea4f",
         "GUID:315d634a9ac6d460a9515f5a56be6311",
         "GUID:ea715009a4efd4c6cbc85be3ae097dd3",
-        "GUID:0caab94c8c0a20b4e83e8dc1e4b2a416"
+        "GUID:0caab94c8c0a20b4e83e8dc1e4b2a416",
+        "GUID:30976a8138310934cb73d24a5b8eea7d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -45,6 +46,11 @@
             "name": "com.alexeytaranov.serializereferencedropdown",
             "expression": "0.0.0",
             "define": "SCOR_ENABLE_SERIALIZEREFERENCE"
+        },
+        {
+            "name": "com.maxygames.unode",
+            "expression": "3.0.0",
+            "define": "SCOR_ENABLE_UNODE"
         }
     ],
     "noEngineReferences": false

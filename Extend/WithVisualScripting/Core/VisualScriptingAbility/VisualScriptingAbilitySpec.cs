@@ -1,6 +1,6 @@
 ﻿#if SCOR_ENABLE_VISUALSCRIPTING
-using UnityEngine;
 using Unity.VisualScripting;
+using UnityEngine;
 
 
 namespace StudioScor.AbilitySystem.VisualScripting

@@ -4,12 +4,8 @@ using StudioScor.GameplayTagSystem;
 
 namespace StudioScor.AbilitySystem
 {
-
-    public abstract class GASPassiveAbilitySpec : GASAbilitySpec
+    public abstract class GASGameObjectPassiveAbilitySpec : GASGameObjectAbilitySpec
     {
-        protected GASPassiveAbilitySpec(Ability ability, IAbilitySystem abilitySystem, int level) : base(ability, abilitySystem, level)
-        {
-        }
 
         protected override void OnGrantAbility()
         {
@@ -46,14 +42,14 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (_ability.ConditionTags.Obstacleds.Contains(gameplayTag))
+                if (_gasAbility.ConditionTags.Obstacleds.Contains(gameplayTag))
                 {
                     TryFinishAbility();
                 }
             }
             else
             {
-                if (_ability.ConditionTags.Requireds.Contains(gameplayTag))
+                if (_gasAbility.ConditionTags.Requireds.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }
@@ -63,14 +59,14 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (_ability.ConditionTags.Requireds.Contains(gameplayTag))
+                if (_gasAbility.ConditionTags.Requireds.Contains(gameplayTag))
                 {
                     TryFinishAbility();
                 }
             }
             else
             {
-                if (_ability.ConditionTags.Obstacleds.Contains(gameplayTag))
+                if (_gasAbility.ConditionTags.Obstacleds.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }
@@ -80,7 +76,7 @@ namespace StudioScor.AbilitySystem
         {
             if (IsPlaying)
             {
-                if (gameplayTag == _ability.AbilityTag || _ability.AttributeTags.Contains(gameplayTag))
+                if (gameplayTag == _gasAbility.AbilityTag || _gasAbility.AttributeTags.Contains(gameplayTag))
                 {
                     TryFinishAbility();
                 }
@@ -90,7 +86,7 @@ namespace StudioScor.AbilitySystem
         {
             if (!IsPlaying)
             {
-                if (gameplayTag == _ability.AbilityTag || _ability.AttributeTags.Contains(gameplayTag))
+                if (gameplayTag == _gasAbility.AbilityTag || _gasAbility.AttributeTags.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }

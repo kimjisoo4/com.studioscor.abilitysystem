@@ -5,8 +5,8 @@ namespace StudioScor.AbilitySystem
 {
     public abstract class GameObjectAbilitySpec : BaseMonoBehaviour, IAbilitySpec
     {
-        protected Ability ability;
-        protected IAbilitySystem abilitySystem;
+        protected Ability _ability;
+        protected IAbilitySystem _abilitySystem;
 
         public event IAbilitySpec.AbilityEventHandler OnActivatedAbility;
         public event IAbilitySpec.AbilityEventHandler OnReleasedAbility;
@@ -15,8 +15,8 @@ namespace StudioScor.AbilitySystem
         public event IAbilitySpec.AbilityEventHandler OnCanceledAbility;
         public event IAbilitySpec.AbilityLevelEventHandler OnChangedAbilityLevel;
 
-        public Ability Ability => ability;
-        public IAbilitySystem AbilitySystem => abilitySystem;
+        public Ability Ability => _ability;
+        public IAbilitySystem AbilitySystem => _abilitySystem;
 
         public int Level { get; protected set; }
         public bool IsPlaying { get; protected set; }
@@ -24,8 +24,8 @@ namespace StudioScor.AbilitySystem
 
         public virtual void Setup(Ability ability, IAbilitySystem abilitySystem, int level = 0)
         {
-            this.ability = ability;
-            this.abilitySystem = abilitySystem;
+            this._ability = ability;
+            this._abilitySystem = abilitySystem;
             this.Level = level;
         }
 
@@ -36,6 +36,8 @@ namespace StudioScor.AbilitySystem
         public void RemoveAbility()
         {
             OnRemoveAbility();
+
+            Destroy(gameObject);
         }
 
         public bool TryActiveAbility()
@@ -77,7 +79,7 @@ namespace StudioScor.AbilitySystem
             return false;
         }
 
-        public virtual void ForceActiveAbility()
+        public void ForceActiveAbility()
         {
             Log(" On Ability ");
 
@@ -116,7 +118,7 @@ namespace StudioScor.AbilitySystem
         }
 
 
-        public virtual void ForceFinishAbility()
+        public void ForceFinishAbility()
         {
             if (!IsPlaying)
                 return;
@@ -136,7 +138,7 @@ namespace StudioScor.AbilitySystem
 
         public virtual void CancelAbilityFromSource(object source) { }
 
-        public virtual void CancelAbility()
+        public void CancelAbility()
         {
             if (!IsPlaying)
                 return;

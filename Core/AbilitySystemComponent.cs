@@ -14,19 +14,19 @@ namespace StudioScor.AbilitySystem
         public GameObject gameObject { get; }
         public Transform transform { get; }
 
-        public IReadOnlyDictionary<Ability, IAbilitySpec> Abilities { get; }
+        public IReadOnlyDictionary<IAbility, IAbilitySpec> Abilities { get; }
 
         public void Tick(float deltaTime);
         public void FixedTick(float deltaTime);
 
-        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(Ability ability, int level = 0);
-        public bool TryRemoveAbility(Ability ability);
-        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(Ability ability);
-        public (bool isPossible, IAbilitySpec abilitySpec) CanActivateAbility(Ability ability);
-        public IAbilitySpec ForceActivateAbility(Ability ability);
-        public void ReleasedAbility(Ability ability);
-        public bool IsPlayingAbility(Ability ability);
-        public void CancelAbility(Ability ability);
+        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(IAbility ability, int level = 0);
+        public bool TryRemoveAbility(IAbility ability);
+        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(IAbility ability);
+        public (bool isPossible, IAbilitySpec abilitySpec) CanActivateAbility(IAbility ability);
+        public IAbilitySpec ForceActivateAbility(IAbility ability);
+        public void ReleasedAbility(IAbility ability);
+        public bool IsPlayingAbility(IAbility ability);
+        public void CancelAbility(IAbility ability);
         public void CancelAbilityFromSource(object source);
 
         public event AbilitySpecHandler OnActivatedAbility;
@@ -93,9 +93,7 @@ namespace StudioScor.AbilitySystem
 
         public static bool TryGetAbilitySpec(this IAbilitySystem abilitySystem, Ability abilitym, out IAbilitySpec spec)
         {
-            spec = abilitySystem.GetAbilitySpec(abilitym);
-
-            return spec is not null;
+            return abilitySystem.Abilities.TryGetValue(abilitym, out spec);
         }
 
         public static bool TryGetAbilitySpec(this IAbilitySystem abilitySystem, Type type, out IAbilitySpec abilitySpec)
@@ -114,10 +112,10 @@ namespace StudioScor.AbilitySystem
         [Header(" [ Setup] ")]
         [SerializeField] private FAbility[] initAbilities;
 
-        private readonly Dictionary<Ability, IAbilitySpec> _abilities = new();
+        private readonly Dictionary<IAbility, IAbilitySpec> _abilities = new();
         private readonly List<IUpdateableAbilitySpec> _updateableAbilitySpecs = new();
 
-        public IReadOnlyDictionary<Ability,IAbilitySpec> Abilities => _abilities;
+        public IReadOnlyDictionary<IAbility, IAbilitySpec> Abilities => _abilities;
 
         public event IAbilitySystem.AbilitySpecHandler OnActivatedAbility;
         public event IAbilitySystem.AbilitySpecHandler OnReleasedAbility;
@@ -195,7 +193,7 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public (bool isPossible, IAbilitySpec abilitySpec) CanActivateAbility(Ability ability)
+        public (bool isPossible, IAbilitySpec abilitySpec) CanActivateAbility(IAbility ability)
         {
             if(Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -206,7 +204,7 @@ namespace StudioScor.AbilitySystem
                 return (false, null);
             }
         }
-        public bool IsPlayingAbility(Ability ability)
+        public bool IsPlayingAbility(IAbility ability)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -218,9 +216,9 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(Ability ability)
+        public (bool isActivate, IAbilitySpec abilitySpec) TryActivateAbility(IAbility ability)
         {
-            if (!ability)
+            if (ability is null)
                 return (false, null);
 
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
@@ -233,9 +231,9 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public IAbilitySpec ForceActivateAbility(Ability ability)
+        public IAbilitySpec ForceActivateAbility(IAbility ability)
         {
-            if (!ability)
+            if (ability is null)
                 return null;
 
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
@@ -249,7 +247,7 @@ namespace StudioScor.AbilitySystem
             }
         }
 
-        public void ReleasedAbility(Ability ability)
+        public void ReleasedAbility(IAbility ability)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -267,7 +265,7 @@ namespace StudioScor.AbilitySystem
                 spec.CancelAbilityFromSource(source);
             }
         }
-        public void CancelAbility(Ability ability)
+        public void CancelAbility(IAbility ability)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -281,7 +279,7 @@ namespace StudioScor.AbilitySystem
                 spec.CancelAbility();
             }
         }
-        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(Ability addAbility, int level = 0)
+        public (bool isGrant, IAbilitySpec abilitySpec) TryGrantAbility(IAbility addAbility, int level = 0)
         {
             if (!CanGrantAbility(addAbility, level))
                 return (false, null);
@@ -290,9 +288,9 @@ namespace StudioScor.AbilitySystem
 
             return (true, abilitySpec);
         }
-        public virtual bool CanGrantAbility(Ability ability, int level = 0)
+        public virtual bool CanGrantAbility(IAbility ability, int level = 0)
         {
-            if (!ability)
+            if (ability is null)
             {
                 Log(ability + " is Null");
                 
@@ -301,7 +299,7 @@ namespace StudioScor.AbilitySystem
 
             return ability.CanGrantAbility(this);
         }
-        public IAbilitySpec ForceGrantAbility(Ability ability, int level = 0)
+        public IAbilitySpec ForceGrantAbility(IAbility ability, int level = 0)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -330,7 +328,7 @@ namespace StudioScor.AbilitySystem
             return abilitySpec;
         }
 
-        public bool TryRemoveAbility(Ability ability)
+        public bool TryRemoveAbility(IAbility ability)
         {
             if (!CanRemoveAbility(ability))
                 return false;
@@ -340,9 +338,9 @@ namespace StudioScor.AbilitySystem
             return true;
         }
 
-        public virtual bool CanRemoveAbility(Ability ability)
+        public virtual bool CanRemoveAbility(IAbility ability)
         {
-            if (!ability)
+            if (ability is null)
             {
                 Log(ability + "is Null");
 
@@ -359,7 +357,7 @@ namespace StudioScor.AbilitySystem
             return true;
 
         }
-        public void ForceRemoveAbility(Ability ability)
+        public void ForceRemoveAbility(IAbility ability)
         {
             if (Abilities.TryGetValue(ability, out IAbilitySpec spec))
             {
@@ -392,7 +390,7 @@ namespace StudioScor.AbilitySystem
             {
                 var ability = abilities.ElementAtOrDefault(i);
 
-                if(ability)
+                if(ability is not null)
                     ForceRemoveAbility(ability);
             }
 
