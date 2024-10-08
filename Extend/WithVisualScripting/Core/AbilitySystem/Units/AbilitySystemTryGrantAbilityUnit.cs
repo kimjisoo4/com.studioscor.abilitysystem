@@ -1,15 +1,14 @@
 ﻿
 #if SCOR_ENABLE_VISUALSCRIPTING
+using System;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
 
-
-    [UnitTitle("Try Activate Ability")]
+    [UnitTitle("Try Grant Ability")]
     [UnitSubtitle("AbilitySystem Unit")]
-    public class AbilitySystemTryActivateAbilityUnit : AbilitySystemFlowUnit
+    public class AbilitySystemTryGrantAbilityUnit : AbilitySystemFlowUnit
     {
         [DoNotSerialize]
         [PortLabel("Ability")]
@@ -17,9 +16,14 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public ValueInput Ability { get; private set; }
 
         [DoNotSerialize]
-        [PortLabel("isActivate")]
+        [PortLabel("Level")]
         [PortLabelHidden]
-        public ValueOutput IsActivate { get; private set; }
+        public ValueInput Level { get; private set; }
+
+        [DoNotSerialize]
+        [PortLabel("isGrant")]
+        [PortLabelHidden]
+        public ValueOutput IsGrant { get; private set; }
 
         [DoNotSerialize]
         [PortLabel("AbilitySpec")]
@@ -31,27 +35,33 @@ namespace StudioScor.AbilitySystem.VisualScripting
             base.Definition();
 
             Ability = ValueInput<Ability>(nameof(Ability), null);
+            Level = ValueInput<int>(nameof(Level), 1);
 
-            AbilitySpec = ValueOutput<IAbilitySpec>(nameof(Ability));
-            IsActivate = ValueOutput<bool>(nameof(IsActivate));
+            AbilitySpec = ValueOutput<IAbilitySpec>(nameof(AbilitySpec));
+            IsGrant = ValueOutput<bool>(nameof(IsGrant));
 
             Requirement(Target, AbilitySpec);
-            Requirement(Target, IsActivate);
+            Requirement(Target, IsGrant);
 
             Requirement(Ability, Enter);
             Requirement(Ability, AbilitySpec);
-            Requirement(Ability, IsActivate);
+            Requirement(Ability, IsGrant);
+
+            Requirement(Level, Enter);
+            Requirement(Level, AbilitySpec);
+            Requirement(Level, IsGrant);
         }
 
         protected override ControlOutput EnterUnit(Flow flow)
         {
             var abilitySystem = flow.GetValue<IAbilitySystem>(Target);
             var ability = flow.GetValue<Ability>(Ability);
+            var level = flow.GetValue<int>(Level);
 
-            var result = abilitySystem.TryActivateAbility(ability, out IAbilitySpec abilitySpec);
+            var result = abilitySystem.TryGrantAbility(ability, level, out IAbilitySpec spec);
 
-            flow.SetValue(AbilitySpec, abilitySpec);
-            flow.SetValue(IsActivate, result);
+            flow.SetValue(AbilitySpec, spec);
+            flow.SetValue(IsGrant, result);
 
             return Exit;
         }

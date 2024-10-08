@@ -77,8 +77,7 @@ namespace StudioScor.AbilitySystem.VisualScripting
 
         public override void CancelAbilityFromSource(object source)
         {
-            if (IsPlaying)
-                EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CANCEL_ABILITY_FROM_SOURCE, this), source);
+            EventBus.Trigger(new EventHook(AbilitySystemWithVisualScriptingEvent.ABILITYSPEC_CANCEL_ABILITY_FROM_SOURCE, this), source);
         }
         protected override void OnCancelAbility() 
         {

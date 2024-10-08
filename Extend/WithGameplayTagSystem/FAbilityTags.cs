@@ -6,9 +6,9 @@ namespace StudioScor.AbilitySystem
     [System.Serializable]
     public struct FAbilityTags
     {
-        public GameplayTag[] AttributeTags;
-        public GameplayTag[] RequiredTags;
-        public GameplayTag[] ObstacledTags;
+        public GameplayTagSO[] AttributeTags;
+        public GameplayTagSO[] RequiredTags;
+        public GameplayTagSO[] ObstacledTags;
     }
 }
 #endif

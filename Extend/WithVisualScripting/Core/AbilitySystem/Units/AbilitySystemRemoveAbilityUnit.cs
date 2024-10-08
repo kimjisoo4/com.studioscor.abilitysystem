@@ -1,15 +1,14 @@
 ﻿
 #if SCOR_ENABLE_VISUALSCRIPTING
+using System;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
 
-
-    [UnitTitle("Try Activate Ability")]
+    [UnitTitle("Remove Ability")]
     [UnitSubtitle("AbilitySystem Unit")]
-    public class AbilitySystemTryActivateAbilityUnit : AbilitySystemFlowUnit
+    public class AbilitySystemRemoveAbilityUnit : AbilitySystemFlowUnit
     {
         [DoNotSerialize]
         [PortLabel("Ability")]
@@ -17,9 +16,9 @@ namespace StudioScor.AbilitySystem.VisualScripting
         public ValueInput Ability { get; private set; }
 
         [DoNotSerialize]
-        [PortLabel("isActivate")]
+        [PortLabel("isRemove")]
         [PortLabelHidden]
-        public ValueOutput IsActivate { get; private set; }
+        public ValueOutput IsRemove { get; private set; }
 
         [DoNotSerialize]
         [PortLabel("AbilitySpec")]
@@ -33,14 +32,14 @@ namespace StudioScor.AbilitySystem.VisualScripting
             Ability = ValueInput<Ability>(nameof(Ability), null);
 
             AbilitySpec = ValueOutput<IAbilitySpec>(nameof(Ability));
-            IsActivate = ValueOutput<bool>(nameof(IsActivate));
+            IsRemove = ValueOutput<bool>(nameof(IsRemove));
 
             Requirement(Target, AbilitySpec);
-            Requirement(Target, IsActivate);
+            Requirement(Target, IsRemove);
 
             Requirement(Ability, Enter);
             Requirement(Ability, AbilitySpec);
-            Requirement(Ability, IsActivate);
+            Requirement(Ability, IsRemove);
         }
 
         protected override ControlOutput EnterUnit(Flow flow)
@@ -48,10 +47,9 @@ namespace StudioScor.AbilitySystem.VisualScripting
             var abilitySystem = flow.GetValue<IAbilitySystem>(Target);
             var ability = flow.GetValue<Ability>(Ability);
 
-            var result = abilitySystem.TryActivateAbility(ability, out IAbilitySpec abilitySpec);
+            var result = abilitySystem.RemoveAbility(ability);
 
-            flow.SetValue(AbilitySpec, abilitySpec);
-            flow.SetValue(IsActivate, result);
+            flow.SetValue(IsRemove, result);
 
             return Exit;
         }

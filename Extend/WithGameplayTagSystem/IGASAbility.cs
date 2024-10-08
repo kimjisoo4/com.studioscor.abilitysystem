@@ -6,9 +6,9 @@ namespace StudioScor.AbilitySystem
 {
     public interface IGASAbility
     {
-        public GameplayTag AbilityTag { get; }
-        public IReadOnlyCollection<GameplayTag> AttributeTags { get; }
-        public IReadOnlyCollection<GameplayTag> CancelAbilityTags { get; }
+        public GameplayTagSO AbilityTag { get; }
+        public IReadOnlyCollection<GameplayTagSO> AttributeTags { get; }
+        public IReadOnlyCollection<GameplayTagSO> CancelAbilityTags { get; }
         public FGameplayTags GrantTags { get; }
         public FConditionTags ConditionTags { get; }
 

@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 namespace StudioScor.AbilitySystem.VisualScripting.Editor
 {
 
+
     [Descriptor(typeof(AbilitySystemEventUnit))]
     public sealed class AbilitySystemEventDescriptor : UnitDescriptor<AbilitySystemEventUnit>
     {

@@ -6,10 +6,10 @@ using Unity.VisualScripting;
 namespace StudioScor.AbilitySystem.VisualScripting.Editor
 {
 
-    [Descriptor(typeof(VisualScriptingAbilityEndAbilityUnit))]
-    public sealed class VisualScriptingAbilityEndAbilityUnitDescriptor : UnitDescriptor<VisualScriptingAbilityEndAbilityUnit>
+    [Descriptor(typeof(AbilitySpecFinishAbilityUnit))]
+    public sealed class VisualScriptingAbilityEndAbilityUnitDescriptor : UnitDescriptor<AbilitySpecFinishAbilityUnit>
     {
-        public VisualScriptingAbilityEndAbilityUnitDescriptor(VisualScriptingAbilityEndAbilityUnit target) : base(target)
+        public VisualScriptingAbilityEndAbilityUnitDescriptor(AbilitySpecFinishAbilityUnit target) : base(target)
         {
         }
         protected override EditorTexture DefaultIcon()

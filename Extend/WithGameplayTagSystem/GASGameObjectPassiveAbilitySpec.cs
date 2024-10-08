@@ -38,7 +38,7 @@ namespace StudioScor.AbilitySystem
         }
 
         #region Auto Toggle
-        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -55,7 +55,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -72,21 +72,21 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
-                if (gameplayTag == _gasAbility.AbilityTag || _gasAbility.AttributeTags.Contains(gameplayTag))
+                if (_gasAbility.AbilityTag == gameplayTag || _gasAbility.AttributeTags.Contains(gameplayTag))
                 {
                     TryFinishAbility();
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
         {
             if (!IsPlaying)
             {
-                if (gameplayTag == _gasAbility.AbilityTag || _gasAbility.AttributeTags.Contains(gameplayTag))
+                if (_gasAbility.AbilityTag == gameplayTag || _gasAbility.AttributeTags.Contains(gameplayTag))
                 {
                     TryActiveAbility();
                 }

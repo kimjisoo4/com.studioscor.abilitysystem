@@ -5,36 +5,27 @@ using UnityEngine;
 
 namespace StudioScor.AbilitySystem.VisualScripting
 {
-
     [UnitTitle("Get Ability")]
-    [UnitSubtitle("VisualScriptingAbility Unit")]
-    [UnitCategory("StudioScor\\AbilitySystem\\AbilitySpec")]
-    public class VisualScriptingAbilityGetAbilityUnit : Unit
+    [UnitSubtitle("AbilitySpec Unit")]
+    public class AbilitySpecGetAbilityUnit : AbilitySpecUnit
     {
-        [DoNotSerialize]
-        [NullMeansSelf]
-        [PortLabel("Target")]
-        [PortLabelHidden]
-        public ValueInput AbilitySpec { get; private set; }
-
         [DoNotSerialize]
         [PortLabel("AbilitySystem")]
         [PortLabelHidden]
         public ValueOutput Ability { get; private set; }
 
-
         protected override void Definition()
         {
-            AbilitySpec = ValueInput<VisualScriptingAbilitySpec>(nameof(AbilitySpec), null).NullMeansSelf();
+            base.Definition();
 
             Ability = ValueOutput<Ability>(nameof(Ability), GetAbility);
 
-            Requirement(AbilitySpec, Ability);
+            Requirement(Target, Ability);
         }
 
         private Ability GetAbility(Flow flow)
         {
-            var spec = flow.GetValue<VisualScriptingAbilitySpec>(AbilitySpec);
+            var spec = flow.GetValue<IAbilitySpec>(Target);
 
             return spec.Ability;
         }

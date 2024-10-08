@@ -34,7 +34,15 @@ namespace StudioScor.AbilitySystem.VisualScripting.Editor
 
         private static EditorTexture GetStateTexture(string name)
         {
-            return _EditorTextures[name];
+            if(_EditorTextures.TryGetValue(name, out EditorTexture texture))
+            {
+                return texture;
+            }
+            else
+            {
+                return null;
+            }
+            
         }
     }
 }

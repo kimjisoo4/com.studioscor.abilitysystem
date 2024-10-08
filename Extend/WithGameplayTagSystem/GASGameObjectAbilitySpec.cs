@@ -22,7 +22,7 @@ namespace StudioScor.AbilitySystem
 
         public override void CancelAbilityFromSource(object source)
         {
-            if (source is not GameplayTag[] gameplayTags)
+            if (source is not GameplayTagSO[] gameplayTags)
                 return;
 
             foreach (var tag in gameplayTags)
@@ -67,7 +67,7 @@ namespace StudioScor.AbilitySystem
         {
             _abilitySystem.CancelAbilityFromSource(_gasAbility.CancelAbilityTags);
 
-            _gameplayTagSystem.GrantGameplayTags(_gasAbility.GrantTags);
+            _gameplayTagSystem.AddGameplayTags(_gasAbility.GrantTags);
         }
 
         protected override void ExitAbility()

@@ -5,10 +5,10 @@ using Unity.VisualScripting;
 
 namespace StudioScor.AbilitySystem.VisualScripting.Editor
 {
-    [Descriptor(typeof(AbilitySpecCancelAbilityUnit))]
-    public sealed class VisualScriptingAbilityCancelAbilityUnitDescriptor : UnitDescriptor<AbilitySpecCancelAbilityUnit>
+    [Descriptor(typeof(AbilitySpecUnit))]
+    public sealed class AbilitySpecUnitDescriptor : UnitDescriptor<AbilitySpecUnit>
     {
-        public VisualScriptingAbilityCancelAbilityUnitDescriptor(AbilitySpecCancelAbilityUnit target) : base(target)
+        public AbilitySpecUnitDescriptor(AbilitySpecUnit target) : base(target)
         {
         }
         protected override EditorTexture DefaultIcon()
