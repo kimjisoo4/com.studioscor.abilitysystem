@@ -10,7 +10,7 @@ namespace StudioScor.AbilitySystem.Editor
     {
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
+            DrawDefaultInspector();
 
             if (Application.isPlaying)
             {
