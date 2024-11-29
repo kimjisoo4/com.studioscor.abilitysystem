@@ -38,7 +38,7 @@ namespace StudioScor.AbilitySystem
         }
 
         #region Auto Toggle
-        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -55,7 +55,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedOwnedTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -72,7 +72,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
+        private void GameplayTagEvent_OnGrantedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (IsPlaying)
             {
@@ -82,7 +82,7 @@ namespace StudioScor.AbilitySystem
                 }
             }
         }
-        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, IGameplayTag gameplayTag)
+        private void GameplayTagEvent_OnRemovedBlockTag(IGameplayTagSystem gameplayTagSystem, GameplayTag gameplayTag)
         {
             if (!IsPlaying)
             {

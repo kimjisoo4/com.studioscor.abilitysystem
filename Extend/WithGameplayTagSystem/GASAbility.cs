@@ -8,15 +8,15 @@ namespace StudioScor.AbilitySystem
     public abstract class GASAbility : Ability, IGASAbility
     {
         [Header(" [ Gameplay Ability ] ")]
-        [SerializeField] private GameplayTagSO abilityTag;
-        [SerializeField] private GameplayTagSO[] attributeTags;
+        [SerializeField] private GameplayTag abilityTag;
+        [SerializeField] private GameplayTag[] attributeTags;
         [SerializeField] private FConditionTags conditionTags;
         [SerializeField] private FGameplayTags grantTags;
-        [SerializeField] private GameplayTagSO[] cancelAbilityTags;
+        [SerializeField] private GameplayTag[] cancelAbilityTags;
 
-        public GameplayTagSO AbilityTag => abilityTag;
-        public IReadOnlyCollection<GameplayTagSO> AttributeTags => attributeTags;
-        public IReadOnlyCollection<GameplayTagSO> CancelAbilityTags => cancelAbilityTags;
+        public GameplayTag AbilityTag => abilityTag;
+        public IReadOnlyCollection<GameplayTag> AttributeTags => attributeTags;
+        public IReadOnlyCollection<GameplayTag> CancelAbilityTags => cancelAbilityTags;
         public FGameplayTags GrantTags => grantTags;
         public FConditionTags ConditionTags => conditionTags;
     }

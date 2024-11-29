@@ -22,7 +22,7 @@ namespace StudioScor.AbilitySystem
 
         public override void CancelAbilityFromSource(object source)
         {
-            if (source is not GameplayTagSO[] gameplayTags)
+            if (source is not GameplayTag[] gameplayTags)
                 return;
 
             foreach (var tag in gameplayTags)
