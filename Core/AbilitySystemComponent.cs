@@ -51,7 +51,7 @@ namespace StudioScor.AbilitySystem
 
         private readonly Dictionary<IAbility, IAbilitySpec> _abilities = new();
         private readonly List<IUpdateableAbilitySpec> _updateableAbilitySpecs = new();
-
+        private readonly Queue<IUpdateableAbilitySpec> _removalAbilities = new();
         public IReadOnlyDictionary<IAbility, IAbilitySpec> Abilities => _abilities;
 
         public event IAbilitySystem.AbilitySpecHandler OnActivatedAbility;
@@ -114,19 +114,40 @@ namespace StudioScor.AbilitySystem
         {
             base.Tick(deltaTime);
 
-            foreach (var ability in _updateableAbilitySpecs)
+            for(int i = 0; i < _updateableAbilitySpecs.Count; i++)
             {
+                var ability = _updateableAbilitySpecs[i];
+
                 ability.UpdateAbility(deltaTime);
             }
+
+            RemovalQueue();
         }
 
         public override void FixedTick(float deltaTime)
         {
             base.FixedTick(deltaTime);
 
-            foreach (var ability in _updateableAbilitySpecs)
+            for (int i = 0; i < _updateableAbilitySpecs.Count; i++)
             {
+                var ability = _updateableAbilitySpecs[i];
+
                 ability.FixedUpdateAbility(deltaTime);
+            }
+
+            RemovalQueue();
+        }
+
+        private void RemovalQueue()
+        {
+            if (_removalAbilities.Count > 0)
+            {
+                foreach (var removeAbility in _removalAbilities)
+                {
+                    _updateableAbilitySpecs.Remove(removeAbility);
+                }
+
+                _removalAbilities.Clear();
             }
         }
 
@@ -318,6 +339,9 @@ namespace StudioScor.AbilitySystem
 
         public bool RemoveAbility(IAbility ability)
         {
+            if (ability is null)
+                return false;
+
             if (!Abilities.TryGetValue(ability, out IAbilitySpec spec))
                 return false;
 
@@ -332,7 +356,7 @@ namespace StudioScor.AbilitySystem
 
             if (spec is IUpdateableAbilitySpec updateableAbility)
             {
-                _updateableAbilitySpecs.Remove(updateableAbility);
+                _removalAbilities.Enqueue(updateableAbility);
             }
 
             Invoke_OnRemovedAbility(spec);
