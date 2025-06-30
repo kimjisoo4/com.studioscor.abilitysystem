@@ -73,7 +73,7 @@ namespace StudioScor.AbilitySystem
             if (!IsPlaying)
                 return;
 
-            Invoke_OnReleasedAbility();
+            RaiseOnReleasedAbility();
 
             OnReleaseAbility();
         }
@@ -95,7 +95,7 @@ namespace StudioScor.AbilitySystem
         {
             IsPlaying = true;
 
-            Invoke_OnActivateAbility();
+            RaiseOnActivateAbility();
 
             EnterAbility();
         }
@@ -137,12 +137,12 @@ namespace StudioScor.AbilitySystem
 
             OnFinishAbility();
 
-            Invoke_OnFinishedAbility();
+            RaiseOnFinishedAbility();
 
 
             ExitAbility();
 
-            Invoke_OnEndedAbility();
+            RaiseOnEndedAbility();
         }
 
         public virtual void CancelAbilityFromSource(object source)
@@ -165,7 +165,7 @@ namespace StudioScor.AbilitySystem
 
             ExitAbility();
 
-            Invoke_OnEndedAbility();
+            RaiseOnEndedAbility();
         }
 
         public void SetAbilityLevel(int newLevel)
@@ -207,25 +207,25 @@ namespace StudioScor.AbilitySystem
         }
 
         #region Callback
-        protected virtual void Invoke_OnActivateAbility()
+        protected virtual void RaiseOnActivateAbility()
         {
             Log(nameof(OnActivatedAbility));
 
             OnActivatedAbility?.Invoke(this);
         }
-        protected virtual void Invoke_OnReleasedAbility()
+        protected virtual void RaiseOnReleasedAbility()
         {
             Log(nameof(OnReleasedAbility));
 
             OnReleasedAbility?.Invoke(this);
         }
-        protected virtual void Invoke_OnFinishedAbility()
+        protected virtual void RaiseOnFinishedAbility()
         {
             Log(nameof(OnFinishedAbility));
 
             OnFinishedAbility?.Invoke(this);
         }
-        protected virtual void Invoke_OnEndedAbility()
+        protected virtual void RaiseOnEndedAbility()
         {
             Log(nameof(OnEndedAbility));
 
