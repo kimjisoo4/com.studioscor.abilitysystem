@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using StudioScor.Utilities;
-
-namespace StudioScor.AbilitySystem
+﻿namespace StudioScor.AbilitySystem
 {
     [System.Serializable]
     public struct FAbility
@@ -13,7 +10,7 @@ namespace StudioScor.AbilitySystem
             AbilityName = Ability.ID;
         }
 
-        [SReadOnly] public string AbilityName;
+        public string AbilityName;
 
         public Ability Ability;
         public int Level;
